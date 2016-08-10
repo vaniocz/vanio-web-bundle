@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
+        <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
+    </parameters>
+
+    <services>
+        <service id="vanio_web.request.referer_resolver" class="%vanio_web.request.referer_resolver.class%">
+            <argument type="service" id="security.http_utils"/>
+            <argument type="service" id="router"/>
+            <argument>%vanio_web.referer_fallback_path%</argument>
+        </service>
+        <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
+            <tag name="twig.extension"/>
+        </service>
+    </services>
+</container>
