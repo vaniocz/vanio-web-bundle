@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "258c51670f8fdf62b0aef5b3107bd10b",
-    "content-hash": "bc6caba804e00b6b972e26fcd15dff39",
+    "hash": "3c5d0996880c734be9042f14cd3a1693",
+    "content-hash": "ff98d0be3784877cb6149e2e86a23874",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1876,12 +1876,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vaniocz/stdlib.git",
-                "reference": "e7e3aa5ed9f9f4d80f4627962168035e3b79b5be"
+                "reference": "0033f27c590fed1dd1125474efd6580278be8fe8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/e7e3aa5ed9f9f4d80f4627962168035e3b79b5be",
-                "reference": "e7e3aa5ed9f9f4d80f4627962168035e3b79b5be",
+                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/0033f27c590fed1dd1125474efd6580278be8fe8",
+                "reference": "0033f27c590fed1dd1125474efd6580278be8fe8",
                 "shasum": ""
             },
             "require": {
@@ -1930,7 +1930,7 @@
                 "strings",
                 "uri value object"
             ],
-            "time": "2016-08-18 14:18:08"
+            "time": "2016-08-18 15:13:46"
         }
     ],
     "packages-dev": [

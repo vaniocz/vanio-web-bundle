@@ -5,21 +5,27 @@ use Vanio\WebBundle\Templating\WebExtension;
 
 class WebExtensionTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var WebExtension */
-    private $webExtension;
+    /** @var \Twig_Environment */
+    private $twig;
 
     public function setUp()
     {
-        $this->webExtension = new WebExtension;
+        $this->twig = new \Twig_Environment(new \Twig_Loader_Array([]));
+        $this->twig->addExtension(new WebExtension);
     }
 
     function test_resolving_class_name()
     {
-        $this->assertSame('', $this->webExtension->className([]));
-        $this->assertSame('', $this->webExtension->className([' ']));
-        $this->assertSame('class', $this->webExtension->className(['class']));
-        $this->assertSame('foo bar', $this->webExtension->className(['foo' => true, 'bar' => true]));
-        $this->assertSame('foo', $this->webExtension->className(['foo' => true, 'bar' => false]));
-        $this->assertSame('foo baz', $this->webExtension->className(['foo' => true, 'bar' => false, 'baz']));
+        $this->assertSame('', $this->render('{{ class_name([]) }}'));
+        $this->assertSame('', $this->render("{{ class_name([' ']) }}"));
+        $this->assertSame('class', $this->render("{{ class_name(['class']) }}"));
+        $this->assertSame('foo bar', $this->render('{{ class_name({foo: true, bar: true}) }}'));
+        $this->assertSame('foo', $this->render('{{ class_name({foo: true, bar: false}) }}'));
+        $this->assertSame('foo baz', $this->render("{{ class_name({foo: true, bar: false, 0: 'baz'}) }}"));
+    }
+
+    private function render(string $template, array $context = []): string
+    {
+        return $this->twig->createTemplate($template)->render($context);
     }
 }
