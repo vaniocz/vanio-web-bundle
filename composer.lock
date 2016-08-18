@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ff7e68a8d1694e53ef566d771aed42c6",
-    "content-hash": "e94cf7a780dce1f42a41eefab41ef759",
+    "hash": "258c51670f8fdf62b0aef5b3107bd10b",
+    "content-hash": "bc6caba804e00b6b972e26fcd15dff39",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1876,21 +1876,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vaniocz/stdlib.git",
-                "reference": "c487f04a1d8ec36716a6652efc94522cc3679f84"
+                "reference": "e7e3aa5ed9f9f4d80f4627962168035e3b79b5be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/c487f04a1d8ec36716a6652efc94522cc3679f84",
-                "reference": "c487f04a1d8ec36716a6652efc94522cc3679f84",
+                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/e7e3aa5ed9f9f4d80f4627962168035e3b79b5be",
+                "reference": "e7e3aa5ed9f9f4d80f4627962168035e3b79b5be",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.0"
             },
             "require-dev": {
-                "consistence/coding-standard": "^0.10.1",
-                "phpunit/phpunit": "5.2.*",
-                "slevomat/coding-standard": "^1.0.5"
+                "phpunit/phpunit": "^5.5",
+                "slevomat/coding-standard": "dev-master as 1.x-dev",
+                "vanio/coding-standards": "^0.1@dev"
             },
             "type": "library",
             "extra": {
@@ -1927,9 +1927,10 @@
                 "objects",
                 "standard library",
                 "string utility",
-                "strings"
+                "strings",
+                "uri value object"
             ],
-            "time": "2016-08-12 15:03:36"
+            "time": "2016-08-18 14:18:08"
         }
     ],
     "packages-dev": [
@@ -2684,16 +2685,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.5.0",
+            "version": "5.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b"
+                "reference": "46ec2d1522ae8c9a12aca6b7650e0be78bbb0502"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
-                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/46ec2d1522ae8c9a12aca6b7650e0be78bbb0502",
+                "reference": "46ec2d1522ae8c9a12aca6b7650e0be78bbb0502",
                 "shasum": ""
             },
             "require": {
@@ -2758,20 +2759,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-08-05 04:49:02"
+            "time": "2016-08-18 11:10:44"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "3.2.3",
+            "version": "3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "b13d0d9426ced06958bd32104653526a6c998a52"
+                "reference": "4e83390f64e7ce04fcaec2ce95cd72823b431d19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/b13d0d9426ced06958bd32104653526a6c998a52",
-                "reference": "b13d0d9426ced06958bd32104653526a6c998a52",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/4e83390f64e7ce04fcaec2ce95cd72823b431d19",
+                "reference": "4e83390f64e7ce04fcaec2ce95cd72823b431d19",
                 "shasum": ""
             },
             "require": {
@@ -2817,7 +2818,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2016-06-12 07:37:26"
+            "time": "2016-08-17 09:33:51"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2982,23 +2983,23 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "1.3.7",
+            "version": "1.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "4e8f0da10ac5802913afc151413bc8c53b6c2716"
+                "reference": "be2c607e43ce4c89ecd60e75c6a85c126e754aea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/4e8f0da10ac5802913afc151413bc8c53b6c2716",
-                "reference": "4e8f0da10ac5802913afc151413bc8c53b6c2716",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/be2c607e43ce4c89ecd60e75c6a85c126e754aea",
+                "reference": "be2c607e43ce4c89ecd60e75c6a85c126e754aea",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": "^5.3.3 || ^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.4"
+                "phpunit/phpunit": "^4.8 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -3028,7 +3029,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2016-05-17 03:18:57"
+            "time": "2016-08-18 05:49:44"
         },
         {
             "name": "sebastian/exporter",
@@ -3499,6 +3500,50 @@
             "time": "2016-07-17 14:02:08"
         },
         {
+            "name": "vanio/coding-standards",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vaniocz/coding-standards.git",
+                "reference": "de110ee15016086aaa5113cb14cd12628749de20"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vaniocz/coding-standards/zipball/de110ee15016086aaa5113cb14cd12628749de20",
+                "reference": "de110ee15016086aaa5113cb14cd12628749de20",
+                "shasum": ""
+            },
+            "require": {
+                "consistence/coding-standard": "^0.11.1",
+                "slevomat/coding-standard": "^1.1.1",
+                "squizlabs/php_codesniffer": "^2.6.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marek Štípek",
+                    "email": "marek.stipek@vanio.cz"
+                }
+            ],
+            "description": "Vanio Coding Standard Ruleset for PHP_CodeSniffer.",
+            "homepage": "https://github.com/vaniocz/coding-standards",
+            "keywords": [
+                "codesniffer",
+                "coding standards",
+                "conventions"
+            ],
+            "time": "2016-08-18 14:24:04"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.1.0",
             "source": {
@@ -3552,7 +3597,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "vanio/stdlib": 20
+        "vanio/stdlib": 20,
+        "vanio/coding-standards": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
