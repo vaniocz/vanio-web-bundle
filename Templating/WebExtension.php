@@ -13,7 +13,7 @@ class WebExtension extends \Twig_Extension
 
     public function getName(): string
     {
-        return 'web_extension';
+        return 'vanio_web_extension';
     }
 
     public function className(array $classes): string

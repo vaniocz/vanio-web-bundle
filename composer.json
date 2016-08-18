@@ -22,16 +22,16 @@
         "slevomat/coding-standard": "^1.1.1"
     },
     "autoload": {
-        "psr-4": {"Vanio\\WebBundle\\": "src/"},
-        "exclude-from-classmap": ["/tests/", "**/Tests/"]
+        "psr-4": {"Vanio\\WebBundle\\": ""},
+        "exclude-from-classmap": ["/Tests/", "**/Tests/"]
     },
     "autoload-dev": {
-        "psr-4": {"Vanio\\WebBundle\\Tests\\": "tests/"}
+        "psr-4": {"Vanio\\WebBundle\\Tests\\": "Tests/"}
     },
     "scripts": {
         "test": "\"vendor/bin/phpunit\"",
-        "lint": "\"vendor/bin/phpcs\" --standard=ruleset.xml --extensions=php --encoding=utf-8 -sp src tests",
-        "fix": "\"vendor/bin/phpcbf\" --standard=ruleset.xml --extensions=php --encoding=utf-8 --no-patch -sp src tests"
+        "lint": "\"vendor/bin/phpcs\" --standard=ruleset.xml --extensions=php --encoding=utf-8 --ignore=vendor .",
+        "fix": "\"vendor/bin/phpcbf\" --standard=ruleset.xml --extensions=php --encoding=utf-8 --no-patch --ignore=vendor ."
     },
     "extra": {
         "branch-alias": {
