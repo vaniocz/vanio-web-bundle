@@ -24,6 +24,12 @@ class WebExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('foo baz', $this->render("{{ class_name({foo: true, bar: false, 0: 'baz'}) }}"));
     }
 
+    function test_instance_of_test()
+    {
+        $this->assertEquals(true, $this->render("{{ value is instance_of('stdClass') }}", ['value' => new \stdClass]));
+        $this->assertEquals(false, $this->render("{{ value is instance_of('stdClass') }}", ['value' => '']));
+    }
+
     private function render(string $template, array $context = []): string
     {
         return $this->twig->createTemplate($template)->render($context);

@@ -11,6 +11,14 @@ class WebExtension extends \Twig_Extension
         return [new \Twig_SimpleFunction('class_name', [$this, 'className'])];
     }
 
+    /**
+     * @return \Twig_SimpleFunction[]
+     */
+    public function getTests(): array
+    {
+        return [new \Twig_SimpleTest('instance_of', [$this, 'isInstanceOf'])];
+    }
+
     public function getName(): string
     {
         return 'vanio_web_extension';
@@ -27,5 +35,10 @@ class WebExtension extends \Twig_Extension
         }
 
         return trim($className);
+    }
+
+    public function isInstanceOf($value, string $class): bool
+    {
+        return is_a($value, $class, true);
     }
 }
