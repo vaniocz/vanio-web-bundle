@@ -26,8 +26,8 @@ class WebExtensionTest extends \PHPUnit_Framework_TestCase
 
     function test_instance_of_test()
     {
-        $this->assertEquals(true, $this->render("{{ value is instance_of('stdClass') }}", ['value' => new \stdClass]));
-        $this->assertEquals(false, $this->render("{{ value is instance_of('stdClass') }}", ['value' => '']));
+        $this->assertEquals(true, $this->render("{{ value is instance of('stdClass') }}", ['value' => new \stdClass]));
+        $this->assertEquals(false, $this->render("{{ value is instance of('stdClass') }}", ['value' => 'value']));
     }
 
     private function render(string $template, array $context = []): string

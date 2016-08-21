@@ -16,7 +16,7 @@ class WebExtension extends \Twig_Extension
      */
     public function getTests(): array
     {
-        return [new \Twig_SimpleTest('instance_of', [$this, 'isInstanceOf'])];
+        return [new \Twig_SimpleTest('instance of', [$this, 'isInstanceOf'])];
     }
 
     public function getName(): string
