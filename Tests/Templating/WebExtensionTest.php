@@ -8,7 +8,7 @@ class WebExtensionTest extends \PHPUnit_Framework_TestCase
     /** @var \Twig_Environment */
     private $twig;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->twig = new \Twig_Environment(new \Twig_Loader_Array([]));
         $this->twig->addExtension(new WebExtension);

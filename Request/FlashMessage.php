@@ -1,8 +1,13 @@
 <?php
-namespace Vanio\WebBundle\Templating;
+namespace Vanio\WebBundle\Request;
 
 class FlashMessage
 {
+    const TYPE_SUCCESS = 'success';
+    const TYPE_INFO = 'info';
+    const TYPE_WARNING = 'warning';
+    const TYPE_DANGER = 'danger';
+
     /** @var string */
     private $message;
 

@@ -14,7 +14,7 @@ class RefererResolverTest extends \PHPUnit_Framework_TestCase
     /** @var RefererResolver */
     private $refererResolver;
 
-    public function setUp()
+    protected function setUp()
     {
         $routes = new RouteCollection;
         $routes->add('route', new Route('/path'));

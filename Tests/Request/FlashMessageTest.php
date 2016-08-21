@@ -1,7 +1,7 @@
 <?php
-namespace Vanio\WebBundle\Tests\Templating;
+namespace Vanio\WebBundle\Tests\Request;
 
-use Vanio\WebBundle\Templating\FlashMessage;
+use Vanio\WebBundle\Request\FlashMessage;
 
 class FlashMessageTest extends \PHPUnit_Framework_TestCase
 {
