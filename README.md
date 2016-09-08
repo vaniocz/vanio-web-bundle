@@ -43,10 +43,12 @@ Since this functionality is mostly used from inside controllers, it is possible 
 which defines one method - `redirectToReferer(string $fallbackPath = null): RedirectResponse`.
 
 ## Flash Messages
-Another stupid thing which seems too complicated to me is translating of flash messages.
+Another thing which seems too complicated to me is translating of flash messages.
 It's actually very easy but you need a session and a translator.
 Two dependencies just to show a translated flash message.
-To simplify that there is `Vanio\WebBundle\Request\FlashMessage` value object you can use as an envelope of the message and pass the message parameters and domain to it.
+To simplify that there is `Vanio\WebBundle\Translation\FlashMessage` value object you can use as an envelope
+of the message and pass the message parameters and domain to it. This bundle also replaces `translation.extractor.php`
+service with implementation able to extract messages from `FlashMessage` constructor.
 
 ```php
 $this->addFlash(FlashMessage::TYPE_DANGER, new FlashMessage('message', ['key' => 'value'], 'vanio_web'));
@@ -67,7 +69,7 @@ So, for example, it is not possible to determine whether a flash message is just
 And that's why `instance of(string $class)` Twig test was added. You can use it like this:
 
 ```twig
-{{ message is instance of('Vanio\\WebBundle\\Request\\FlashMessage')
+{{ message is instance of('Vanio\\WebBundle\\Translation\\FlashMessage')
     ? message.message|trans(message.parameters, message.domain, message.locale)
     : message }}
 ```

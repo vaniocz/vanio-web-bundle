@@ -3,9 +3,13 @@
     <parameters>
         <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
+        <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
     </parameters>
 
     <services>
+        <service id="translation.extractor.php" class="%vanio_web.translation.php_extractor.class%">
+            <tag name="translation.extractor" alias="php"/>
+        </service>
         <service id="vanio_web.request.referer_resolver" class="%vanio_web.request.referer_resolver.class%">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router"/>

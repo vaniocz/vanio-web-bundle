@@ -1,5 +1,5 @@
 <?php
-namespace Vanio\WebBundle\Request;
+namespace Vanio\WebBundle\Translation;
 
 class FlashMessage
 {
