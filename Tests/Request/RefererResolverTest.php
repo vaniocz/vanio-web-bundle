@@ -1,6 +1,7 @@
 <?php
 namespace Vanio\WebBundle\Tests\Request;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -9,7 +10,7 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Security\Http\HttpUtils;
 use Vanio\WebBundle\Request\RefererResolver;
 
-class RefererResolverTest extends \PHPUnit_Framework_TestCase
+class RefererResolverTest extends TestCase
 {
     /** @var RefererResolver */
     private $refererResolver;

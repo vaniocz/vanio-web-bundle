@@ -5,8 +5,6 @@
 ![PHP7](https://img.shields.io/badge/php-7-6B7EB9.svg)
 [![License](https://poser.pugx.org/vanio/vanio-web-bundle/license)](https://github.com/vaniocz/vanio-web-bundle/blob/master/LICENSE)
 
-**WORK IN PROGRESS - DO NOT USE**
-
 # Installation
 Installation can be done as usually using composer.
 `composer require vanio/vanio-web-bundle`
@@ -62,7 +60,10 @@ You'll also need to display it somewhere in your view and actually translate it 
 Sometimes, even just determining a class name of HTML elements can be cumbersome when it depends on some conditions.
 So there is `class_name(array $classes): string` Twig function.
 You need to pass it an array where key is a class and value is a boolean value indicating whether this class name should be present.
-Passing a numeric key means the class name is always present.
+
+Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
+so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
+It uses handy [html2text](https://github.com/mtibben/html2text) library.   
 
 In Twig, there is no possibility how to determine whether a given object implements a given type.
 So, for example, it is not possible to determine whether a flash message is just a string or an instance of the added `FlashMessage` class.

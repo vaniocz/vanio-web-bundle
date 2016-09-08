@@ -1,9 +1,10 @@
 <?php
 namespace Vanio\WebBundle\Tests\Translation;
 
+use PHPUnit\Framework\TestCase;
 use Vanio\WebBundle\Translation\FlashMessage;
 
-class FlashMessageTest extends \PHPUnit_Framework_TestCase
+class FlashMessageTest extends TestCase
 {
     function test_getting_message()
     {

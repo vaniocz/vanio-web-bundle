@@ -1,10 +1,11 @@
 <?php
 namespace Vanio\WebBundle\Tests\Translation;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Translation\MessageCatalogue;
 use Vanio\WebBundle\Translation\PhpExtractor;
 
-class PhpExtractorTest extends \PHPUnit_Framework_TestCase
+class PhpExtractorTest extends TestCase
 {
     function test_extracting_messages()
     {

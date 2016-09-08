@@ -1,6 +1,7 @@
 <?php
 namespace Vanio\WebBundle\Tests\Request;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,7 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Vanio\WebBundle\Request\RefererHelperTrait;
 use Vanio\WebBundle\Request\RefererResolver;
 
-class RefererHelperTraitTest extends \PHPUnit_Framework_TestCase
+class RefererHelperTraitTest extends TestCase
 {
     /** @var RefererResolver|\PHPUnit_Framework_MockObject_MockObject */
     private $refererResolverMock;

@@ -1,9 +1,10 @@
 <?php
 namespace Vanio\WebBundle\Tests\Templating;
 
+use PHPUnit\Framework\TestCase;
 use Vanio\WebBundle\Templating\WebExtension;
 
-class WebExtensionTest extends \PHPUnit_Framework_TestCase
+class WebExtensionTest extends TestCase
 {
     /** @var \Twig_Environment */
     private $twig;
@@ -17,11 +18,20 @@ class WebExtensionTest extends \PHPUnit_Framework_TestCase
     function test_resolving_class_name()
     {
         $this->assertSame('', $this->render('{{ class_name([]) }}'));
-        $this->assertSame('', $this->render("{{ class_name([' ']) }}"));
-        $this->assertSame('class', $this->render("{{ class_name(['class']) }}"));
         $this->assertSame('foo bar', $this->render('{{ class_name({foo: true, bar: true}) }}'));
         $this->assertSame('foo', $this->render('{{ class_name({foo: true, bar: false}) }}'));
-        $this->assertSame('foo baz', $this->render("{{ class_name({foo: true, bar: false, 0: 'baz'}) }}"));
+    }
+
+    function test_converting_html_to_text()
+    {
+        $this->assertSame('', $this->render("{{ ''|html_to_text }}"));
+        $this->assertSame('FOO', $this->render("{{ '<strong>foo</strong>'|html_to_text }}"));
+        $this->assertSame("foo\nbar", $this->render("{{ 'foo<br>bar'|html_to_text }}"));
+        $this->assertSame("foo\nbar", $this->render("{{ 'foo bar'|html_to_text({width: 1}) }}"));
+        $this->assertSame(
+            'foo [http://example.com]',
+            $this->render("{{ '<a href=\"http://example.com\">foo</a>'|html_to_text }}")
+        );
     }
 
     function test_instance_of_test()

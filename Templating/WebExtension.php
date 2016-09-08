@@ -1,6 +1,8 @@
 <?php
 namespace Vanio\WebBundle\Templating;
 
+use Html2Text\Html2Text;
+
 class WebExtension extends \Twig_Extension
 {
     /**
@@ -9,6 +11,14 @@ class WebExtension extends \Twig_Extension
     public function getFunctions(): array
     {
         return [new \Twig_SimpleFunction('class_name', [$this, 'className'])];
+    }
+
+    /**
+     * @return \Twig_SimpleFilter[]
+     */
+    public function getFilters(): array
+    {
+        return [new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText'])];
     }
 
     /**
@@ -26,15 +36,12 @@ class WebExtension extends \Twig_Extension
 
     public function className(array $classes): string
     {
-        $className = '';
+        return implode(' ', array_keys(array_filter($classes)));
+    }
 
-        foreach ($classes as $class => $enabled) {
-            if ($enabled) {
-                $className .= (is_int($class) ? $enabled : $class) . ' ';
-            }
-        }
-
-        return trim($className);
+    public function htmlToText(string $html, array $options = []): string
+    {
+        return (new Html2Text($html, $options))->getText();
     }
 
     public function isInstanceOf($value, string $class): bool
