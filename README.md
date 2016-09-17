@@ -35,9 +35,11 @@ class AppKernel extends Kernel
 
 It's quite a common task to redirect user back after certain actions.
 This bundle defines a service named `vanio_web.request.referer_resolver` which helps you with that.
-It reads HTTP_REFERER header from current request and tries to match the referring URL against defined routes.
-In case of missing header or invalid URL (like URL pointing to a different webpage) fallback path is used.
-Since this functionality is mostly used from inside controllers, it is possible to use `Vanio\WebBundle\Request\RefererHelperTrait`
+First it tries to read from `_referer` (`%vanio_web.referer_parameter%`) query parameter. 
+When the query parameter is not present then it reads HTTP_REFERER header and tries to match the referring URL against
+defined routes. In case of missing header or invalid URL (like URL pointing to a different webpage) fallback path
+is used. Since this functionality is mostly used from inside controllers,
+it is possible to use `Vanio\WebBundle\Request\RefererHelperTrait`
 which defines one method - `redirectToReferer(string $fallbackPath = null): RedirectResponse`.
 
 ## Flash Messages
@@ -78,4 +80,5 @@ And that's why `instance of(string $class)` Twig test was added. You can use it 
 # Default Configuration
 ```yml
 referer_fallback_path: /
+referer_parameter: _referer
 ```

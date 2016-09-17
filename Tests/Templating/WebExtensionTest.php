@@ -2,6 +2,9 @@
 namespace Vanio\WebBundle\Tests\Templating;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Templating\WebExtension;
 
 class WebExtensionTest extends TestCase
@@ -11,8 +14,11 @@ class WebExtensionTest extends TestCase
 
     protected function setUp()
     {
+        $request = new Request;
+        $requestStack = new RequestStack;
+        $requestStack->push($request);
         $this->twig = new \Twig_Environment(new \Twig_Loader_Array([]));
-        $this->twig->addExtension(new WebExtension);
+        $this->twig->addExtension(new WebExtension($this->createRefererResolverMock($request), $requestStack));
     }
 
     function test_resolving_class_name()
@@ -20,6 +26,11 @@ class WebExtensionTest extends TestCase
         $this->assertSame('', $this->render('{{ class_name([]) }}'));
         $this->assertSame('foo bar', $this->render('{{ class_name({foo: true, bar: true}) }}'));
         $this->assertSame('foo', $this->render('{{ class_name({foo: true, bar: false}) }}'));
+    }
+
+    function test_resolving_referer()
+    {
+        $this->assertSame('fallback_path', $this->render("{{ referer('fallback_path') }}"));
     }
 
     function test_converting_html_to_text()
@@ -43,5 +54,21 @@ class WebExtensionTest extends TestCase
     private function render(string $template, array $context = []): string
     {
         return $this->twig->createTemplate($template)->render($context);
+    }
+
+    /**
+     * @param Request $request
+     * @return RefererResolver|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createRefererResolverMock(Request $request): \PHPUnit_Framework_MockObject_MockObject
+    {
+        $refererResolverMock = $this->createMock(RefererResolver::class);
+        $refererResolverMock
+            ->expects($this->any())
+            ->method('resolveReferer')
+            ->with($request)
+            ->willReturnArgument(1);
+
+        return $refererResolverMock;
     }
 }

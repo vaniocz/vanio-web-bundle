@@ -1913,12 +1913,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vaniocz/stdlib.git",
-                "reference": "0033f27c590fed1dd1125474efd6580278be8fe8"
+                "reference": "329a2d9fb7c00eb7f525a20a640ea366fee32cd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/0033f27c590fed1dd1125474efd6580278be8fe8",
-                "reference": "0033f27c590fed1dd1125474efd6580278be8fe8",
+                "url": "https://api.github.com/repos/vaniocz/stdlib/zipball/329a2d9fb7c00eb7f525a20a640ea366fee32cd6",
+                "reference": "329a2d9fb7c00eb7f525a20a640ea366fee32cd6",
                 "shasum": ""
             },
             "require": {
@@ -1967,7 +1967,7 @@
                 "strings",
                 "uri value object"
             ],
-            "time": "2016-08-18 15:13:46"
+            "time": "2016-09-17 00:58:48"
         }
     ],
     "packages-dev": [

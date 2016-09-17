@@ -12,6 +12,7 @@ class Configuration implements ConfigurationInterface
         /* @noinspection PhpUndefinedMethodInspection */
         $treeBuilder->root('vanio_web')
             ->children()
+                ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
             ->end();
 

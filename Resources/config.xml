@@ -10,12 +10,16 @@
         <service id="translation.extractor.php" class="%vanio_web.translation.php_extractor.class%">
             <tag name="translation.extractor" alias="php"/>
         </service>
+
         <service id="vanio_web.request.referer_resolver" class="%vanio_web.request.referer_resolver.class%">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router"/>
-            <argument>%vanio_web.referer_fallback_path%</argument>
+            <argument>%vanio_web%</argument>
         </service>
+
         <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
+            <argument type="service" id="vanio_web.request.referer_resolver"/>
+            <argument type="service" id="request_stack"/>
             <tag name="twig.extension"/>
         </service>
     </services>

@@ -15,23 +15,30 @@ class RefererResolver
     /** @var UrlMatcherInterface */
     private $urlMatcher;
 
-    /** @var string */
-    private $fallbackPath;
+    /** @var array */
+    private $options;
 
-    public function __construct(HttpUtils $httpUtils, UrlMatcherInterface $urlMatcher, string $fallbackPath = '/')
+    public function __construct(HttpUtils $httpUtils, UrlMatcherInterface $urlMatcher, array $options = [])
     {
         $this->httpUtils = $httpUtils;
         $this->urlMatcher = $urlMatcher;
-        $this->fallbackPath = $fallbackPath;
+        $this->options = $options + [
+            'referer_parameter' => '_referer',
+            'referer_fallback_path' => '/',
+        ];
     }
 
     public function resolveReferer(Request $request, string $fallbackPath = null): string
     {
-        $referer = $request->headers->get('referer');
+        $referer = $request->query->get($this->options['referer_parameter'], $request->headers->get('referer', ''));
         $absoluteBaseUrl = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
+        $path = Strings::startsWith($referer, $absoluteBaseUrl)
+            ? substr($referer, strlen($absoluteBaseUrl))
+            : $referer;
+        $referer = $absoluteBaseUrl . $path;
 
-        if ($referer && $referer !== $request->getUri() && Strings::startsWith($referer, $absoluteBaseUrl)) {
-            $path = parse_url(substr($referer, strlen($absoluteBaseUrl)), PHP_URL_PATH);
+        if ($request->getUri() !== $referer && Strings::startsWith($path, '/')) {
+            $path = parse_url($path, PHP_URL_PATH);
 
             if ($path !== false) {
                 try {
@@ -42,6 +49,6 @@ class RefererResolver
             }
         }
 
-        return $this->httpUtils->generateUri($request, $fallbackPath ?? $this->fallbackPath);
+        return $this->httpUtils->generateUri($request, $fallbackPath ?? $this->options['referer_fallback_path']);
     }
 }

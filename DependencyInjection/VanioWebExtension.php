@@ -13,7 +13,10 @@ class VanioWebExtension extends Extension
         $config = $this->processConfiguration(new Configuration, $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources'));
         $loader->load('config.xml');
+        $container->setParameter('vanio_web', $config);
 
-        $container->setParameter('vanio_web.referer_fallback_path', $config['referer_fallback_path']);
+        foreach ($config as $key => $value) {
+            $container->setParameter("vanio_web.$key", $value);
+        }
     }
 }

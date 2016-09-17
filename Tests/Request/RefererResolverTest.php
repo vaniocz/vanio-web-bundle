@@ -18,17 +18,27 @@ class RefererResolverTest extends TestCase
     protected function setUp()
     {
         $routes = new RouteCollection;
-        $routes->add('route', new Route('/path'));
+        $routes->add('foo', new Route('/foo'));
+        $routes->add('bar', new Route('/bar'));
         $urlMatcher = new UrlMatcher($routes, new RequestContext);
         $this->refererResolver = new RefererResolver(new HttpUtils, $urlMatcher);
     }
 
-    function test_resolving_known_referer()
+    function test_resolving_known_referer_using_query_parameter()
     {
         $request = Request::create('http://localhost');
-        $request->headers->set('referer', 'http://localhost/path');
+        $request->query->set('_referer', 'http://localhost/foo');
+        $request->headers->set('referer', 'http://localhost/bar');
 
-        $this->assertSame('http://localhost/path', $this->refererResolver->resolveReferer($request));
+        $this->assertSame('http://localhost/foo', $this->refererResolver->resolveReferer($request));
+    }
+
+    function test_resolving_known_referer_using_header()
+    {
+        $request = Request::create('http://localhost');
+        $request->headers->set('referer', 'http://localhost/foo');
+
+        $this->assertSame('http://localhost/foo', $this->refererResolver->resolveReferer($request));
     }
 
     function test_resolving_to_fallback_path_when_referer_is_missing()
@@ -42,10 +52,19 @@ class RefererResolverTest extends TestCase
         );
     }
 
-    function test_resolving_to_fallback_path_when_referer_is_not_routed()
+    function test_resolving_to_fallback_path_using_header_when_query_parameter_is_unknown()
     {
         $request = Request::create('http://localhost');
-        $request->headers->set('referer', 'http://localhost/bar');
+        $request->query->set('_referer', 'http://localhost/baz');
+        $request->headers->set('referer', 'http://localhost/foo');
+
+        $this->assertSame('http://localhost/', $this->refererResolver->resolveReferer($request));
+    }
+
+    function test_resolving_to_fallback_path_using_header_when_referer_is_unknown()
+    {
+        $request = Request::create('http://localhost');
+        $request->headers->set('referer', 'http://localhost/baz');
 
         $this->assertSame('http://localhost/', $this->refererResolver->resolveReferer($request));
     }
