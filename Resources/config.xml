@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
+        <parameter key="vanio_web.request.request_type_listener.class">Vanio\WebBundle\Request\RequestTypeListener</parameter>
         <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
         <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
@@ -10,6 +11,8 @@
         <service id="translation.extractor.php" class="%vanio_web.translation.php_extractor.class%">
             <tag name="translation.extractor" alias="php"/>
         </service>
+
+        <service id="vanio_web.request.request_type_listener" class="%vanio_web.request.request_type_listener.class%" abstract="true"/>
 
         <service id="vanio_web.request.referer_resolver" class="%vanio_web.request.referer_resolver.class%">
             <argument type="service" id="security.http_utils"/>

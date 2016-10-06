@@ -18,5 +18,12 @@ class VanioWebExtension extends Extension
         foreach ($config as $key => $value) {
             $container->setParameter("vanio_web.$key", $value);
         }
+
+        if ($config['detect_request_type']) {
+            $container
+                ->getDefinition('vanio_web.request.request_type_listener')
+                ->setAbstract(false)
+                ->addTag('kernel.event_subscriber');
+        }
     }
 }

@@ -14,6 +14,15 @@ class VanioWebExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('vanio_web.referer_fallback_path', '/');
     }
 
+    function test_detect_request_type_configuration()
+    {
+        $this->load(['detect_request_type' => true]);
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(
+            'vanio_web.request.request_type_listener',
+            'kernel.event_subscriber'
+        );
+    }
+
     function test_referer_fallback_path_configuration()
     {
         $this->load([

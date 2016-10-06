@@ -1,11 +1,15 @@
 <?php
 namespace Vanio\WebBundle\Request;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 trait RefererHelperTrait
 {
+    /** @var ContainerInterface|null */
+    protected $container;
+
     /** @var RefererResolver|null */
     protected $refererResolver;
 
@@ -19,7 +23,7 @@ trait RefererHelperTrait
      */
     protected function redirectToReferer(string $fallbackPath = null): RedirectResponse
     {
-        if (!isset($this->container) && (!$this->refererResolver || !$this->requestStack)) {
+        if (!$this->container && (!$this->refererResolver || !$this->requestStack)) {
             throw new \LogicException(sprintf(
                 'Unable to redirect to referer. You must set both "refererResolver" and "requestStack" properties or make "%s" class container-aware.',
                 __CLASS__

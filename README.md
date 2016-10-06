@@ -31,8 +31,12 @@ class AppKernel extends Kernel
 ```
 # Features
 
-## Redirecting to Referer
+## Detecting request type
+To detect whether current request is master or sub request, special request attribute `_request_type` is set.
+This logic happens inside `Vanio\WebBundle\Request\RequestTypeListener` listener which is not registered by default.
+Enable this feature by setting `detect_request_type` configuration parameter to true. 
 
+## Redirecting to Referer
 It's quite a common task to redirect user back after certain actions.
 This bundle defines a service named `vanio_web.request.referer_resolver` which helps you with that.
 First it tries to read from `_referer` (`%vanio_web.referer_parameter%`) query parameter. 
@@ -58,7 +62,6 @@ But adding a flash message is just half of the problem.
 You'll also need to display it somewhere in your view and actually translate it yourself.
 
 ## Templating
-
 Sometimes, even just determining a class name of HTML elements can be cumbersome when it depends on some conditions.
 So there is `class_name(array $classes): string` Twig function.
 You need to pass it an array where key is a class and value is a boolean value indicating whether this class name should be present.
@@ -79,6 +82,7 @@ And that's why `instance of(string $class)` Twig test was added. You can use it 
 
 # Default Configuration
 ```yml
+detect_request_type: false
 referer_fallback_path: /
 referer_parameter: _referer
 ```
