@@ -21,8 +21,9 @@
         </service>
 
         <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
-            <argument type="service" id="vanio_web.request.referer_resolver"/>
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="vanio_web.request.referer_resolver"/>
             <tag name="twig.extension"/>
         </service>
     </services>

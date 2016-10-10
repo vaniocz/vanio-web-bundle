@@ -62,16 +62,27 @@ But adding a flash message is just half of the problem.
 You'll also need to display it somewhere in your view and actually translate it yourself.
 
 ## Templating
-Sometimes, even just determining a class name of HTML elements can be cumbersome when it depends on some conditions.
-So there is `class_name(array $classes): string` Twig function.
-You need to pass it an array where key is a class and value is a boolean value indicating whether this class name should be present.
 
+### Generating class name
+Sometimes, even just generating a class name of HTML elements can be cumbersome when it depends on some conditions.
+Let's use `class_name(array $classes): string` Twig function.
+You need to pass it an array where key is a class and value is a boolean value indicating whether this class name should
+be present.
+
+### Determining current menu item
+To determine whether a current request matches a menu item, use `is_current(string $route): bool` Twig function.
+The route is considered current when either `_route` request attribute equals to the given route or when request
+pathinfo starts with the route path and it's delimited by `/`.
+
+### Converting HTML to plaintext
 Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
 so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
 It uses handy [html2text](https://github.com/mtibben/html2text) library.   
 
+### Testing whether a given object implements a given type
 In Twig, there is no possibility how to determine whether a given object implements a given type.
-So, for example, it is not possible to determine whether a flash message is just a string or an instance of the added `FlashMessage` class.
+So, for example, it is not possible to determine whether a flash message is just a string or an instance of the added
+`FlashMessage` class.
 And that's why `instance of(string $class)` Twig test was added. You can use it like this:
 
 ```twig
