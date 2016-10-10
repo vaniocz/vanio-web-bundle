@@ -3,6 +3,7 @@
     <parameters>
         <parameter key="vanio_web.request.request_type_listener.class">Vanio\WebBundle\Request\RequestTypeListener</parameter>
         <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
+        <parameter key="vanio_web.http_kernel.embedded_fragment_renderer.class">Vanio\WebBundle\HttpKernel\EmbeddedFragmentRenderer</parameter>
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
         <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
     </parameters>
@@ -18,6 +19,10 @@
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router"/>
             <argument>%vanio_web%</argument>
+        </service>
+
+        <service id="vanio_web.http_kernel.embedded_fragment_renderer" class="%vanio_web.http_kernel.embedded_fragment_renderer.class%" parent="fragment.renderer.inline">
+            <tag name="kernel.fragment_renderer" alias="embedded"/>
         </service>
 
         <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
