@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Vanio\WebBundle\Request\RefererHelperTrait;
 use Vanio\WebBundle\Request\RefererResolver;
 
@@ -31,8 +32,11 @@ class RefererHelperTraitTest extends TestCase
     function test_redirecting_to_referer()
     {
         $refererHelper = new RefererHelper($this->refererResolverMock, $this->requestStack);
+        $response = $refererHelper->redirectToReferer('referer', Response::HTTP_MOVED_PERMANENTLY, ['key' => 'value']);
 
-        $this->assertSame('referer', $refererHelper->redirectToReferer('referer')->getTargetUrl());
+        $this->assertSame('referer', $response->getTargetUrl());
+        $this->assertSame(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
+        $this->assertSame('value', $response->headers->get('key'));
     }
 
     function test_redirecting_to_referer_using_container_aware_referer_helper()
@@ -42,15 +46,17 @@ class RefererHelperTraitTest extends TestCase
         $container->set('request_stack', $this->requestStack);
         $container->set('vanio_web.request.referer_resolver', $this->refererResolverMock);
         $refererHelper->setContainer($container);
+        $response = $refererHelper->redirectToReferer('referer');
 
-        $this->assertSame('referer', $refererHelper->redirectToReferer('referer')->getTargetUrl());
+        $this->assertSame('referer', $response->getTargetUrl());
+        $this->assertSame(Response::HTTP_FOUND, $response->getStatusCode());
     }
 
     function test_cannot_redirect_to_referer_without_dependencies_being_set()
     {
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Unable to redirect to referer.');
-        (new ContainerAwareRefererHelper)->redirectToReferer('referer')->getTargetUrl();
+        (new ContainerAwareRefererHelper)->redirectToReferer('referer');
     }
 }
 

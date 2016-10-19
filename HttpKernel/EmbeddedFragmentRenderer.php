@@ -48,7 +48,7 @@ class EmbeddedFragmentRenderer extends InlineFragmentRenderer
     protected function createSubRequest($uri, Request $request): Request
     {
         if ($request->isMethod(Request::METHOD_POST)) {
-            return clone $request;
+            return $request;
         }
 
         return parent::createSubRequest($uri, $request);

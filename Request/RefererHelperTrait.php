@@ -4,6 +4,7 @@ namespace Vanio\WebBundle\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RefererHelperTrait
 {
@@ -18,11 +19,16 @@ trait RefererHelperTrait
 
     /**
      * @param string|null $fallbackPath
+     * @param int $status
+     * @param array $headers
      * @return RedirectResponse
      * @throws \LogicException
      */
-    protected function redirectToReferer(string $fallbackPath = null): RedirectResponse
-    {
+    protected function redirectToReferer(
+        string $fallbackPath = null,
+        int $status = Response::HTTP_FOUND,
+        array $headers = []
+    ): RedirectResponse {
         if (!$this->container && (!$this->refererResolver || !$this->requestStack)) {
             throw new \LogicException(sprintf(
                 'Unable to redirect to referer. You must set both "refererResolver" and "requestStack" properties or make "%s" class container-aware.',
@@ -40,6 +46,6 @@ trait RefererHelperTrait
 
         $referer = $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
 
-        return new RedirectResponse($referer);
+        return new RedirectResponse($referer, $status, $headers);
     }
 }
