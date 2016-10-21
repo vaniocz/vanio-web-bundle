@@ -9,7 +9,6 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder;
-        /* @noinspection PhpUndefinedMethodInspection */
         $treeBuilder->root('vanio_web')
             ->children()
                 ->booleanNode('detect_request_type')->defaultFalse()->end()
