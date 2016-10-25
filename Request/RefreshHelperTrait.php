@@ -19,12 +19,9 @@ trait RefreshHelperTrait
     protected $urlGenerator;
 
     /**
-     * @param int $status
-     * @param array $headers
-     * @return RedirectResponse
      * @throws \LogicException
      */
-    protected function refresh($status = Response::HTTP_FOUND, array $headers = []): RedirectResponse
+    protected function refresh(int $status = Response::HTTP_FOUND, array $headers = []): RedirectResponse
     {
         if (!$this->container && (!$this->requestStack || !$this->urlGenerator)) {
             throw new \LogicException(sprintf(

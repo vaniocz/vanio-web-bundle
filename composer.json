@@ -10,8 +10,8 @@
     ],
     "require": {
         "php": "7.0.*",
-        "symfony/framework-bundle": "^3.0",
         "symfony/security-bundle": "^3.0",
+        "sensio/framework-extra-bundle": "^3.0",
         "twig/twig": "^1.24.1",
         "vanio/stdlib": "^0.1@dev",
         "html2text/html2text": "^4.0.1"

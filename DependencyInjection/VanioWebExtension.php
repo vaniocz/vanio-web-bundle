@@ -25,5 +25,12 @@ class VanioWebExtension extends Extension
                 ->setAbstract(false)
                 ->addTag('kernel.event_subscriber');
         }
+
+        if ($config['render_snippets']) {
+            $container
+                ->getDefinition('vanio_web.templating.snippet_renderer')
+                ->setAbstract(false)
+                ->addTag('kernel.event_subscriber');
+        }
     }
 }

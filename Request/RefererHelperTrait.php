@@ -18,10 +18,6 @@ trait RefererHelperTrait
     protected $requestStack;
 
     /**
-     * @param string|null $fallbackPath
-     * @param int $status
-     * @param array $headers
-     * @return RedirectResponse
      * @throws \LogicException
      */
     protected function redirectToReferer(

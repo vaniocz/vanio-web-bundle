@@ -14,6 +14,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('detect_request_type')->defaultFalse()->end()
                 ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
+                ->booleanNode('render_snippets')->defaultFalse()->end()
             ->end();
 
         return $treeBuilder;

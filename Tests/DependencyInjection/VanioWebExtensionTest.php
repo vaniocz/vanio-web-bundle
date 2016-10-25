@@ -10,8 +10,10 @@ class VanioWebExtensionTest extends AbstractExtensionTestCase
     function test_default_configuration()
     {
         $this->load();
+        $this->assertContainerBuilderHasParameter('vanio_web.detect_request_type', false);
         $this->assertContainerBuilderHasParameter('vanio_web.referer_parameter', '_referer');
         $this->assertContainerBuilderHasParameter('vanio_web.referer_fallback_path', '/');
+        $this->assertContainerBuilderHasParameter('vanio_web.render_snippets', false);
     }
 
     function test_detect_request_type_configuration()
