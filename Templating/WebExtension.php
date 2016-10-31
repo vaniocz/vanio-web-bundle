@@ -6,12 +6,17 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Translation\TranslatorBagInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RefererResolver;
 
 class WebExtension extends \Twig_Extension
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
     /** @var RequestStack */
     private $requestStack;
 
@@ -22,10 +27,12 @@ class WebExtension extends \Twig_Extension
     private $refererResolver;
 
     public function __construct(
+        TranslatorInterface $translator,
         RequestStack $requestStack,
         UrlGeneratorInterface $urlGenerator,
         RefererResolver $refererResolver
     ) {
+        $this->translator = $translator;
         $this->requestStack = $requestStack;
         $this->urlGenerator = $urlGenerator;
         $this->refererResolver = $refererResolver;
@@ -39,6 +46,7 @@ class WebExtension extends \Twig_Extension
         return [
             new \Twig_SimpleFunction('class_name', [$this, 'resolveClassName']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
+            new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('referer', [$this, 'resolveReferer']),
         ];
     }
@@ -67,6 +75,13 @@ class WebExtension extends \Twig_Extension
     public function resolveClassName(array $classes): string
     {
         return implode(' ', array_keys(array_filter($classes)));
+    }
+
+    public function isTranslated(string $id, string $domain = 'messages', string $locale = null): bool
+    {
+        return $this->translator instanceof TranslatorBagInterface
+            ? $this->translator->getCatalogue($locale)->has($id, $domain)
+            : false;
     }
 
     public function isCurrent(string $route): bool

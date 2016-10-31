@@ -69,6 +69,10 @@ Let's use `class_name(array $classes): string` Twig function.
 You need to pass it an array where key is a class and value is a boolean value indicating whether this class name should
 be present.
 
+### Checking whether a text is translated
+To check whether text is translated you can use `is_translated(string $id, string $locale = null)` Twig
+function which checks translator's catalogue. 
+
 ### Determining current menu item
 To determine whether a current request matches a menu item, use `is_current(string $route): bool` Twig function.
 The route is considered current when either `_route` request attribute equals to the given route or when request

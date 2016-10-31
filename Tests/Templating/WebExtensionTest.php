@@ -8,6 +8,8 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Translation\Loader\ArrayLoader;
+use Symfony\Component\Translation\Translator;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Templating\WebExtension;
 
@@ -29,6 +31,7 @@ class WebExtensionTest extends TestCase
         $this->requestStack->push(new Request);
         $this->twig = new \Twig_Environment(new \Twig_Loader_Array([]));
         $this->twig->addExtension(new WebExtension(
+            $this->createTranslator(),
             $this->requestStack,
             $this->createUrlGenerator(),
             $this->createRefererResolverMock()
@@ -74,6 +77,16 @@ class WebExtensionTest extends TestCase
         $this->assertEquals(false, $this->render("{{ is_current('baz') }}"));
     }
 
+    function test_string_is_translated()
+    {
+        $this->assertEquals(true, $this->render("{{ is_translated('foo') }}"));
+    }
+
+    function test_string_is_not_translated()
+    {
+        $this->assertEquals(false, $this->render("{{ is_translated('bar') }}"));
+    }
+
     function test_resolving_referer()
     {
         $this->assertSame('fallback_path', $this->render("{{ referer('fallback_path') }}"));
@@ -100,6 +113,15 @@ class WebExtensionTest extends TestCase
     private function render(string $template, array $context = []): string
     {
         return $this->twig->createTemplate($template)->render($context);
+    }
+
+    private function createTranslator(): Translator
+    {
+        $translator = new Translator('en');
+        $translator->addLoader('array', new ArrayLoader);
+        $translator->addResource('array', ['foo' => 'foo'], 'en');
+
+        return $translator;
     }
 
     private function createUrlGenerator(): UrlGenerator
