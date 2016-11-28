@@ -78,11 +78,6 @@ To determine whether a current request matches a menu item, use `is_current(stri
 The route is considered current when either `_route` request attribute equals to the given route or when request
 pathinfo starts with the route path and it's delimited by `/`.
 
-### Converting HTML to plaintext
-Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
-so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
-It uses handy [html2text](https://github.com/mtibben/html2text) library.   
-
 ### Testing whether a given object implements a given type
 In Twig, there is no possibility how to determine whether a given object implements a given type.
 So, for example, it is not possible to determine whether a flash message is just a string or an instance of the added
@@ -93,6 +88,19 @@ And that's why `instance of(string $class)` Twig test was added. You can use it 
 {{ message is instance of('Vanio\\WebBundle\\Translation\\FlashMessage')
     ? message.message|trans(message.parameters, message.domain, message.locale)
     : message }}
+```
+
+### Removing keys from arrays
+Removing certain keys from an array is possible using `without(array $array, $keys)` Twig filter.
+Pass it either a string or an array of keys to remove and it will return a new array with the given keys being unset. 
+
+### Converting HTML to plaintext
+Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
+so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
+It uses handy [html2text](https://github.com/mtibben/html2text) library.   
+
+```twig
+{{ {foo: 'bar', bar: 'baz'}|without('foo') }}
 ```
 
 # Default Configuration

@@ -56,7 +56,10 @@ class WebExtension extends \Twig_Extension
      */
     public function getFilters(): array
     {
-        return [new \Twig_SimpleFilter('html_to_text', [$this, 'convertHtmlToText'])];
+        return [
+            new \Twig_SimpleFilter('without', [$this, 'without']),
+            new \Twig_SimpleFilter('html_to_text', [$this, 'convertHtmlToText']),
+        ];
     }
 
     /**
@@ -120,5 +123,10 @@ class WebExtension extends \Twig_Extension
     public function isInstanceOf($value, string $class): bool
     {
         return is_a($value, $class, true);
+    }
+
+    public function without(array $array, $keys): array
+    {
+        return array_diff_key($array, array_flip((array) $keys));
     }
 }

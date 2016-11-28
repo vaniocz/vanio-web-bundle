@@ -110,9 +110,21 @@ class WebExtensionTest extends TestCase
         $this->assertEquals(false, $this->render("{{ value is instance of('stdClass') }}", ['value' => 'value']));
     }
 
+    function test_without_filter()
+    {
+        $this->assertEquals(
+            '{"bar":"baz"}',
+            $this->render("{{ {foo: 'bar', bar: 'baz'}|without('foo')|json_encode }}")
+        );
+        $this->assertEquals(
+            '{"baz":"qux"}',
+            $this->render("{{ {foo: 'bar', bar: 'baz', baz: 'qux'}|without(['foo', 'bar'])|json_encode }}")
+        );
+    }
+
     private function render(string $template, array $context = []): string
     {
-        return $this->twig->createTemplate($template)->render($context);
+        return $this->twig->createTemplate("{% autoescape false %}$template{% endautoescape %}")->render($context);
     }
 
     private function createTranslator(): Translator
