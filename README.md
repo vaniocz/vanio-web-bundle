@@ -90,6 +90,13 @@ And that's why `instance of(string $class)` Twig test was added. You can use it 
     : message }}
 ```
 
+### Filtering arrays
+To filter an array there is `filter` filter. The filtering callback has the same implementation as `empty` Twig test.
+Array keys are preserved. 
+```twig
+{{ [null, 1]|filter }}
+```
+
 ### Removing keys from arrays
 Removing certain keys from an array is possible using `without(array $array, $keys)` Twig filter.
 Pass it either a string or an array of keys to remove and it will return a new array with the given keys being unset. 

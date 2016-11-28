@@ -110,6 +110,11 @@ class WebExtensionTest extends TestCase
         $this->assertEquals(false, $this->render("{{ value is instance of('stdClass') }}", ['value' => 'value']));
     }
 
+    function test_filter_filter()
+    {
+        $this->assertEquals('{"4":"0"}', $this->render("{{ ['', false, null, [], '0']|filter|json_encode }}"));
+    }
+
     function test_without_filter()
     {
         $this->assertEquals(

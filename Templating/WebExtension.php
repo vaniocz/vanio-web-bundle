@@ -57,6 +57,7 @@ class WebExtension extends \Twig_Extension
     public function getFilters(): array
     {
         return [
+            new \Twig_SimpleFilter('filter', [$this, 'filter']),
             new \Twig_SimpleFilter('without', [$this, 'without']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'convertHtmlToText']),
         ];
@@ -115,6 +116,16 @@ class WebExtension extends \Twig_Extension
         return $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
     }
 
+    public function filter(array $array): array
+    {
+        return array_filter($array, [$this, 'isNotEmpty']);
+    }
+
+    public function without(array $array, $keys): array
+    {
+        return array_diff_key($array, array_flip((array) $keys));
+    }
+
     public function convertHtmlToText(string $html, array $options = []): string
     {
         return (new Html2Text($html, $options))->getText();
@@ -125,8 +136,12 @@ class WebExtension extends \Twig_Extension
         return is_a($value, $class, true);
     }
 
-    public function without(array $array, $keys): array
+    public function isNotEmpty($value): bool
     {
-        return array_diff_key($array, array_flip((array) $keys));
+        if ($value instanceof \Countable) {
+            return count($value) > 0;
+        }
+
+        return $value !== '' && $value !== false && $value !== null && $value !== [];
     }
 }
