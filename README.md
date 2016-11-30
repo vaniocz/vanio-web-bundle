@@ -100,15 +100,14 @@ Array keys are preserved.
 ### Removing keys from arrays
 Removing certain keys from an array is possible using `without(array $array, $keys)` Twig filter.
 Pass it either a string or an array of keys to remove and it will return a new array with the given keys being unset. 
+```twig
+{{ {foo: 'bar', bar: 'baz'}|without('foo') }}
+```
 
 ### Converting HTML to plaintext
 Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
 so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
 It uses handy [html2text](https://github.com/mtibben/html2text) library.   
-
-```twig
-{{ {foo: 'bar', bar: 'baz'}|without('foo') }}
-```
 
 # Default Configuration
 ```yml
