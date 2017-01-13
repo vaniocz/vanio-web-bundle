@@ -92,6 +92,13 @@ class WebExtensionTest extends TestCase
         $this->assertSame('fallback_path', $this->render("{{ referer('fallback_path') }}"));
     }
 
+    function test_replacing_using_regular_expression()
+    {
+        $this->assertSame('bar', $this->render("{{ 'foo'|regexp_replace('~foo~', 'bar') }}"));
+        $this->assertSame('baz qux', $this->render("{{ 'foo bar'|regexp_replace({'~foo~': 'baz', '~bar~': 'qux'}) }}"));
+        $this->assertSame('baz baz', $this->render("{{ 'foo bar'|regexp_replace(['~foo~', '~bar~'], 'baz') }}"));
+    }
+
     function test_converting_html_to_text()
     {
         $this->assertSame('', $this->render("{{ ''|html_to_text }}"));

@@ -59,6 +59,7 @@ class WebExtension extends \Twig_Extension
         return [
             new \Twig_SimpleFilter('filter', [$this, 'filter']),
             new \Twig_SimpleFilter('without', [$this, 'without']),
+            new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'convertHtmlToText']),
         ];
     }
@@ -124,6 +125,21 @@ class WebExtension extends \Twig_Extension
     public function without(array $array, $keys): array
     {
         return array_diff_key($array, array_flip((array) $keys));
+    }
+
+    /**
+     * @param string $string
+     * @param array|string $pattern
+     * @param array|string|null $replacement
+     * @return string
+     */
+    public function regexpReplace(string $string, $pattern, $replacement = null): string
+    {
+        if ($replacement === null) {
+            return preg_replace(array_keys($pattern), $pattern, $string);
+        }
+
+        return preg_replace($pattern, $replacement, $string);
     }
 
     public function convertHtmlToText(string $html, array $options = []): string

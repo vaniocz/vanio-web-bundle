@@ -104,6 +104,18 @@ Pass it either a string or an array of keys to remove and it will return a new a
 {{ {foo: 'bar', bar: 'baz'}|without('foo') }}
 ```
 
+### Replacing based on regular expressions
+The builtin `replace` Twig filter uses `strtr` under the hood but there is no support for replacing based on regular
+expressions. So we've implemented `regexp_replace(string $string, $pattern, $replacement)` filter.
+You can pass it either an array with keys as regular expressions and values as replacements or when the replacement
+argument is provided then the pattern can be either a string or an array (keys are ignored).
+
+```twig
+{{ 'foo bar'|regexp_replace({'~foo~': 'baz', '~bar~': 'qux'}) }}
+{{ 'foo'|regexp_replace('~foo~', 'bar') }}
+{{ 'foo bar'|regexp_replace(['~foo~', '~bar~'], 'baz') }}
+```
+
 ### Converting HTML to plaintext
 Have you ever created an HTML e-mail? Providing plaintext alternative manually is tedious
 so `html_to_text(string $html, array $options = []): string` Twig filter is your friend in such cases.
