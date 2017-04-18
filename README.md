@@ -61,6 +61,11 @@ $this->addFlash(FlashMessage::TYPE_DANGER, new FlashMessage('message', ['key' =>
 But adding a flash message is just half of the problem.
 You'll also need to display it somewhere in your view and actually translate it yourself.
 
+## Form state URL canonization
+Due to SEO optimizations and also in situations where having full form state serialized in URL is too long and ugly it
+is possible to set `canonize: true` in form options. When you submit the form it is then redirected to canonical URL
+where all empty form fields (even those equal to empty_data option) are ommited.
+
 ## Templating
 
 ### Generating class name

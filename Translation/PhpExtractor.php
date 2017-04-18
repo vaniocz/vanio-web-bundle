@@ -29,7 +29,7 @@ class PhpExtractor extends BasePhpExtractor
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
 
         // https://github.com/symfony/symfony/issues/17739
-        if ($trace[4]['class'] ?? null === TranslationUpdateCommand::class) {
+        if (($trace[4]['class'] ?? null) === TranslationUpdateCommand::class) {
             $directory = preg_replace('~/Resources/views$~', '/', $directory);
             $finder->exclude('vendor')->exclude('var');
         }
