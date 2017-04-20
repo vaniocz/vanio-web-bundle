@@ -93,8 +93,14 @@ class CanonizationExtension extends AbstractTypeExtension
     {
         $form = $event->getForm();
 
-        if ($form->getRoot()->getConfig()->getOption('canonize') && !$form->getConfig()->getCompound()) {
-            $this->submittedData[$form] = (string) $event->getData();
+        if ($form->getRoot()->getConfig()->getOption('canonize')) {
+            if ($form->getConfig()->getCompound()) {
+                if ($form->isRoot() && $event->getData() === '') {
+                    $event->setData([]);
+                }
+            } else {
+                $this->submittedData[$form] = (string) $event->getData();
+            }
         }
     }
 
