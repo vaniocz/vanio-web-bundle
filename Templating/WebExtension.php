@@ -122,6 +122,11 @@ class WebExtension extends \Twig_Extension
         return array_filter($array, [$this, 'isNotEmpty']);
     }
 
+    /**
+     * @param array $array
+     * @param string|array $keys
+     * @return array
+     */
     public function without(array $array, $keys): array
     {
         return array_diff_key($array, array_flip((array) $keys));
@@ -147,11 +152,20 @@ class WebExtension extends \Twig_Extension
         return (new Html2Text($html, $options))->getText();
     }
 
+    /**
+     * @param mixed $value
+     * @param string $class
+     * @return bool
+     */
     public function isInstanceOf($value, string $class): bool
     {
         return is_a($value, $class, true);
     }
 
+    /**
+     * @param mixed $value
+     * @return bool
+     */
     public function isNotEmpty($value): bool
     {
         if ($value instanceof \Countable) {

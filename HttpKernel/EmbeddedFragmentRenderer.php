@@ -13,6 +13,12 @@ class EmbeddedFragmentRenderer extends InlineFragmentRenderer
     const REDIRECT_FOLLOW = 'follow';
     const REDIRECT_FORWARD = 'forward';
 
+    /**
+     * @param ControllerReference|string $uri
+     * @param Request $request
+     * @param array $options
+     * @return Response
+     */
     public function render($uri, Request $request, array $options = []): Response
     {
         $options += ['redirect' => self::REDIRECT_REFRESH];

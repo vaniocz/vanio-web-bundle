@@ -9,12 +9,12 @@
         {"name": "Marek Štípek", "email": "marek.stipek@vanio.cz"}
     ],
     "require": {
-        "php": "7.0.*",
+        "php": "^7.0",
         "symfony/security-bundle": "^3.0",
         "symfony/translation": "^3.0",
         "symfony/form": "^3.0",
         "sensio/framework-extra-bundle": "^3.0",
-        "twig/twig": "^1.24.1",
+        "twig/twig": "^1.24.1|^2.0",
         "vanio/stdlib": "^0.1@dev",
         "html2text/html2text": "^4.0.1"
     },
@@ -32,8 +32,8 @@
     },
     "scripts": {
         "test": "\"vendor/bin/phpunit\"",
-        "lint": "\"vendor/bin/phpcs\" --standard=vendor/vanio/coding-standards/ruleset.xml --extensions=php --encoding=utf-8 --ignore=vendor .",
-        "fix": "\"vendor/bin/phpcbf\" --standard=vendor/vanio/coding-standards/ruleset.xml --extensions=php --encoding=utf-8 --no-patch --ignore=vendor ."
+        "lint": "\"vendor/bin/phpcs\" --standard=ruleset.xml --extensions=php --encoding=utf-8 --ignore=vendor .",
+        "fix": "\"vendor/bin/phpcbf\" --standard=ruleset.xml --extensions=php --encoding=utf-8 --no-patch --ignore=vendor ."
     },
     "extra": {
         "branch-alias": {
