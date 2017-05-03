@@ -76,7 +76,8 @@ be present.
 
 ### Checking whether a text is translated
 To check whether text is translated you can use `is_translated(string $id, string $locale = null)` Twig
-function which checks translator's catalogue. 
+function which checks translator's catalogue. The text is considered as translated when it is present in the catalogue
+and the translation does not equal to false.
 
 ### Determining current menu item
 To determine whether a current request matches a menu item, use `is_current(string $route): bool` Twig function.

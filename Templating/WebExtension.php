@@ -85,8 +85,8 @@ class WebExtension extends \Twig_Extension
     public function isTranslated(string $id, string $domain = 'messages', string $locale = null): bool
     {
         return $this->translator instanceof TranslatorBagInterface
-            ? $this->translator->getCatalogue($locale)->has($id, $domain)
-            : false;
+            && $this->translator->getCatalogue($locale)->has($id, $domain)
+            && $this->translator->getCatalogue($locale)->get($id, $domain) !== false;
     }
 
     public function isCurrent(string $route): bool

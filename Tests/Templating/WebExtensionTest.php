@@ -85,6 +85,7 @@ class WebExtensionTest extends TestCase
     function test_string_is_not_translated()
     {
         $this->assertEquals(false, $this->render("{{ is_translated('bar') }}"));
+        $this->assertEquals(false, $this->render("{{ is_translated('baz') }}"));
     }
 
     function test_resolving_referer()
@@ -143,7 +144,7 @@ class WebExtensionTest extends TestCase
     {
         $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader);
-        $translator->addResource('array', ['foo' => 'foo'], 'en');
+        $translator->addResource('array', ['foo' => 'foo', 'baz' => false], 'en');
 
         return $translator;
     }
