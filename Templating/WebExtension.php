@@ -3,14 +3,11 @@ namespace Vanio\WebBundle\Templating;
 
 use Html2Text\Html2Text;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Exception\InvalidParameterException;
-use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Strings;
-use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RefererResolver;
+use Vanio\WebBundle\Request\RouteHierarchyResolver;
 
 class WebExtension extends \Twig_Extension
 {
@@ -20,22 +17,22 @@ class WebExtension extends \Twig_Extension
     /** @var RequestStack */
     private $requestStack;
 
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
-
     /** @var RefererResolver */
     private $refererResolver;
+
+    /** @var RouteHierarchyResolver */
+    private $routeHierarchyResolver;
 
     public function __construct(
         TranslatorInterface $translator,
         RequestStack $requestStack,
-        UrlGeneratorInterface $urlGenerator,
-        RefererResolver $refererResolver
+        RefererResolver $refererResolver,
+        RouteHierarchyResolver $routeHierarchyResolver
     ) {
         $this->translator = $translator;
         $this->requestStack = $requestStack;
-        $this->urlGenerator = $urlGenerator;
         $this->refererResolver = $refererResolver;
+        $this->routeHierarchyResolver = $routeHierarchyResolver;
     }
 
     /**
@@ -45,9 +42,10 @@ class WebExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('class_name', [$this, 'resolveClassName']),
-            new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('referer', [$this, 'resolveReferer']),
+            new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
+            new \Twig_SimpleFunction('breadcrumbs', [$this, 'resolveBreadcrumbs']),
         ];
     }
 
@@ -60,7 +58,8 @@ class WebExtension extends \Twig_Extension
             new \Twig_SimpleFilter('filter', [$this, 'filter']),
             new \Twig_SimpleFilter('without', [$this, 'without']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
-            new \Twig_SimpleFilter('html_to_text', [$this, 'convertHtmlToText']),
+            new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
+            new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
         ];
     }
 
@@ -89,6 +88,11 @@ class WebExtension extends \Twig_Extension
             && $this->translator->getCatalogue($locale)->get($id, $domain) !== false;
     }
 
+    public function resolveReferer(string $fallbackPath = null): string
+    {
+        return $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
+    }
+
     public function isCurrent(string $route): bool
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -97,24 +101,17 @@ class WebExtension extends \Twig_Extension
             return true;
         }
 
-        try {
-            $attributes = $request->attributes->all();
-            $path = $this->urlGenerator->generate($route, $attributes, UrlGeneratorInterface::ABSOLUTE_PATH);
-            $path = (new Uri($path))->path();
-        } catch (MissingMandatoryParametersException $e) {
-            return false;
-        } catch (InvalidParameterException $e) {
-            return false;
-        }
+        $hierarchy = $this->routeHierarchyResolver->resolveRouteHierarchy($this->requestStack->getCurrentRequest());
 
-        return $request->getPathInfo() === $path
-            || $path !== '/'
-            && Strings::startsWith($request->getPathInfo(), Strings::endsWith($path, '/') ? $path : $path . '/');
+        return isset($hierarchy[$route]);
     }
 
-    public function resolveReferer(string $fallbackPath = null): string
+    /**
+     * @return string[]
+     */
+    public function resolveBreadcrumbs(): array
     {
-        return $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
+        return $this->routeHierarchyResolver->resolveRouteHierarchy($this->requestStack->getCurrentRequest());
     }
 
     public function filter(array $array): array
@@ -147,9 +144,16 @@ class WebExtension extends \Twig_Extension
         return preg_replace($pattern, $replacement, $string);
     }
 
-    public function convertHtmlToText(string $html, array $options = []): string
+    public function htmlToText(string $html, array $options = []): string
     {
         return (new Html2Text($html, $options))->getText();
+    }
+
+    public function evaluate(\Twig_Environment $environment, string $template, array $context = []): string
+    {
+        return Strings::contains($template, ['{{', '{%', '{#'])
+            ? $environment->createTemplate($template)->render($context)
+            : $template;
     }
 
     /**

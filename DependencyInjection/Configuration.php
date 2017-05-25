@@ -15,6 +15,23 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
                 ->booleanNode('render_snippets')->defaultFalse()->end()
+                ->booleanNode('multilingual')->defaultFalse()->end()
+                ->arrayNode('multilingual_root_paths')
+                    ->defaultValue(['/'])
+                    ->beforeNormalization()
+                        ->ifTrue(function ($value) {
+                            return !is_array($value);
+                        })
+                        ->then(function ($value) {
+                            return [$value];
+                        })
+                    ->end()
+                    ->prototype('scalar')->end()
+                ->end()
+                ->arrayNode('multilingual_supported_locales')
+                    ->treatNullLike([])
+                    ->prototype('scalar')->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

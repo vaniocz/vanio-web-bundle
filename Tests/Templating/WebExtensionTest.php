@@ -4,13 +4,14 @@ namespace Vanio\WebBundle\Tests\Templating;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
 use Vanio\WebBundle\Request\RefererResolver;
+use Vanio\WebBundle\Request\RouteHierarchyResolver;
 use Vanio\WebBundle\Templating\WebExtension;
 
 class WebExtensionTest extends TestCase
@@ -33,8 +34,8 @@ class WebExtensionTest extends TestCase
         $this->twig->addExtension(new WebExtension(
             $this->createTranslator(),
             $this->requestStack,
-            $this->createUrlGenerator(),
-            $this->createRefererResolverMock()
+            $this->createRefererResolverMock(),
+            new RouteHierarchyResolver($this->createUrlMatcher())
         ));
     }
 
@@ -45,6 +46,22 @@ class WebExtensionTest extends TestCase
         $this->assertSame('foo', $this->render('{{ class_name({foo: true, bar: false}) }}'));
     }
 
+    function test_string_is_translated()
+    {
+        $this->assertEquals(true, $this->render("{{ is_translated('foo') }}"));
+    }
+
+    function test_string_is_not_translated()
+    {
+        $this->assertEquals(false, $this->render("{{ is_translated('bar') }}"));
+        $this->assertEquals(false, $this->render("{{ is_translated('baz') }}"));
+    }
+
+    function test_resolving_referer()
+    {
+        $this->assertSame('fallback_path', $this->render("{{ referer('fallback_path') }}"));
+    }
+
     function test_route_is_current()
     {
         $this->requestStack->push(Request::create('/foo/foo'));
@@ -53,7 +70,7 @@ class WebExtensionTest extends TestCase
         $this->requestStack->push(Request::create('/bar/foo'));
         $this->assertEquals(true, $this->render("{{ is_current('bar') }}"));
 
-        $this->requestStack->getCurrentRequest()->attributes->replace(['_route' => 'foo']);
+        $this->requestStack->getCurrentRequest()->attributes->set('_route', 'foo');
         $this->assertEquals(true, $this->render("{{ is_current('foo') }}"));
 
         $this->requestStack->push(Request::create('/baz/parameter/foo'));
@@ -73,24 +90,25 @@ class WebExtensionTest extends TestCase
 
         $this->assertEquals(false, $this->render("{{ is_current('baz') }}"));
 
-        $this->requestStack->getCurrentRequest()->attributes->replace(['parameter' => '']);
+        $this->requestStack->getCurrentRequest()->attributes->set('parameter', '');
         $this->assertEquals(false, $this->render("{{ is_current('baz') }}"));
     }
 
-    function test_string_is_translated()
+    function test_filter_filter()
     {
-        $this->assertEquals(true, $this->render("{{ is_translated('foo') }}"));
+        $this->assertEquals('{"4":"0"}', $this->render("{{ ['', false, null, [], '0']|filter|json_encode }}"));
     }
 
-    function test_string_is_not_translated()
+    function test_without_filter()
     {
-        $this->assertEquals(false, $this->render("{{ is_translated('bar') }}"));
-        $this->assertEquals(false, $this->render("{{ is_translated('baz') }}"));
-    }
-
-    function test_resolving_referer()
-    {
-        $this->assertSame('fallback_path', $this->render("{{ referer('fallback_path') }}"));
+        $this->assertEquals(
+            '{"bar":"baz"}',
+            $this->render("{{ {foo: 'bar', bar: 'baz'}|without('foo')|json_encode }}")
+        );
+        $this->assertEquals(
+            '{"baz":"qux"}',
+            $this->render("{{ {foo: 'bar', bar: 'baz', baz: 'qux'}|without(['foo', 'bar'])|json_encode }}")
+        );
     }
 
     function test_replacing_using_regular_expression()
@@ -112,27 +130,16 @@ class WebExtensionTest extends TestCase
         );
     }
 
+    function test_evaluating_twig_template()
+    {
+        $this->assertSame('foo bar', $this->render("{{ '{{ foo }} {{ bar }}'|evaluate({foo: 'foo', bar: 'bar'}) }}"));
+        $this->assertSame('%foo%', $this->render("{{ '%foo%'|evaluate() }}"));
+    }
+
     function test_instance_of_test()
     {
         $this->assertEquals(true, $this->render("{{ value is instance of('stdClass') }}", ['value' => new \stdClass]));
         $this->assertEquals(false, $this->render("{{ value is instance of('stdClass') }}", ['value' => 'value']));
-    }
-
-    function test_filter_filter()
-    {
-        $this->assertEquals('{"4":"0"}', $this->render("{{ ['', false, null, [], '0']|filter|json_encode }}"));
-    }
-
-    function test_without_filter()
-    {
-        $this->assertEquals(
-            '{"bar":"baz"}',
-            $this->render("{{ {foo: 'bar', bar: 'baz'}|without('foo')|json_encode }}")
-        );
-        $this->assertEquals(
-            '{"baz":"qux"}',
-            $this->render("{{ {foo: 'bar', bar: 'baz', baz: 'qux'}|without(['foo', 'bar'])|json_encode }}")
-        );
     }
 
     private function render(string $template, array $context = []): string
@@ -149,7 +156,7 @@ class WebExtensionTest extends TestCase
         return $translator;
     }
 
-    private function createUrlGenerator(): UrlGenerator
+    private function createUrlMatcher(): UrlMatcher
     {
         $routes = new RouteCollection;
         $routes->add('homepage', new Route('/'));
@@ -160,7 +167,7 @@ class WebExtensionTest extends TestCase
         $routes->add('baz', new Route('/baz/{parameter}/', [], ['parameter' => '\w+']));
         $routes->add('baz_foo', new Route('/baz/{parameter}/foo'));
 
-        return new UrlGenerator($routes, $this->requestContext);
+        return new UrlMatcher($routes, $this->requestContext);
     }
 
     /**

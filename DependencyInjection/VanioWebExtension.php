@@ -19,6 +19,10 @@ class VanioWebExtension extends Extension
             $container->setParameter("vanio_web.$key", $value);
         }
 
+        if (!$config['multilingual_supported_locales']) {
+            $container->setParameter('vanio_web.multilingual_supported_locales', '%be_simple_i18n_routing.locales%');
+        }
+
         if ($config['detect_request_type']) {
             $container
                 ->getDefinition('vanio_web.request.request_type_listener')
@@ -29,6 +33,13 @@ class VanioWebExtension extends Extension
         if ($config['render_snippets']) {
             $container
                 ->getDefinition('vanio_web.templating.snippet_renderer')
+                ->setAbstract(false)
+                ->addTag('kernel.event_subscriber');
+        }
+
+        if ($config['multilingual']) {
+            $container
+                ->getDefinition('vanio_web.request.multilingual_listener')
                 ->setAbstract(false)
                 ->addTag('kernel.event_subscriber');
         }
