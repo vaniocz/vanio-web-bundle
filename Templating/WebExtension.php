@@ -55,6 +55,7 @@ class WebExtension extends \Twig_Extension
     public function getFilters(): array
     {
         return [
+            new \Twig_SimpleFilter('trans', [$this, 'trans']),
             new \Twig_SimpleFilter('filter', [$this, 'filter']),
             new \Twig_SimpleFilter('without', [$this, 'without']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
@@ -112,6 +113,28 @@ class WebExtension extends \Twig_Extension
     public function resolveBreadcrumbs(): array
     {
         return $this->routeHierarchyResolver->resolveRouteHierarchy($this->requestStack->getCurrentRequest());
+    }
+
+    /**
+     * @param string|string[] $messages
+     * @param array $arguments
+     * @param string|null $domain
+     * @param string|null $locale
+     * @return string|string[]
+     */
+    public function trans($messages, array $arguments = [], string $domain = null, string $locale = null)
+    {
+        if (is_array($messages)) {
+            $translatedMessages = [];
+
+            foreach ($messages as $message) {
+                $translatedMessages[] = $this->trans($message, $arguments, $domain, $locale);
+            }
+
+            return $translatedMessages;
+        }
+
+        return $this->translator->trans($messages, $arguments, $domain, $locale);
     }
 
     public function filter(array $array): array
