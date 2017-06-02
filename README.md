@@ -96,18 +96,26 @@ And that's why `instance of(string $class)` Twig test was added. You can use it 
     : message }}
 ```
 
-### Filtering arrays
-To filter an array there is `filter` filter. The filtering callback has the same implementation as `empty` Twig test.
-Array keys are preserved. 
+### Removing values from arrays
+Removing certain values from an array is possible using `without(array $array, $values)` Twig filter.
+Pass it either a value or an array of values to remove and it will return a new array with the given values being unset. 
 ```twig
-{{ [null, 1]|filter }}
+{{ ['foo', 'bar']|without('foo') }}
 ```
 
 ### Removing keys from arrays
 Removing certain keys from an array is possible using `without(array $array, $keys)` Twig filter.
 Pass it either a string or an array of keys to remove and it will return a new array with the given keys being unset. 
 ```twig
-{{ {foo: 'bar', bar: 'baz'}|without('foo') }}
+{{ {foo: 'bar', bar: 'baz'}|without_keys('foo') }}
+```
+
+### Removing empty values from arrays
+Removing empty values from an array is possible using `withoutEmpty(array $array)` Twig filter.
+Value is considered empty using the same implementation as `empty` Twig test
+(`''`, `false`, `null`, `[]`, or instances of `Countable` with zero length).
+```twig
+{{ [null, 1]|without_empty }}
 ```
 
 ### Replacing based on regular expressions

@@ -46,6 +46,19 @@ class WebExtensionTest extends TestCase
         $this->assertSame('foo', $this->render('{{ class_name({foo: true, bar: false}) }}'));
     }
 
+    function test_resolving_attributes()
+    {
+        $this->assertSame('', $this->render('{{ attributes({}) }}'));
+        $this->assertSame('', $this->render("{{ attributes({required: false}) }}"));
+        $this->assertSame('required="required"', $this->render("{{ attributes({required: true}) }}"));
+        $this->assertSame('class="foo"', $this->render("{{ attributes({class: 'foo'}) }}"));
+        $this->assertSame(
+            'class="foo bar" name="value"',
+            $this->render("{{ attributes({class: {foo: true, bar: true}, name: 'value'}) }}")
+        );
+        $this->assertSame('name="&lt;value&gt;"', $this->render("{{ attributes({name: '<value>'}) }}"));
+    }
+
     function test_string_is_translated()
     {
         $this->assertEquals(true, $this->render("{{ is_translated('foo') }}"));
@@ -94,21 +107,37 @@ class WebExtensionTest extends TestCase
         $this->assertEquals(false, $this->render("{{ is_current('baz') }}"));
     }
 
-    function test_filter_filter()
-    {
-        $this->assertEquals('{"4":"0"}', $this->render("{{ ['', false, null, [], '0']|filter|json_encode }}"));
-    }
-
     function test_without_filter()
     {
         $this->assertEquals(
+            '["foo","bar"]',
+            $this->render("{{ ['foo', 'bar']|without('baz')|json_encode }}")
+        );
+        $this->assertEquals(
+            '{"1":"bar"}',
+            $this->render("{{ ['foo', 'bar']|without('foo')|json_encode }}")
+        );
+        $this->assertEquals(
+            '{"2":"baz"}',
+            $this->render("{{ ['foo', 'bar', 'baz']|without(['foo', 'bar'])|json_encode }}")
+        );
+    }
+
+    function test_without_keys_filter()
+    {
+        $this->assertEquals(
             '{"bar":"baz"}',
-            $this->render("{{ {foo: 'bar', bar: 'baz'}|without('foo')|json_encode }}")
+            $this->render("{{ {foo: 'bar', bar: 'baz'}|without_keys('foo')|json_encode }}")
         );
         $this->assertEquals(
             '{"baz":"qux"}',
-            $this->render("{{ {foo: 'bar', bar: 'baz', baz: 'qux'}|without(['foo', 'bar'])|json_encode }}")
+            $this->render("{{ {foo: 'bar', bar: 'baz', baz: 'qux'}|without_keys(['foo', 'bar'])|json_encode }}")
         );
+    }
+
+    function test_without_empty_filter()
+    {
+        $this->assertEquals('{"4":"0"}', $this->render("{{ ['', false, null, [], '0']|without_empty|json_encode }}"));
     }
 
     function test_replacing_using_regular_expression()

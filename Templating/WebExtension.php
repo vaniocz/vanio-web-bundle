@@ -41,7 +41,11 @@ class WebExtension extends \Twig_Extension
     public function getFunctions(): array
     {
         return [
-            new \Twig_SimpleFunction('class_name', [$this, 'resolveClassName']),
+            new \Twig_SimpleFunction('class_name', [$this, 'renderClassName']),
+            new \Twig_SimpleFunction('attributes', [$this, 'renderAttributes'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
+            ]),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('referer', [$this, 'resolveReferer']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
@@ -56,8 +60,9 @@ class WebExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFilter('trans', [$this, 'trans']),
-            new \Twig_SimpleFilter('filter', [$this, 'filter']),
             new \Twig_SimpleFilter('without', [$this, 'without']),
+            new \Twig_SimpleFilter('without_keys', [$this, 'withoutKeys']),
+            new \Twig_SimpleFilter('without_empty', [$this, 'withoutEmpty']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
@@ -77,9 +82,29 @@ class WebExtension extends \Twig_Extension
         return 'vanio_web_extension';
     }
 
-    public function resolveClassName(array $classes): string
+    public function renderClassName(array $classes): string
     {
         return implode(' ', array_keys(array_filter($classes)));
+    }
+
+    public function renderAttributes(\Twig_Environment $environment, array $attributes): string
+    {
+        $html = '';
+
+        foreach ($attributes as $name => $value) {
+            if ($name === 'class' && is_array($value)) {
+                $value = $this->renderClassName($value);
+            } elseif ($value === true) {
+                $value = $name;
+            }
+
+            if ($value !== false) {
+                $value = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, $environment->getCharset());
+                $html .= sprintf(' %s="%s"', $name, $value);
+            }
+        }
+
+        return ltrim($html);
     }
 
     public function isTranslated(string $id, string $domain = 'messages', string $locale = null): bool
@@ -137,9 +162,14 @@ class WebExtension extends \Twig_Extension
         return $this->translator->trans($messages, $arguments, $domain, $locale);
     }
 
-    public function filter(array $array): array
+    /**
+     * @param array $array
+     * @param string|array $values
+     * @return array
+     */
+    public function without(array $array, $values): array
     {
-        return array_filter($array, [$this, 'isNotEmpty']);
+        return array_diff($array, (array) $values);
     }
 
     /**
@@ -147,9 +177,14 @@ class WebExtension extends \Twig_Extension
      * @param string|array $keys
      * @return array
      */
-    public function without(array $array, $keys): array
+    public function withoutKeys(array $array, $keys): array
     {
         return array_diff_key($array, array_flip((array) $keys));
+    }
+
+    public function withoutEmpty(array $array): array
+    {
+        return array_filter($array, [$this, 'isNotEmpty']);
     }
 
     /**
