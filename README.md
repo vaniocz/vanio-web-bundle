@@ -61,10 +61,15 @@ $this->addFlash(FlashMessage::TYPE_DANGER, new FlashMessage('message', ['key' =>
 But adding a flash message is just half of the problem.
 You'll also need to display it somewhere in your view and actually translate it yourself.
 
+## Validation of required fields
+The `required` option normally affects only the HTML5 `required` attribute.
+This bundle allows setting of `validate_required: true` to automatically add a `NotBlank` constraint to the form.
+The default validation message is configurable by setting `required_message`.
+
 ## Form state URL canonization
 Due to SEO optimizations and also in situations where having full form state serialized in URL is too long and ugly it
 is possible to set `canonize: true` in form options. When you submit the form it is then redirected to canonical URL
-where all empty form fields (even those equal to empty_data option) are ommited.
+where all empty form fields (even those equal to `empty_data` option) are ommited.
 
 ## Templating
 

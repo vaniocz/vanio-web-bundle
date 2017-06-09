@@ -9,6 +9,7 @@
         <parameter key="vanio_web.templating.snippet_renderer.class">Vanio\WebBundle\Templating\SnippetRenderer</parameter>
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
         <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
+        <parameter key="vanio_web.form.required_extension.class">Vanio\WebBundle\Form\RequiredExtension</parameter>
         <parameter key="vanio_web.form.canonization_extension.class">Vanio\WebBundle\Form\CanonizationExtension</parameter>
     </parameters>
 
@@ -48,6 +49,10 @@
             <argument type="service" id="vanio_web.request.referer_resolver"/>
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
             <tag name="twig.extension"/>
+        </service>
+
+        <service id="vanio_web.form.required_extension" class="%vanio_web.form.required_extension.class%">
+            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
         <service id="vanio_web.form.canonization_extension" class="%vanio_web.form.canonization_extension.class%">
