@@ -19,7 +19,7 @@ class VanioWebExtension extends Extension
             $container->setParameter("vanio_web.$key", $value);
         }
 
-        if (!$config['multilingual_supported_locales']) {
+        if (!$config['multilingual_supported_locales'] && $container->hasParameter('be_simple_i18n_routing.locales')) {
             $container->setParameter('vanio_web.multilingual_supported_locales', '%be_simple_i18n_routing.locales%');
         }
 
