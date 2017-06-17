@@ -49,8 +49,8 @@ class WebExtensionTest extends TestCase
     function test_resolving_attributes()
     {
         $this->assertSame('', $this->render('{{ attributes({}) }}'));
-        $this->assertSame('', $this->render("{{ attributes({required: false}) }}"));
-        $this->assertSame('required="required"', $this->render("{{ attributes({required: true}) }}"));
+        $this->assertSame('', $this->render('{{ attributes({required: false}) }}'));
+        $this->assertSame('required="required"', $this->render('{{ attributes({required: true}) }}'));
         $this->assertSame('class="foo"', $this->render("{{ attributes({class: 'foo'}) }}"));
         $this->assertSame(
             'class="foo bar" name="value"',
