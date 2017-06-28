@@ -1,5 +1,9 @@
 {% import '@VanioWeb/menu.html.twig' as menu %}
 
+{% if filter is defined %}
+    {% set page = filter.page %}
+{% endif %}
+
 {% if page is defined %}
     <div class="paginator">
         <p class="paginator-info">
