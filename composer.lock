@@ -4977,12 +4977,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vaniocz/vanio-domain-bundle.git",
-                "reference": "5c7bb656fd875058ad1fbff014c8167b99971e34"
+                "reference": "915099195b9eab31d563b253d2990720ef0b0218"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vaniocz/vanio-domain-bundle/zipball/5c7bb656fd875058ad1fbff014c8167b99971e34",
-                "reference": "5c7bb656fd875058ad1fbff014c8167b99971e34",
+                "url": "https://api.github.com/repos/vaniocz/vanio-domain-bundle/zipball/915099195b9eab31d563b253d2990720ef0b0218",
+                "reference": "915099195b9eab31d563b253d2990720ef0b0218",
                 "shasum": ""
             },
             "require": {
@@ -5037,7 +5037,7 @@
                 "ddd",
                 "doctrine"
             ],
-            "time": "2017-06-28 13:34:25"
+            "time": "2017-06-28 15:44:50"
         },
         {
             "name": "vertigolabs/doctrine-full-text-postgres",

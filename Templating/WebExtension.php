@@ -2,7 +2,6 @@
 namespace Vanio\WebBundle\Templating;
 
 use Html2Text\Html2Text;
-use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -269,7 +268,6 @@ class WebExtension extends \Twig_Extension
 
     public function width(string $path): int
     {
-
         return $this->resolveImageDimensions($path)[0];
     }
 

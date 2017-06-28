@@ -34,10 +34,9 @@
             <argument>%kernel.cache_dir%/vanio_web</argument>
         </service>
 
-        <service id="vanio_web.form.uploaded_file_type" class="%vanio_web.form.uploaded_file_type.class%">
+        <service id="vanio_web.form.uploaded_file_type" class="%vanio_web.form.uploaded_file_type.class%" abstract="true">
             <argument type="service" id="vanio_web.model.uploaded_file_repository"/>
             <argument type="service" id="session.storage"/>
-            <tag name="form.type"/>
         </service>
 
         <service id="vanio_web.form.validation_token_parser" class="%vanio_web.form.validation_token_parser.class%"/>
@@ -57,7 +56,7 @@
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
-        <service id="vanio_web.model.uploaded_file_repository" class="%vanio_web.model.uploaded_file_repository.class%" public="false">
+        <service id="vanio_web.model.uploaded_file_repository" class="%vanio_web.model.uploaded_file_repository.class%" public="false" abstract="true">
             <factory service="doctrine.orm.entity_manager" method="getRepository"/>
             <argument>Vanio\WebBundle\Model\UploadedFile</argument>
         </service>

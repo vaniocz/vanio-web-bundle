@@ -5,6 +5,10 @@ use Vanio\DomainBundle\Assert\Validation;
 
 class Foo
 {
+    /**
+     * @param mixed $foo
+     * @param mixed $bar
+     */
     public function __construct($foo, $bar)
     {
         Validation::notBlank($foo, 'not_blank_message');
