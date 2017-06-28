@@ -1,5 +1,5 @@
 <?php
-namespace Vanio\DiExtraBundle\Tests\Fixtures;
+namespace Vanio\WebBundle\Tests\Fixtures;
 
 use Symfony\Component\Translation\Translator;
 use Vanio;

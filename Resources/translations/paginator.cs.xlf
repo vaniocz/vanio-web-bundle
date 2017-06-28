@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="cs" datatype="plaintext" original="file.ext">
+        <header>
+            <tool tool-id="symfony" tool-name="Symfony"/>
+        </header>
+
+        <body>
+            <trans-unit id="a48d0c4b4e9b3386c6de6794038b00c1" resname="paginator.info">
+                <source>paginator.info</source>
+                <target>Zobrazuji %fromPage%. – %toPage%. z %recordTotalCount% záznamů.</target>
+            </trans-unit>
+
+            <trans-unit id="1cd54e08ae664141b14c24118e187975" resname="siblingPaginator.info">
+                <source>siblingPaginator.info</source>
+                <target><![CDATA[Zobrazuji <span class="paginator-info-count">%recordCount%</span> záznamů z %recordTotalCount%.]]></target>
+            </trans-unit>
+
+            <trans-unit id="46f4bb6f5551210ea34fd41ebbddf484" resname="siblingPaginator.previous">
+                <source>siblingPaginator.previous</source>
+                <target>Zobrazit předchozích %recordCount%</target>
+            </trans-unit>
+
+            <trans-unit id="b08ef8aced1f37d1e95b509d43496d03" resname="siblingPaginator.next">
+                <source>siblingPaginator.next</source>
+                <target>Zobrazit dalších %recordCount%</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

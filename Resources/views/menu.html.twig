@@ -1,0 +1,62 @@
+{% macro link(route = null, parameters = null, attributes = {}) %}
+    {% import _self as self %}
+
+    {% if route is null %}
+        {% set route = app.request.attributes.get('_route') %}
+        {% set parameters = parameters ?? app.request.attributes.get('_route_params') %}
+    {% endif %}
+
+    {% if attributes.class is defined and attributes.class is not null and attributes.class is not iterable %}
+        {% set attributes = {class: {(attributes.class): true}} + attributes %}
+    {% endif %}
+
+    <a
+        {{ attributes({
+            class: attributes.class ?? {} + {active: is_current(route)},
+            href: attributes.href ?? path(route, parameters ?? {}),
+            label: false,
+            labelContext: false,
+            rawLabel: false,
+        } + attributes) }}
+    >
+        {% if attributes.rawLabel is defined %}
+            {{ attributes.rawLabel|raw }}
+        {% else %}
+            {{- self.label(attributes.label ?? route, attributes.labelContext ?? {}) -}}
+        {% endif %}
+    </a>
+{% endmacro %}
+
+{% macro label(page = null, context = null, translationDomain = 'pages') %}
+    {% if page is null %}
+        {% set page = app.request.attributes.get('_route') %}
+        {% set context = context ?? app.request.attributes.get('_route_params') %}
+    {% endif %}
+
+    {{- is_translated(page, translationDomain) ? page|trans({}, translationDomain)|evaluate(context ?? {}) : page -}}
+{% endmacro %}
+
+{% macro item(route = null, parameters = null, itemAttributes = {}, linkAttributes = {}) %}
+    {% import _self as self %}
+
+    {% if route is null %}
+        {% set route = app.request.attributes.get('_route') %}
+        {% set parameters = parameters ?? app.request.attributes.get('_route_params') %}
+    {% endif %}
+
+    {% if itemAttributes.class is defined and itemAttributes.class is not null and itemAttributes.class is not iterable %}
+        {% set itemAttributes = {class: {(itemAttributes.class): true}} + itemAttributes %}
+    {% endif %}
+
+
+    {% if itemAttributes.roles is not defined or itemAttributes.roles is empty or is_granted(itemAttributes.roles) %}
+        <li
+            {{ attributes({
+                class: itemAttributes.class ?? {} + {("menu--#{route}"|replace({'_': '-'})): true, active: is_current(route)},
+                roles: false,
+            } + itemAttributes) }}
+        >
+            {{ self.link(route, parameters ?? {}, linkAttributes) }}
+        </li>
+    {% endif %}
+{% endmacro %}

@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "strict": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "noEmit": true,
+        "baseUrl": "",
+        "paths": {
+            "@vanio_web/*": ["Resources/assets/*"]
+        },
+        "lib": ["dom", "es6", "scripthost"]
+    },
+    "include": ["Resources/assets/**/*"]
+}

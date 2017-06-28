@@ -8,10 +8,12 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
+use Vanio\WebBundle\Templating\TwigFormRendererEngine;
 use Vanio\WebBundle\Templating\WebExtension;
 
 class WebExtensionTest extends TestCase
@@ -33,6 +35,8 @@ class WebExtensionTest extends TestCase
         $this->twig = new \Twig_Environment(new \Twig_Loader_Array([]));
         $this->twig->addExtension(new WebExtension(
             $this->createTranslator(),
+            $this->createRouterMock(),
+            new TwigFormRendererEngine,
             $this->requestStack,
             $this->createRefererResolverMock(),
             new RouteHierarchyResolver($this->createUrlMatcher())
@@ -183,6 +187,11 @@ class WebExtensionTest extends TestCase
         $translator->addResource('array', ['foo' => 'foo', 'baz' => false], 'en');
 
         return $translator;
+    }
+
+    private function createRouterMock(): RouterInterface
+    {
+        return $this->createMock(RouterInterface::class);
     }
 
     private function createUrlMatcher(): UrlMatcher

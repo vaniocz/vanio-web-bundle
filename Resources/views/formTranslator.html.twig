@@ -1,0 +1,34 @@
+{% macro translate_form_label(form, translationDomain = null) -%}
+    {% import _self as self %}
+
+    {% if form.vars.label is not empty or form.vars.label_format is not empty -%}
+        {% set label = form.vars.label_format|replace({'%name%': form.vars.name, '%id%': form.vars.id})|default(form.vars.label) -%}
+
+        {% if translationDomain is same as(false) -%}
+            {{ label -}}
+        {% else -%}
+            {{ label|trans({}, translationDomain) -}}
+        {% endif -%}
+    {% else -%}
+        {{ self.translate_recursive(self.form_path(form), translationDomain) -}}
+    {% endif -%}
+{% endmacro %}
+
+{% macro translate_recursive(id, translationDomain = null, currentPath = null) -%}
+    {% import _self as self %}
+
+    {% set currentId = currentPath is same as(null) ? id : currentPath|join('.') -%}
+    {% set currentPath = currentPath ?? id|split('.') -%}
+
+    {% if is_translated(currentId, translationDomain) -%}
+        {{ currentId|trans({}, translationDomain) -}}
+    {% elseif currentPath|length > 1 -%}
+        {{ self.translate_recursive(id, translationDomain, currentPath|slice(1)) -}}
+    {% else -%}
+        {{ currentId -}}
+    {% endif -%}
+{% endmacro %}
+
+{% macro form_path(form) -%}
+    {{ form.vars.full_name|replace({'[]': ''})|replace({'[': '.', ']': ''}) -}}
+{% endmacro %}

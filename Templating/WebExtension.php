@@ -2,7 +2,11 @@
 namespace Vanio\WebBundle\Templating;
 
 use Html2Text\Html2Text;
+use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\ExceptionInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Strings;
@@ -13,6 +17,12 @@ class WebExtension extends \Twig_Extension
 {
     /** @var TranslatorInterface */
     private $translator;
+
+    /** @var UrlGeneratorInterface */
+    private $urlGenerator;
+
+    /** @var TwigFormRendererEngine */
+    private $twigFormRendererEngine;
 
     /** @var RequestStack */
     private $requestStack;
@@ -25,11 +35,15 @@ class WebExtension extends \Twig_Extension
 
     public function __construct(
         TranslatorInterface $translator,
+        UrlGeneratorInterface $urlGenerator,
+        TwigFormRendererEngine $twigFormRendererEngine,
         RequestStack $requestStack,
         RefererResolver $refererResolver,
         RouteHierarchyResolver $routeHierarchyResolver
     ) {
         $this->translator = $translator;
+        $this->urlGenerator = $urlGenerator;
+        $this->twigFormRendererEngine = $twigFormRendererEngine;
         $this->requestStack = $requestStack;
         $this->refererResolver = $refererResolver;
         $this->routeHierarchyResolver = $routeHierarchyResolver;
@@ -47,6 +61,8 @@ class WebExtension extends \Twig_Extension
                 'is_safe' => ['html'],
             ]),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
+            new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
+            new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
             new \Twig_SimpleFunction('referer', [$this, 'resolveReferer']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'resolveBreadcrumbs']),
@@ -66,6 +82,8 @@ class WebExtension extends \Twig_Extension
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
+            new \Twig_SimpleFilter('width', [$this, 'width']),
+            new \Twig_SimpleFilter('height', [$this, 'height']),
         ];
     }
 
@@ -107,11 +125,46 @@ class WebExtension extends \Twig_Extension
         return ltrim($html);
     }
 
-    public function isTranslated(string $id, string $domain = 'messages', string $locale = null): bool
+    public function isTranslated(string $id, string $domain = null, string $locale = null): bool
     {
+        if ($domain === null) {
+            $domain = 'messages';
+        }
+
         return $this->translator instanceof TranslatorBagInterface
             && $this->translator->getCatalogue($locale)->has($id, $domain)
             && $this->translator->getCatalogue($locale)->get($id, $domain) !== false;
+    }
+
+    public function routeExists(string $name): bool
+    {
+        try {
+            $this->urlGenerator->generate($name);
+        } catch (RouteNotFoundException $e) {
+            return false;
+        } catch (ExceptionInterface $e) {}
+
+        return true;
+    }
+
+    public function formDefaultTheme(string $theme): void
+    {
+        $defaultThemes = $this->twigFormRendererEngine->getDefaultThemes();
+        $recursiveFormLayoutTheme = '@VanioWeb/recursiveFormLabelLayout.html.twig';
+        $recursiveFormLayoutThemeKey = array_search($recursiveFormLayoutTheme, $defaultThemes);
+
+        if ($recursiveFormLayoutThemeKey !== false) {
+            unset($defaultThemes[$recursiveFormLayoutThemeKey]);
+            $defaultThemes = array_values($defaultThemes);
+        }
+
+        $defaultThemes[] = $theme;
+
+        if ($recursiveFormLayoutThemeKey !== false) {
+            $defaultThemes[] = '@VanioWeb/recursiveFormLabelLayout.html.twig';
+        }
+
+        $this->twigFormRendererEngine->setDefaultThemes($defaultThemes);
     }
 
     public function resolveReferer(string $fallbackPath = null): string
@@ -214,6 +267,17 @@ class WebExtension extends \Twig_Extension
             : $template;
     }
 
+    public function width(string $path): int
+    {
+
+        return $this->resolveImageDimensions($path)[0];
+    }
+
+    public function height(string $path): int
+    {
+        return $this->resolveImageDimensions($path)[1];
+    }
+
     /**
      * @param mixed $value
      * @param string $class
@@ -235,5 +299,16 @@ class WebExtension extends \Twig_Extension
         }
 
         return $value !== '' && $value !== false && $value !== null && $value !== [];
+    }
+
+    private function resolveImageDimensions(string $path): array
+    {
+        static $imageDimensions = [];
+
+        if (!isset($imageDimensions[$path])) {
+            $imageDimensions[$path] = getimagesize($path);
+        }
+
+        return $imageDimensions[$path];
     }
 }

@@ -52,7 +52,7 @@ class SnippetRenderer implements EventSubscriberInterface
         /** @var \Twig_Template $template */
         $template = $this->twig()->loadTemplate($template);
         /** @noinspection PhpInternalEntityUsedInspection */
-        $content = $template->renderBlock($snippet . 'Snippet', $this->twig()->mergeGlobals($parameters));
+        $content = $template->renderBlock("{$snippet}_snippet", $this->twig()->mergeGlobals($parameters));
         $event->setResponse(new Response($content));
     }
 

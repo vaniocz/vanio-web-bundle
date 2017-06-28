@@ -1,0 +1,19 @@
+<div class="paginated-list"{% if snippet is defined %} data-component-paginated-list="{{ snippet }}"{% endif %}>
+    {% if page is defined %}
+        <div class="paginated-list-top-pagination">
+            {% block paginator %}
+                {% include '@VanioWeb/siblingPaginator.html.twig' %}
+            {% endblock %}
+        </div>
+    {% endif %}
+
+    <div class="paginated-list-list {{ listClass ?? '' }}">
+        {% block list %}{% endblock %}
+    </div>
+
+    {% if page is defined %}
+        <div class="paginated-list-bottom-pagination">
+            {{ block('paginator') }}
+        </div>
+    {% endif %}
+</div>

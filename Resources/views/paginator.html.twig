@@ -1,0 +1,38 @@
+{% import '@VanioWeb/menu.html.twig' as menu %}
+
+{% if page is defined %}
+    <div class="paginator">
+        <p class="paginator-info">
+            {{ 'paginator.info'|trans({'%fromPage%': (page.pageNumber - 1 ) * page.recordsPerPage + 1, '%toPage%': min(page.pageNumber * page.recordsPerPage, records|length), '%recordTotalCount%': records|length}, 'paginator')|raw }}
+        </p>
+
+        {% if records|length > page.recordsPerPage %}
+            {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
+            {% set neighboursCount = neighboursCount ?? 3 %}
+            {% set maximalPage = (records|length / page.recordsPerPage)|round(0, 'ceil') %}
+
+            <div class="paginator-pages">
+                <ul class="pagination">
+                    {{ menu.item(null, {page: page.pageNumber - 1} + parameters, {class: {active: false, disabled: page.pageNumber == 1}}, {href: page.pageNumber == 1 ? false : null, label: '«'}) }}
+                    {{ menu.item(null, {page: 1} + parameters, {class: {active: page.pageNumber == 1}}, {label: 1}) }}
+
+                    {% if page.pageNumber - neighboursCount > 2 %}<li class="disabled"><a>…</a></li>{% endif %}
+
+                    {% if maximalPage > 2 %}
+                        {% for pageNumber in max(page.pageNumber - neighboursCount, 2)..min(maximalPage - 1, page.pageNumber + neighboursCount) %}
+                            {{ menu.item(null, {page: pageNumber} + parameters, {class: {active: page.pageNumber == pageNumber}}, {label: pageNumber}) }}
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if page.pageNumber + neighboursCount < maximalPage - 1 %}<li class="disabled"><a>…</a>{% endif %}
+
+                    {% if maximalPage > 1 %}
+                        {{ menu.item(null, {page: maximalPage} + parameters, {class: {active: page.pageNumber == maximalPage}}, {label: maximalPage}) }}
+                    {% endif %}
+
+                    {{ menu.item(null, {page: page.pageNumber + 1} + parameters, {class: {active: false, disabled: page.pageNumber >= maximalPage}}, {href: page.pageNumber >= maximalPage ? false : null, label: '»'}) }}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

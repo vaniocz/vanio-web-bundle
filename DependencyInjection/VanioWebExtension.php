@@ -11,7 +11,7 @@ class VanioWebExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $config = $this->processConfiguration(new Configuration, $configs);
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources'));
+        $loader = new XmlFileLoader($container, new FileLocator(sprintf('%s/../Resources/config', __DIR__)));
         $loader->load('config.xml');
         $container->setParameter('vanio_web', $config);
 
@@ -43,5 +43,16 @@ class VanioWebExtension extends Extension
                 ->setAbstract(false)
                 ->addTag('kernel.event_subscriber');
         }
+
+        $resources = $container->hasParameter('twig.form.resources')
+            ? $container->getParameter('twig.form.resources')
+            : [];
+        $resources[] = '@VanioWeb/formLayout.html.twig';
+
+        if ($config['recursive_form_label']) {
+            $resources[] = '@VanioWeb/recursiveFormLabelLayout.html.twig';
+        }
+
+        $container->setParameter('twig.form.resources', $resources);
     }
 }

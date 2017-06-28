@@ -15,6 +15,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
                 ->booleanNode('render_snippets')->defaultFalse()->end()
+                ->booleanNode('recursive_form_label')->defaultFalse()->end()
                 ->booleanNode('multilingual')->defaultFalse()->end()
                 ->arrayNode('multilingual_root_paths')
                     ->defaultValue(['/'])

@@ -1,0 +1,25 @@
+{
+  "name": "vanio-web-bundle",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Vanio Web Bundle JavaScript dependencies",
+  "author": "Marek Štípek <mario.dweller@seznam.cz>",
+  "engines": {
+    "node": ">=6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vaniocz/vanio-web-bundle.git"
+  },
+  "files": [],
+  "dependencies": {
+    "@types/dropzone": "^4.3.34",
+    "@types/jquery": "^3.2.4",
+    "@types/photoswipe": "^4.0.28",
+    "dropzone": "^5.0.1",
+    "jquery": "^3.2.1",
+    "jquery-photoswipe": "^1.0.3",
+    "jquery-ts-components": "^0.1.4",
+    "photoswipe": "^4.1.2"
+  }
+}

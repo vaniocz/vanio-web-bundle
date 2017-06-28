@@ -58,7 +58,12 @@ class MultilingualListener implements EventSubscriberInterface
         $this->request = $event->getRequest();
 
         if ($this->multilingualRootRequested()) {
-            $redirectPath = sprintf('%s/%s/', rtrim($this->request->getPathInfo(), '/'), $this->preferredLocale());
+            $redirectPath = sprintf(
+                '%s%s/%s/',
+                $this->request->getBaseUrl(),
+                rtrim($this->request->getPathInfo(), '/'),
+                $this->preferredLocale()
+            );
             $uri = (new Uri($this->request->getUri()))->withPath($redirectPath);
             $event->setResponse(new RedirectResponse((string) $uri));
         }

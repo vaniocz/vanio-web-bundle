@@ -1,0 +1,19 @@
+{% import '@VanioWeb/menu.html.twig' as menu %}
+
+{% if page is defined and records|length > page.recordsPerPage %}
+    <div class="sibling-paginator">
+        <p class="paginator-info">
+            {{ 'siblingPaginator.info'|trans({'%recordCount%': min(page.recordsPerPage, records|length), '%recordTotalCount%': records|length}, 'paginator')|raw }}
+        </p>
+
+        {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
+
+        {% if page.fromPage > 1 %}
+            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.recordsPerPage}, 'paginator')}) }}
+        {% endif %}
+
+        {% if records|length > page.lastRecord %}
+            {{ menu.link(null, {page: page.toPage + 1} + parameters, {class: 'btn btn-primary paginator-next', label: 'siblingPaginator.next'|trans({'%recordCount%': min(page.recordsPerPage, records|length - page.lastRecord)}, 'paginator')}) }}
+        {% endif %}
+    </div>
+{% endif %}
