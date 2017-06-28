@@ -34,6 +34,11 @@
             <argument>%kernel.cache_dir%/vanio_web</argument>
         </service>
 
+        <service id="vanio_web.model.uploaded_file_repository" class="%vanio_web.model.uploaded_file_repository.class%" public="false" abstract="true">
+            <factory service="doctrine.orm.entity_manager" method="getRepository"/>
+            <argument>Vanio\WebBundle\Model\UploadedFile</argument>
+        </service>
+
         <service id="vanio_web.form.uploaded_file_type" class="%vanio_web.form.uploaded_file_type.class%" abstract="true">
             <argument type="service" id="vanio_web.model.uploaded_file_repository"/>
             <argument type="service" id="session.storage"/>
@@ -54,11 +59,6 @@
 
         <service id="vanio_web.form.js_form_validator_extension" class="%vanio_web.form.js_form_validator_extension.class%">
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
-        </service>
-
-        <service id="vanio_web.model.uploaded_file_repository" class="%vanio_web.model.uploaded_file_repository.class%" public="false" abstract="true">
-            <factory service="doctrine.orm.entity_manager" method="getRepository"/>
-            <argument>Vanio\WebBundle\Model\UploadedFile</argument>
         </service>
 
         <service id="vanio_web.request.request_type_listener" class="%vanio_web.request.request_type_listener.class%" abstract="true"/>

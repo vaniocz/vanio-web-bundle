@@ -1,6 +1,7 @@
 <?php
 namespace Vanio\WebBundle;
 
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Vanio\WebBundle\DependencyInjection\JsFormValidatorFactoryCompilerPass;
@@ -12,6 +13,6 @@ class VanioWebBundle extends Bundle
     {
         parent::build($container);
         $container->addCompilerPass(new JsFormValidatorFactoryCompilerPass);
-        $container->addCompilerPass(new UploadedFileCompilerPass);
+        $container->addCompilerPass(new UploadedFileCompilerPass, PassConfig::TYPE_BEFORE_OPTIMIZATION, 10);
     }
 }
