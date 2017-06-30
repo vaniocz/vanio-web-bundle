@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThan;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 
 class ValidationConstraintsGuesser
 {
@@ -34,6 +35,7 @@ class ValidationConstraintsGuesser
         'nullOrGreaterThan' => [GreaterThan::class, ['limit' => 'value']],
         'lessThan' => [LessThan::class, ['limit' => 'value']],
         'email' => [Email::class],
+        'url' => [Url::class],
         'supportedImageFile' => [Image::class, ['message' => 'mimeTypesMessage']],
     ];
 

@@ -13,9 +13,11 @@
   },
   "files": [],
   "dependencies": {
+    "@types/autosize": "^3.0.4",
     "@types/dropzone": "^4.3.34",
     "@types/jquery": "^3.2.4",
     "@types/photoswipe": "^4.0.28",
+    "autosize": "^3.0.20",
     "dropzone": "^5.0.1",
     "jquery": "^3.2.1",
     "jquery-photoswipe": "^1.0.3",
