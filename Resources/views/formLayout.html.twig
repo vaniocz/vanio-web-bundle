@@ -1,3 +1,11 @@
+{% block vanio_date_widget %}
+    <div class="input-group datepicker date" data-component-date-picker data-min-view="2">
+        {% set type = 'text' %}
+        {{ block('form_widget_simple') }}
+        <span class="input-group-addon btn btn-primary"><i class="icon s7-date"></i></span>
+    </div>
+{% endblock %}
+
 {% block uploaded_file_widget %}
     {% set files = {} %}
     {% for key, file in multiple ? data : (data ? [data] : []) %}
