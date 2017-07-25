@@ -88,7 +88,7 @@ export default class DropzoneComponent
         this.dropzone.files.push(file);
         this.dropzone.emit('addedfile', file);
 
-        if (file.url) {
+        if (file.url && file.mime && file.mime.indexOf('image/') === 0) {
             this.dropzone.emit('thumbnail', file, file.url);
         }
 

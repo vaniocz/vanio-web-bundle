@@ -103,10 +103,7 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
             if ($status === self::STATUS_SUCCESS) {
                 $file = $this->getUploadedFile($key)->file();
                 $class = $form->getParent()->getConfig()->getOption('class');
-
-                if (!is_a($file, $class, true)) {
-                    $file = new $class($file);
-                }
+                $file = new $class($file);
             } else {
                 $file = $data[$key];
             }

@@ -11,9 +11,10 @@
     {% for key, file in multiple ? data : (data ? [data] : []) %}
         {% set url = file.file.pathname|replace({(web_root): '', '\\': '/'}) %}
         {% set files = files + {(key): {
-            name: file.metadata.name ?? file.basename,
+            name: file.metadata.name ?? file.file.basename,
+            mime: file.metadata.mime ?? null,
             size: file.metadata.size,
-            url: thumbnail_filter ? url|imagine_filter(thumbnail_filter) : url,
+            url: thumbnail_filter is defined ? url|imagine_filter(thumbnail_filter) : url,
             key: key,
             status: 'uploaded',
         }} %}

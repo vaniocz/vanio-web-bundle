@@ -83,6 +83,7 @@ class WebExtension extends \Twig_Extension
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
             new \Twig_SimpleFilter('width', [$this, 'width']),
             new \Twig_SimpleFilter('height', [$this, 'height']),
+            new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
         ];
     }
 
@@ -274,6 +275,14 @@ class WebExtension extends \Twig_Extension
     public function height(string $path): int
     {
         return $this->resolveImageDimensions($path)[1];
+    }
+
+    public function humanFileSize(int $bytes, int $decimals = 0): string
+    {
+        $units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$decimals}f %s", $bytes / pow(1024, $factor), $units[$factor] ?? '');
     }
 
     /**
