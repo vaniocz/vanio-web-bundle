@@ -93,6 +93,8 @@
             <argument type="service" id="request_stack"/>
             <argument type="service" id="vanio_web.request.referer_resolver"/>
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
+            <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
+            <argument>%kernel.cache_dir%/vanio_web</argument>
             <tag name="twig.extension"/>
         </service>
 

@@ -1,7 +1,9 @@
 <?php
 namespace Vanio\WebBundle\Templating;
 
+use Doctrine\Common\Cache\FilesystemCache;
 use Html2Text\Html2Text;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -32,13 +34,21 @@ class WebExtension extends \Twig_Extension
     /** @var RouteHierarchyResolver */
     private $routeHierarchyResolver;
 
+    /** @var CacheManager|null */
+    private $cacheManager;
+
+    /** @var FilesystemCache */
+    private $imageDimensionsCache;
+
     public function __construct(
         TranslatorInterface $translator,
         UrlGeneratorInterface $urlGenerator,
         TwigFormRendererEngine $twigFormRendererEngine,
         RequestStack $requestStack,
         RefererResolver $refererResolver,
-        RouteHierarchyResolver $routeHierarchyResolver
+        RouteHierarchyResolver $routeHierarchyResolver,
+        CacheManager $cacheManager = null,
+        string $imageDimensionsCacheDirectory
     ) {
         $this->translator = $translator;
         $this->urlGenerator = $urlGenerator;
@@ -46,6 +56,8 @@ class WebExtension extends \Twig_Extension
         $this->requestStack = $requestStack;
         $this->refererResolver = $refererResolver;
         $this->routeHierarchyResolver = $routeHierarchyResolver;
+        $this->cacheManager = $cacheManager;
+        $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
     }
 
     /**
@@ -62,9 +74,11 @@ class WebExtension extends \Twig_Extension
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
             new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
-            new \Twig_SimpleFunction('referer', [$this, 'resolveReferer']),
+            new \Twig_SimpleFunction('referer', [$this, 'referer']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
-            new \Twig_SimpleFunction('breadcrumbs', [$this, 'resolveBreadcrumbs']),
+            new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
+            new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
+            new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
         ];
     }
 
@@ -81,8 +95,6 @@ class WebExtension extends \Twig_Extension
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
-            new \Twig_SimpleFilter('width', [$this, 'width']),
-            new \Twig_SimpleFilter('height', [$this, 'height']),
             new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
         ];
     }
@@ -167,7 +179,7 @@ class WebExtension extends \Twig_Extension
         $this->twigFormRendererEngine->setDefaultThemes($defaultThemes);
     }
 
-    public function resolveReferer(string $fallbackPath = null): string
+    public function referer(string $fallbackPath = null): string
     {
         return $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
     }
@@ -188,9 +200,64 @@ class WebExtension extends \Twig_Extension
     /**
      * @return string[]
      */
-    public function resolveBreadcrumbs(): array
+    public function breadcrumbs(): array
     {
         return $this->routeHierarchyResolver->resolveRouteHierarchy($this->requestStack->getCurrentRequest());
+    }
+
+    /**
+     * @param string $path
+     * @param bool|string $permanentCacheKey
+     * @return array
+     */
+    public function imageDimensions(string $path, $permanentCacheKey = false): array
+    {
+        static $imageDimensions = [];
+        static $permanentImageDimensions;
+
+        if ($permanentCacheKey !== false) {
+            if ($permanentImageDimensions === null) {
+                $permanentImageDimensions = $this->imageDimensionsCache->fetch('image_dimensions') ?: [];
+            }
+
+            if ($permanentCacheKey === true) {
+                $permanentCacheKey = $path;
+            }
+
+            if (!isset($permanentImageDimensions[$permanentCacheKey])) {
+                $permanentImageDimensions[$permanentCacheKey] = $this->imageDimensions($path);
+                $this->imageDimensionsCache->save('image_dimensions', $permanentImageDimensions);
+            }
+
+            return $permanentImageDimensions[$permanentCacheKey];
+        }
+
+        if (!isset($imageDimensions[$path])) {
+            $imageDimensions[$path] = getimagesize($path);
+            list($imageDimensions[$path]['width'], $imageDimensions[$path]['height']) = $imageDimensions[$path];
+        }
+
+        return $imageDimensions[$path];
+    }
+
+    /**
+     * @param string $path
+     * @param string $filter
+     * @param array $runtimeConfig
+     * @param null $resolver
+     * @return array
+     * @throws \LogicException
+     */
+    public function imagineDimensions(string $path, string $filter, array $runtimeConfig = [], $resolver = null): array
+    {
+        if (!$this->cacheManager) {
+            throw new \LogicException('LiipImagineBundle is not installed.');
+        }
+
+        return $this->imageDimensions(
+            $this->cacheManager->getBrowserPath($path, $filter, $runtimeConfig, $resolver),
+            $this->cacheManager->generateUrl($path, $filter, $runtimeConfig, $resolver)
+        );
     }
 
     /**
@@ -267,16 +334,6 @@ class WebExtension extends \Twig_Extension
             : $template;
     }
 
-    public function width(string $path): int
-    {
-        return $this->resolveImageDimensions($path)[0];
-    }
-
-    public function height(string $path): int
-    {
-        return $this->resolveImageDimensions($path)[1];
-    }
-
     public function humanFileSize(int $bytes, int $decimals = 0): string
     {
         $units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -306,16 +363,5 @@ class WebExtension extends \Twig_Extension
         }
 
         return $value !== '' && $value !== false && $value !== null && $value !== [];
-    }
-
-    private function resolveImageDimensions(string $path): array
-    {
-        static $imageDimensions = [];
-
-        if (!isset($imageDimensions[$path])) {
-            $imageDimensions[$path] = getimagesize($path);
-        }
-
-        return $imageDimensions[$path];
     }
 }
