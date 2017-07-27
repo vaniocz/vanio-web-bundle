@@ -39,7 +39,9 @@ class WebExtensionTest extends TestCase
             new TwigFormRendererEngine,
             $this->requestStack,
             $this->createRefererResolverMock(),
-            new RouteHierarchyResolver($this->createUrlMatcher())
+            new RouteHierarchyResolver($this->createUrlMatcher()),
+            null,
+            sys_get_temp_dir()
         ));
     }
 
