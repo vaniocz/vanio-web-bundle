@@ -9,6 +9,7 @@ import '@vanio_web/components/AutoSize';
 import '@vanio_web/components/DatePicker';
 import '@vanio_web/components/Dropzone';
 import '@vanio_web/components/Gallery';
+import '@vanio_web/components/NativeValidation';
 import '@vanio_web/components/PaginatedList';
 import '@vanio_web/validators/UserPassword';
 import '@vanio_web/boot';
