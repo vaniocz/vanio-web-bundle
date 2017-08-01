@@ -28,7 +28,7 @@ class ValidationConstraintsGuesser
     private $constraintMappings = [
         'notBlank' => NotBlank::class,
         'same' => [IdenticalTo::class, ['value2' => 'value']],
-        'maxLength' => [Length::class, ['maxLength' => 'max', 'message' => 'maxMessage']],
+        'maxLength' => [Length::class, ['maxLength' => 'max', 'message' => 'maxMessage'], ['max_length' => 'limit']],
         'min' => [GreaterThanOrEqual::class, ['minValue' => 'value'], ['min' => 'compared_value']],
         'max' => [LessThanOrEqual::class, ['maxValue' => 'value'], ['max' => 'compared_value']],
         'greaterThan' => [GreaterThan::class, ['limit' => 'value']],
