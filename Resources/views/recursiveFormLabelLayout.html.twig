@@ -15,3 +15,18 @@
         </label>
     {%- endif -%}
 {% endblock %}
+
+{% block button_widget %}
+    {% from '@VanioWeb/formTranslator.html.twig' import translate_form_label %}
+
+    {% if label is empty %}
+        {% if label_format is not empty %}
+            {% set label = label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) %}
+        {% else %}
+            {% set label = translate_form_label(form, translation_domain) %}
+        {% endif %}
+    {% endif %}
+
+    {% set attr = attr|merge({class: (attr.class ?? 'btn-default') ~ ' btn'}) %}
+    <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>{{ label }}</button>
+{% endblock %}

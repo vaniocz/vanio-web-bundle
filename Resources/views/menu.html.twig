@@ -48,7 +48,6 @@
         {% set itemAttributes = {class: {(itemAttributes.class): true}} + itemAttributes %}
     {% endif %}
 
-
     {% if itemAttributes.roles is not defined or itemAttributes.roles is empty or is_granted(itemAttributes.roles) %}
         <li
             {{ attributes({
