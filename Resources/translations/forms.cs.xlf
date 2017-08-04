@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="cs" datatype="plaintext" original="file.ext">
+        <header>
+            <tool tool-id="symfony" tool-name="Symfony"/>
+        </header>
+
+        <body>
+            <trans-unit id="2d8840721dd9ad7e1e964c8a4208be67" resname="uploadedImage.singleUploadMessage">
+                <source>uploadedImage.singleUploadMessage</source>
+                <target>Obrázek vyberete klepnutím nebo přetáhnutím zde.</target>
+            </trans-unit>
+
+            <trans-unit id="8a5d91054f23f56dbd883dfac4ccb786" resname="uploadedImage.multipleUploadMessage">
+                <source>uploadedImage.multipleUploadMessage</source>
+                <target>Obrázky vyberete klepnutím nebo přetáhnutím zde.</target>
+            </trans-unit>
+
+            <trans-unit id="524681ed7ce774d8b4d39a7a2dce7044" resname="uploadedImage.invalidMessage">
+                <source>uploadedImage.invalidMessage</source>
+                <target>Neplatný typ souboru. Vyberte obrázek.</target>
+            </trans-unit>
+
+            <trans-unit id="6b1dd62fd62cb3bcf26d82f577b6e10b" resname="uploadedFile.multipleUploadMessage">
+                <source>uploadedFile.multipleUploadMessage</source>
+                <target>Soubory vyberete klepnutím nebo přetáhnutím zde.</target>
+            </trans-unit>
+
+            <trans-unit id="781e72f9d79686d1595044d10ff136bb" resname="location.address">
+                <source>location.address</source>
+                <target>Adresa</target>
+            </trans-unit>
+
+            <trans-unit id="c806de0df4ef511c1da0ef2db8377b89" resname="location.latitude">
+                <source>location.latitude</source>
+                <target>Zeměpisná šířka</target>
+            </trans-unit>
+
+            <trans-unit id="3b412e11dab7afc4eab69be4363762ef" resname="location.longitude">
+                <source>location.longitude</source>
+                <target>Zeměpisná délka</target>
+            </trans-unit>
+
+            <trans-unit id="d9b3906f1da0842afd4b3ccd510051fe" resname="location.notFound">
+                <source>location.notFound</source>
+                <target>Adresa nenalezena</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

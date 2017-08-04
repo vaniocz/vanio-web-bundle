@@ -43,3 +43,22 @@
         invalidMessage: "uploadedImage.invalidMessage"|trans({}, translation_domain),
     }) }}
 {% endblock %}
+
+{% block location_widget %}
+    {% set attr = {
+        class: attr.class ?? '' ~ 'location',
+        'data-component-location': '{}',
+    } + attr %}
+
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+
+        {{ form_row(form.address, {attr: {class: 'location__address'}} + (icon is defined ? {icon: icon} : [])) }}
+        {{ form_row(form.latitude, {attr: {class: 'location__latitude'}}) }}
+        {{ form_row(form.longitude, {attr: {class: 'location__longitude'}}) }}
+        {{ form_rest(form) }}
+        <div class="form-errors location__not-found">{{ 'location.notFound'|trans({}, translation_domain) }}</div>
+    </div>
+{% endblock %}

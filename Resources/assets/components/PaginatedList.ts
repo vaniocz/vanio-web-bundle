@@ -9,7 +9,7 @@ export default class PaginatedList
     private $bottomPagination: JQuery;
     private snippet: string;
 
-    public constructor(element: JQuery | HTMLFormElement | string, snippet: string)
+    public constructor(element: JQuery|HTMLFormElement|string, snippet: string)
     {
         this.$element = $(element);
         this.$content = this.findListContent(this.$element);

@@ -8,7 +8,7 @@ export default class Gallery
     private $element: JQuery;
     private options: JQueryPhotoSwipeOptions;
 
-    public constructor(element: JQuery | HTMLFormElement | string, options: JQueryPhotoSwipeOptions)
+    public constructor(element: JQuery|HTMLFormElement|string, options: JQueryPhotoSwipeOptions)
     {
         this.$element = $(element);
         this.options = options;
