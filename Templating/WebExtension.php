@@ -14,7 +14,7 @@ use Vanio\Stdlib\Strings;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
 
-class WebExtension extends \Twig_Extension
+class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -40,6 +40,15 @@ class WebExtension extends \Twig_Extension
     /** @var FilesystemCache */
     private $imageDimensionsCache;
 
+    /** @var string|null */
+    private $googleMapsApiKey;
+
+    /** @var array  */
+    private $javaScripts = [];
+
+    /** @var array  */
+    private $requiredJavaScripts = [];
+
     public function __construct(
         TranslatorInterface $translator,
         UrlGeneratorInterface $urlGenerator,
@@ -48,7 +57,8 @@ class WebExtension extends \Twig_Extension
         RefererResolver $refererResolver,
         RouteHierarchyResolver $routeHierarchyResolver,
         CacheManager $cacheManager = null,
-        string $imageDimensionsCacheDirectory
+        string $imageDimensionsCacheDirectory,
+        string $googleMapsApiKey = null
     ) {
         $this->translator = $translator;
         $this->urlGenerator = $urlGenerator;
@@ -58,6 +68,7 @@ class WebExtension extends \Twig_Extension
         $this->routeHierarchyResolver = $routeHierarchyResolver;
         $this->cacheManager = $cacheManager;
         $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
+        $this->googleMapsApiKey = $googleMapsApiKey;
     }
 
     /**
@@ -71,6 +82,10 @@ class WebExtension extends \Twig_Extension
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
+            new \Twig_SimpleFunction('require_js', [$this, 'requireJs']),
+            new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
+            new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
+            new \Twig_SimpleFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
             new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
@@ -107,6 +122,11 @@ class WebExtension extends \Twig_Extension
         return [new \Twig_SimpleTest('instance of', [$this, 'isInstanceOf'])];
     }
 
+    public function getGlobals(): array
+    {
+        return ['googleMapsApiKey' => $this->googleMapsApiKey];
+    }
+
     public function getName(): string
     {
         return 'vanio_web_extension';
@@ -135,6 +155,30 @@ class WebExtension extends \Twig_Extension
         }
 
         return ltrim($html);
+    }
+
+    public function requireJs(string $javaScript, string $name = null)
+    {
+        $this->javaScripts[] = Strings::startsWith(ltrim($javaScript), '<script')
+            ? $javaScript
+            : sprintf('<script src="%s"></script>', $javaScript);
+        $this->requiredJavaScripts[$name === null ? $javaScript : $name] = true;
+    }
+
+    public function requireJsOnce(string $javaScript, string $name = null)
+    {
+        if (!isset($this->requiredJavaScripts[$name === null ? $javaScript : $name])) {
+            $this->requireJs($javaScript, $name);
+        }
+    }
+
+    public function renderJs(): string
+    {
+        $scripts = implode('', $this->javaScripts);
+        $this->javaScripts = [];
+        $this->requiredJavaScripts = [];
+
+        return $scripts;
     }
 
     public function isTranslated(string $id, string $domain = null, string $locale = null): bool

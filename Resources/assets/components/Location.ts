@@ -21,6 +21,10 @@ export default class Location
 
     public constructor(element: JQuery|HTMLElement|string)
     {
+        if (typeof google === 'undefined') {
+            return;
+        }
+
         this.$element = $(element);
         this.element = this.$element[0] as HTMLFormElement;
         this.$address = this.$element.find('.location__address');

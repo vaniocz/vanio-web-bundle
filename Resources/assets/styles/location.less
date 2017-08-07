@@ -1,0 +1,21 @@
+.location .location__not-found {
+    display: none;
+}
+
+.has-error .location__not-found {
+    display: block;
+}
+
+:not(.no-js) .location {
+    .control-label {
+        display: none;
+    }
+
+    > .form-group {
+        display: none;
+
+        &:first-child {
+            display: block;
+        }
+    }
+}

@@ -11,7 +11,8 @@
     "type": "git",
     "url": "git://github.com/vaniocz/vanio-web-bundle.git"
   },
-  "files": [],
+  "files": ["Resources/assets/styles"],
+  "main": "Resources/assets/styles/index.less",
   "dependencies": {
     "@types/autosize": "^3.0.4",
     "@types/bootstrap-datepicker": "0.0.8",

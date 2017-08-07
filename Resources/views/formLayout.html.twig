@@ -1,3 +1,12 @@
+{% block scalar_object_label %}
+    {% set label_attr = label_attr + {for: form.value.vars.id} %}
+    {{ block('form_label') }}
+{% endblock %}
+
+{% block scalar_object_widget %}
+    {{ form_widget(form.value) }}
+{% endblock %}
+
 {% block vanio_date_widget %}
     <div class="input-group datepicker date" data-component-date-picker data-min-view="2">
         {% set type = 'text' %}
@@ -44,6 +53,11 @@
     }) }}
 {% endblock %}
 
+{% block location_label %}
+    {% set label_attr = label_attr + {for: form.address.vars.id} %}
+    {{ block('form_label') }}
+{% endblock %}
+
 {% block location_widget %}
     {% set attr = {
         class: attr.class ?? '' ~ 'location',
@@ -61,4 +75,6 @@
         {{ form_rest(form) }}
         <div class="form-errors location__not-found">{{ 'location.notFound'|trans({}, translation_domain) }}</div>
     </div>
+
+    {{ require_js_once("//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleMapsApiKey}") }}
 {% endblock %}
