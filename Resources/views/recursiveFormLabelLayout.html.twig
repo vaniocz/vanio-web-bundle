@@ -27,6 +27,36 @@
         {% endif %}
     {% endif %}
 
-    {% set attr = attr|merge({class: (attr.class ?? 'btn-default') ~ ' btn'}) %}
+    {% set attr = {class: "#{attr.class ?? 'btn-default'}  btn"} + attr %}
     <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>{{ label }}</button>
+{% endblock %}
+
+{% block checkbox_radio_label %}
+    {% from '@VanioWeb/formTranslator.html.twig' import translate_form_label %}
+
+    {% if widget is defined %}
+        {% if required %}
+            {% set label_attr = {class: "#{label_attr.class ?? ''} required"} + label_attr %}
+        {% endif %}
+
+        {% if parent_label_class is defined %}
+            {% set label_attr = {class: "#{label_attr.class ?? ''} #{parent_label_class}"} + label_attr %}
+        {% endif %}
+
+        {% if label is not same as(false) and label is empty %}
+            {% if label_format is not empty %}
+                {% set label = label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) %}
+            {% else %}
+                {% set label = translate_form_label(form, translation_domain) %}
+            {% endif %}
+        {% endif %}
+
+        <label {{ attributes(label_attr) }}>
+            {{ widget|raw }}
+
+            {% if label is not same as(false) %}
+                {{ label }}
+            {% endif %}
+        </label>
+    {% endif %}
 {% endblock %}
