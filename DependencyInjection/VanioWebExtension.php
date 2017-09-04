@@ -53,6 +53,10 @@ class VanioWebExtension extends Extension
             $resources[] = '@VanioWeb/recursiveFormLabelLayout.html.twig';
         }
 
+        if ($config['collection_widget']) {
+            $resources[] = '@VanioWeb/collectionWidgetLayout.html.twig';
+        }
+
         $container->setParameter('twig.form.resources', $resources);
     }
 }

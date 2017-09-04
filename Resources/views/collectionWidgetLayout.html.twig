@@ -1,0 +1,28 @@
+{% block collection_widget %}
+    {% if prototype is defined %}
+        {% set attr = {
+            'data-prototype': "<div class='collection-item'>#{form_row(prototype)}</div>",
+            'data-prototype-name': prototype.vars.name,
+        } + attr %}
+    {% endif %}
+
+    {% set attr = {
+        'data-allow-add': allow_add,
+        'data-allow-remove': allow_delete,
+        'data-name-prefix': full_name,
+    } + attr %}
+
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+
+        {% for child in form %}
+            <div class="collection-item">
+                {{ form_row(child) }}
+            </div>
+        {% endfor %}
+
+        {{ form_rest(form) }}
+    </div>
+{% endblock %}

@@ -49,6 +49,12 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var array  */
     private $requiredJavaScripts = [];
 
+    /** @var string[] */
+    private $themesToAppend = [
+        '@VanioWeb/recursiveFormLabelLayout.html.twig',
+        '@VanioWeb/collectionWidgetLayout.html.twig',
+    ];
+
     public function __construct(
         TranslatorInterface $translator,
         UrlGeneratorInterface $urlGenerator,
@@ -206,20 +212,10 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function formDefaultTheme(string $theme): void
     {
         $defaultThemes = $this->twigFormRendererEngine->getDefaultThemes();
-        $recursiveFormLayoutTheme = '@VanioWeb/recursiveFormLabelLayout.html.twig';
-        $recursiveFormLayoutThemeKey = array_search($recursiveFormLayoutTheme, $defaultThemes);
-
-        if ($recursiveFormLayoutThemeKey !== false) {
-            unset($defaultThemes[$recursiveFormLayoutThemeKey]);
-            $defaultThemes = array_values($defaultThemes);
-        }
-
         $defaultThemes[] = $theme;
-
-        if ($recursiveFormLayoutThemeKey !== false) {
-            $defaultThemes[] = '@VanioWeb/recursiveFormLabelLayout.html.twig';
-        }
-
+        $themesToAppend = array_intersect($defaultThemes, $this->themesToAppend);
+        $defaultThemes = array_diff($defaultThemes, $themesToAppend);
+        $defaultThemes = array_merge($defaultThemes, $themesToAppend);
         $this->twigFormRendererEngine->setDefaultThemes($defaultThemes);
     }
 
