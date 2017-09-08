@@ -57,6 +57,10 @@ class VanioWebExtension extends Extension
             $resources[] = '@VanioWeb/collectionWidgetLayout.html.twig';
         }
 
+        if ($config['form_choice_widget']) {
+            $resources[] = '@VanioWeb/formChoiceWidgetLayout.html.twig';
+        }
+
         $container->setParameter('twig.form.resources', $resources);
     }
 }

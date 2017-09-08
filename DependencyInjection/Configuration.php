@@ -17,6 +17,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('render_snippets')->defaultFalse()->end()
                 ->booleanNode('recursive_form_label')->defaultFalse()->end()
                 ->booleanNode('collection_widget')->defaultFalse()->end()
+                ->booleanNode('form_choice_widget')->defaultFalse()->end()
                 ->scalarNode('google_maps_api_key')->defaultNull()->end()
                 ->booleanNode('multilingual')->defaultFalse()->end()
                 ->arrayNode('multilingual_root_paths')

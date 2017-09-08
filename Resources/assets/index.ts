@@ -11,6 +11,7 @@ import '@vanio_web/components/Collection';
 import '@vanio_web/components/Confirm';
 import '@vanio_web/components/DatePicker';
 import '@vanio_web/components/Dropzone';
+import '@vanio_web/components/FormChoice';
 import '@vanio_web/components/Gallery';
 import '@vanio_web/components/Location';
 import '@vanio_web/components/NativeValidation';

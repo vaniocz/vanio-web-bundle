@@ -53,6 +53,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     private $themesToAppend = [
         '@VanioWeb/recursiveFormLabelLayout.html.twig',
         '@VanioWeb/collectionWidgetLayout.html.twig',
+        '@VanioWeb/formChoiceWidgetLayout.html.twig',
     ];
 
     public function __construct(
@@ -379,7 +380,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$decimals}f %s", $bytes / pow(1024, $factor), $units[$factor] ?? '');
+        return sprintf("%.{$decimals}f %s", $bytes / pow(1024, $factor), $units[(string) $factor] ?? '');
     }
 
     /**
