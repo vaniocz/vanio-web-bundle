@@ -1,10 +1,10 @@
-{% block scalar_object_label %}
-    {% set label_attr = label_attr + {for: form.value.vars.id} %}
-    {{ block('form_label') }}
+{% block scalar_object_label -%}
+    {% set label_attr = label_attr + {for: form.value.vars.id} -%}
+    {{ block('form_label') -}}
 {% endblock %}
 
-{% block scalar_object_widget %}
-    {{ form_widget(form.value) }}
+{% block scalar_object_widget -%}
+    {{ form_widget(form.value) -}}
 {% endblock %}
 
 {% block vanio_date_widget %}
@@ -60,7 +60,7 @@
 
 {% block location_widget %}
     {% set attr = {
-        class: attr.class ?? '' ~ ' location',
+        class: "#{attr.class ?? ''} location",
         'data-component-location': '{}',
     } + attr %}
 

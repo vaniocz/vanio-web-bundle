@@ -1,4 +1,4 @@
-{% block form_label %}
+{% block form_label -%}
     {% from '@VanioWeb/formTranslator.html.twig' import translate_form_label %}
 
     {% if label is not same as(false) %}
@@ -11,10 +11,10 @@
         {% endif %}
 
         <label {{ attributes({class: label_attr.class ?? {} + {required: required, 'control-label': true}} + label_attr) }}>
-            {{ translate_form_label(form, translation_domain) }}
+            {{- translate_form_label(form, translation_domain) -}}
         </label>
-    {%- endif -%}
-{% endblock %}
+    {%- endif %}
+{% endblock -%}
 
 {% block button_widget %}
     {% from '@VanioWeb/formTranslator.html.twig' import translate_form_label %}

@@ -1,28 +1,46 @@
 {% block collection_widget %}
-    {% if prototype is defined %}
-        {% set attr = {
-            'data-prototype': "<div class='collection-item'>#{form_row(prototype)}</div>",
-            'data-prototype-name': prototype.vars.name,
-        } + attr %}
-    {% endif %}
-
+    {% from _self import collection_entry %}
     {% set attr = {
-        'data-allow-add': allow_add,
-        'data-allow-remove': allow_delete,
-        'data-name-prefix': full_name,
+        class: "#{attr.class ?? ''} collection",
+        'data-component-collection': "{}",
     } + attr %}
 
     <div {{ block('widget_container_attributes') }}>
-        {% if form.parent is empty %}
-            {{ form_errors(form) }}
+        {% if prototype.vars.compound %}
+            <div class="collection__header">
+                {% for child in prototype %}
+                    <div class="form-group">{{ form_label(child) }}</div>
+                {% endfor %}
+
+                <span class="collection-actions"></span>
+            </div>
         {% endif %}
 
-        {% for child in form %}
-            <div class="collection-item">
-                {{ form_row(child) }}
-            </div>
-        {% endfor %}
+        <div
+            class="collection__body"
+            data-prototype="<div class='collection__entry'>{{ collection_entry(prototype)|e('html_attr') }}</div>"
+            data-prototype-name="{{ prototype.vars.name }}"
+            data-allow-add="{{ allow_add }}"
+            data-allow-remove="{{ allow_delete }}"
+            data-name-prefix="{{ full_name }}"
+        >
+            {% for child in form %}
+                <div class="collection__entry">
+                    {{ collection_entry(child) }}
+                </div>
+            {% endfor %}
+        </div>
 
         {{ form_rest(form) }}
     </div>
 {% endblock %}
+
+{% macro collection_entry(form) %}
+    {% if form.vars.compound %}
+        {% for child in form %}
+            {{ form_row(child) }}
+        {% endfor %}
+    {% else %}
+        {{ form_row(form) }}
+    {% endif %}
+{% endmacro %}

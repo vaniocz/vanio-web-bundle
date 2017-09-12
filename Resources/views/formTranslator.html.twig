@@ -1,5 +1,5 @@
 {% macro translate_form_label(form, translationDomain = null) -%}
-    {% import _self as self %}
+    {% import _self as self -%}
 
     {% if form.vars.label is not empty or form.vars.label_format is not empty -%}
         {% set label = form.vars.label_format|replace({'%name%': form.vars.name, '%id%': form.vars.id})|default(form.vars.label) -%}
@@ -15,7 +15,7 @@
 {% endmacro %}
 
 {% macro translate_recursive(id, translationDomain = null, currentPath = null) -%}
-    {% import _self as self %}
+    {% import _self as self -%}
 
     {% set currentId = currentPath is same as(null) ? id : currentPath|join('.') -%}
     {% set currentPath = currentPath ?? id|split('.') -%}
@@ -29,6 +29,16 @@
     {% endif -%}
 {% endmacro %}
 
-{% macro form_path(form) -%}
-    {{ form.vars.full_name|replace({'[]': ''})|replace({'[': '.', ']': ''}) -}}
+{% macro form_path(form, currentPath = null) -%}
+    {% import _self as self -%}
+
+    {% if 'collection' not in form.parent.vars.block_prefixes ?? [] -%}
+        {% set currentPath = currentPath is same as(null) ? form.vars.name : "#{form.vars.name}.#{currentPath}" -%}
+    {% endif -%}
+
+    {% if form.parent -%}
+        {{ self.form_path(form.parent, currentPath) -}}
+    {% else -%}
+        {{ currentPath -}}
+    {% endif -%}
 {% endmacro %}
