@@ -91,7 +91,6 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             ]),
             new \Twig_SimpleFunction('require_js', [$this, 'requireJs']),
             new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
-            new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
             new \Twig_SimpleFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
