@@ -198,10 +198,10 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             && $this->translator->getCatalogue($locale)->get($id, $domain) !== false;
     }
 
-    public function routeExists(string $name): bool
+    public function routeExists(string $name, array $parameters = []): bool
     {
         try {
-            $this->urlGenerator->generate($name);
+            $this->urlGenerator->generate($name, $parameters);
         } catch (RouteNotFoundException $e) {
             return false;
         } catch (ExceptionInterface $e) {}
