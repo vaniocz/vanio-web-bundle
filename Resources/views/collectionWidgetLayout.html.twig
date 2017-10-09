@@ -9,7 +9,9 @@
         {% if prototype.vars.compound %}
             <div class="collection__header">
                 {% for child in prototype %}
-                    <div class="form-group">{{ form_label(child) }}</div>
+                    {% if child.vars.block_prefixes[child.vars.block_prefixes|length - 2] != 'hidden' %}
+                        <div class="form-group">{{ form_label(child) }}</div>
+                    {% endif %}
                 {% endfor %}
 
                 <span class="collection-actions"></span>
