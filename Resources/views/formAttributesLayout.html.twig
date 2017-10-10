@@ -1,0 +1,9 @@
+{% block attributes -%}
+    {% for name, value in attr -%}
+        {% if name == 'placeholder' or name == 'title' and translation_domain is not same as(false) -%}
+            {% set attr = {(name): value|trans({}, translation_domain)} + attr -%}
+        {% endif -%}
+    {% endfor -%}
+
+    {{ ' ' }}{{ attributes(attr) -}}
+{% endblock %}

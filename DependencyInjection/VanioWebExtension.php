@@ -48,6 +48,7 @@ class VanioWebExtension extends Extension
             ? $container->getParameter('twig.form.resources')
             : [];
         $resources[] = '@VanioWeb/formLayout.html.twig';
+        $resources[] = '@VanioWeb/formAttributesLayout.html.twig';
 
         if ($config['recursive_form_label']) {
             $resources[] = '@VanioWeb/recursiveFormLabelLayout.html.twig';

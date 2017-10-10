@@ -51,6 +51,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     /** @var string[] */
     private $themesToAppend = [
+        '@VanioWeb/formAttributesLayout.html.twig',
         '@VanioWeb/recursiveFormLabelLayout.html.twig',
         '@VanioWeb/collectionWidgetLayout.html.twig',
         '@VanioWeb/formChoiceWidgetLayout.html.twig',
@@ -138,9 +139,15 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return 'vanio_web_extension';
     }
 
-    public function renderClassName(array $classes): string
+    /**
+     * @param string|string[] $classes
+     * @return string
+     */
+    public function renderClassName($classes): string
     {
-        return implode(' ', array_keys(array_filter($classes)));
+        return is_array($classes)
+            ? implode(' ', array_keys(array_filter($classes)))
+            : $classes;
     }
 
     public function renderAttributes(\Twig_Environment $environment, array $attributes): string
@@ -148,13 +155,19 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $html = '';
 
         foreach ($attributes as $name => $value) {
-            if ($name === 'class' && is_array($value)) {
-                $value = $this->renderClassName($value);
+            if (is_array($value)) {
+                if ($name === 'class') {
+                    $value = $this->renderClassName($value);
+                } elseif (Strings::startsWith($name, 'data-component-')) {
+                    $value = json_encode($value);
+                }
             } elseif ($value === true) {
                 $value = $name;
             }
 
-            if ($value !== false) {
+            if ($value === null) {
+                $html .= sprintf(' %s', $name);
+            } elseif ($value !== false) {
                 $value = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, $environment->getCharset());
                 $html .= sprintf(' %s="%s"', $name, $value);
             }

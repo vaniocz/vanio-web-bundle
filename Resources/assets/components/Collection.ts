@@ -11,8 +11,7 @@ export default class Collection
     private $element: JQuery;
     private $body: JQuery;
 
-    public constructor(element: JQuery|HTMLElement|string, options: JQueryCollectionOptions = {})
-    {
+    public constructor(element: JQuery|HTMLElement|string, options: JQueryCollectionOptions = {}) {
         this.$element = $(element);
         this.$body = this.$element.find('> .collection__body');
         options = $.extend({
@@ -22,6 +21,11 @@ export default class Collection
             after_add: this.updateEntriesCount.bind(this),
             after_remove: this.updateEntriesCount.bind(this),
         }, options);
+
+        if (options.position_field_selector === false) {
+            options.position_field_selector = true;
+        }
+
         this.$body.collection(options);
     }
 

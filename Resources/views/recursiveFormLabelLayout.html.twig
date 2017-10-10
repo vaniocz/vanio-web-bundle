@@ -27,7 +27,7 @@
         {% endif %}
     {% endif %}
 
-    {% set attr = {class: "#{attr.class ?? 'btn-default'}  btn"} + attr %}
+    {% set attr = {class: "#{class_name(attr.class ?? 'btn-default')} btn"} + attr %}
     <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>{{ label }}</button>
 {% endblock %}
 
@@ -36,11 +36,11 @@
 
     {% if widget is defined %}
         {% if required %}
-            {% set label_attr = {class: "#{label_attr.class ?? ''} required"} + label_attr %}
+            {% set label_attr = {class: "#{class_name(label_attr.class ?? '')} required"} + label_attr %}
         {% endif %}
 
         {% if parent_label_class is defined %}
-            {% set label_attr = {class: "#{label_attr.class ?? ''} #{parent_label_class}"} + label_attr %}
+            {% set label_attr = {class: "#{class_name(label_attr.class ?? '')} #{class_name(parent_label_class)}"} + label_attr %}
         {% endif %}
 
         {% if label is not same as(false) and label is empty %}

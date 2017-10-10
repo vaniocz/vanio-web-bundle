@@ -60,7 +60,7 @@
 
 {% block location_widget %}
     {% set attr = {
-        class: "#{attr.class ?? ''} location",
+        class: "#{class_name(attr.class ?? '')} location",
         'data-component-location': '{}',
     } + attr %}
 
