@@ -13,8 +13,13 @@ class MapType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $mapTransformer = new MapTransformer(
+            $options['key_name'],
+            $options['value_name'],
+            $options['append_on_empty_key']
+        );
         $builder
-            ->addModelTransformer(new MapTransformer($options['key_name'], $options['value_name']))
+            ->addModelTransformer($mapTransformer)
             ->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData'], PHP_INT_MAX);
     }
 
@@ -31,6 +36,7 @@ class MapType extends AbstractType
                 'value_type' => null,
                 'value_name' => 'value',
                 'value_options' => [],
+                'append_on_empty_key' => false,
             ])
             ->setNormalizer('entry_options', $this->entryOptionsNormalizer());
     }

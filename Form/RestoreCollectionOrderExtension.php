@@ -7,8 +7,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RestoreCollectionOrderExtension extends AbstractTypeExtension
@@ -22,11 +20,6 @@ class RestoreCollectionOrderExtension extends AbstractTypeExtension
         $builder
             ->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'], -100)
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit'], -100);
-    }
-
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-        $view->vars['restoreOrder'] = $options['restore_order'];
     }
 
     public function configureOptions(OptionsResolver $resolver)

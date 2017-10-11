@@ -12,10 +12,14 @@ class MapTransformer implements DataTransformerInterface
     /** @var string */
     private $valueName;
 
-    public function __construct(string $keyName, string $valueName)
+    /** @var bool */
+    private $appendOnEmptyKey;
+
+    public function __construct(string $keyName, string $valueName, bool $appendOnEmptyKey)
     {
         $this->keyName = $keyName;
         $this->valueName = $valueName;
+        $this->appendOnEmptyKey = $appendOnEmptyKey;
     }
 
     /**
@@ -42,7 +46,11 @@ class MapTransformer implements DataTransformerInterface
                 throw new TransformationFailedException('Duplicate key detected.');
             }
 
-            $map[(string) $data[$this->keyName]] = $data[$this->valueName];
+            if ($this->appendOnEmptyKey && $data[$this->keyName] === null) {
+                $map[] = $data[$this->valueName];
+            } else {
+                $map[(string) $data[$this->keyName]] = $data[$this->valueName];
+            }
         }
 
         return $map;
