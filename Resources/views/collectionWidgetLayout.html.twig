@@ -3,7 +3,7 @@
     {% set attr = {class: "#{class_name(attr.class ?? '')} collection"} + attr + {'data-component-collection': []} %}
 
     {% if restore_order|default(false) %}
-        {% set attr = {'data-component-collection': attr['data-component-collection'] + {position_field_selector: true}} + attr %}
+        {% set attr = {'data-component-collection': attr['data-component-collection'] + {maintain_indices: true}} + attr %}
     {% endif %}
 
     <div {{ block('widget_container_attributes') }}>

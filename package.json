@@ -27,6 +27,6 @@
     "jquery-photoswipe": "^1.0.3",
     "jquery-ts-components": "^0.1.4",
     "photoswipe": "^4.1.2",
-    "symfony-collection": "^2.1.11"
+    "symfony-collection": "github:maryo/symfony-collection"
   }
 }

@@ -1,6 +1,7 @@
 interface JQueryCollectionOptions
 {
-    position_field_selector?: string|boolean;
+    elements_selector?: string;
+    maintain_indices?: Function;
 }
 
 interface JQuery
