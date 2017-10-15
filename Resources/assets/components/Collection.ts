@@ -13,10 +13,16 @@ export default class Collection
         options = $.extend({
             fade_in: false,
             fade_out: false,
-            drag_drop_options: {axis: 'y'},
             after_init: this.updateEntriesCount.bind(this),
             after_add: this.updateEntriesCount.bind(this),
             after_remove: this.updateEntriesCount.bind(this),
+            drag_drop_options: {
+                handle: '.collection-move',
+                cursor: 's-resize',
+                containment: 'parent',
+                tolerance: 'pointer',
+                forcePlaceholderSize: true,
+            },
         }, options);
         this.$body.collection(options);
     }

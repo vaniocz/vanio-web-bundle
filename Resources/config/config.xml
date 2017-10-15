@@ -18,7 +18,7 @@
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
         <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
         <parameter key="vanio_web.form.canonization_extension.class">Vanio\WebBundle\Form\CanonizationExtension</parameter>
-        <parameter key="vanio_web.form.restore_collection_order_extension.class">Vanio\WebBundle\Form\RestoreCollectionOrderExtension</parameter>
+        <parameter key="vanio_web.form.restore_form_order_extension.class">Vanio\WebBundle\Form\RestoreFormOrderExtension</parameter>
     </parameters>
 
     <services>
@@ -105,8 +105,8 @@
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
-        <service id="vanio_web.form.restore_collection_order_extension" class="%vanio_web.form.restore_collection_order_extension.class%">
-            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\CollectionType"/>
+        <service id="vanio_web.form.restore_form_order_extension" class="%vanio_web.form.restore_form_order_extension.class%">
+            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
     </services>
 </container>

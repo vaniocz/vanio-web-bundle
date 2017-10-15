@@ -3,7 +3,7 @@ namespace Vanio\WebBundle\Form;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RestoreCollectionOrderExtension extends AbstractTypeExtension
+class RestoreFormOrderExtension extends AbstractTypeExtension
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -38,7 +38,7 @@ class RestoreCollectionOrderExtension extends AbstractTypeExtension
 
     public function getExtendedType(): string
     {
-        return CollectionType::class;
+        return FormType::class;
     }
 
     /**
