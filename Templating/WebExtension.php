@@ -246,6 +246,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         $hierarchy = $this->routeHierarchyResolver->resolveRouteHierarchy($this->requestStack->getCurrentRequest());
+        array_shift($hierarchy);
 
         return isset($hierarchy[$route]);
     }
