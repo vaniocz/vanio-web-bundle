@@ -115,6 +115,10 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
      */
     public function onPostSubmit(FormEvent $event)
     {
+        if ($event->getData() === '') {
+            return;
+        }
+
         $form = $event->getForm()->getParent();
         $children = $form->all();
         next($children);
