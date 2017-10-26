@@ -22,6 +22,9 @@ class MultilingualListener implements EventSubscriberInterface
     /** @var string[] */
     private $multilingualRootPaths;
 
+    /** @var string[] */
+    private $localePrefixes;
+
     /** @var Request */
     private $request;
 
@@ -39,7 +42,7 @@ class MultilingualListener implements EventSubscriberInterface
      * @param string[] $multilingualRootPaths
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $supportedLocales, array $multilingualRootPaths)
+    public function __construct(array $supportedLocales, array $multilingualRootPaths, array $localePrefixes)
     {
         if (!$supportedLocales) {
             throw new \InvalidArgumentException('Supported locales must not be empty.');
@@ -47,6 +50,7 @@ class MultilingualListener implements EventSubscriberInterface
 
         $this->supportedLocales = $supportedLocales;
         $this->multilingualRootPaths = $multilingualRootPaths;
+        $this->localePrefixes = $localePrefixes;
     }
 
     public function onRequest(GetResponseEvent $event)
@@ -58,14 +62,21 @@ class MultilingualListener implements EventSubscriberInterface
         $this->request = $event->getRequest();
 
         if ($this->multilingualRootRequested()) {
-            $redirectPath = sprintf(
-                '%s%s/%s/',
-                $this->request->getBaseUrl(),
-                rtrim($this->request->getPathInfo(), '/'),
-                $this->preferredLocale()
-            );
-            $uri = (new Uri($this->request->getUri()))->withPath($redirectPath);
-            $event->setResponse(new RedirectResponse((string) $uri));
+            $preferredLocale = $this->preferredLocale();
+            $localePrefix = array_key_exists($preferredLocale, $this->localePrefixes)
+                ? $this->localePrefixes[$preferredLocale]
+                : $preferredLocale;
+
+            if ((string) $localePrefix !== '') {
+                $redirectPath = sprintf(
+                    '%s%s/%s/',
+                    $this->request->getBaseUrl(),
+                    rtrim($this->request->getPathInfo(), '/'),
+                    $localePrefix
+                );
+                $uri = (new Uri($this->request->getUri()))->withPath($redirectPath);
+                $event->setResponse(new RedirectResponse((string) $uri));
+            }
         }
     }
 

@@ -77,6 +77,7 @@
         <service id="vanio_web.request.multilingual_listener" class="%vanio_web.request.multilingual_listener.class%" abstract="true">
             <argument>%vanio_web.multilingual_supported_locales%</argument>
             <argument>%vanio_web.multilingual_root_paths%</argument>
+            <argument>%vanio_web.multilingual_locale_prefixes%</argument>
         </service>
 
         <service id="vanio_web.http_kernel.embedded_fragment_renderer" class="%vanio_web.http_kernel.embedded_fragment_renderer.class%" parent="fragment.renderer.inline">
