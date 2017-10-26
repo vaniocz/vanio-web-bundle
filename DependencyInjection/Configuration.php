@@ -36,6 +36,18 @@ class Configuration implements ConfigurationInterface
                     ->treatNullLike([])
                     ->prototype('scalar')->end()
                 ->end()
+                ->arrayNode('multilingual_locale_prefixes')
+                    ->defaultValue([])
+                    ->beforeNormalization()
+                        ->ifTrue(function ($value) {
+                            return !is_array($value);
+                        })
+                        ->then(function ($value) {
+                            return [$value];
+                        })
+                    ->end()
+                    ->prototype('scalar')->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
