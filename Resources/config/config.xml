@@ -97,6 +97,7 @@
             <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
             <argument>%kernel.cache_dir%/vanio_web</argument>
             <argument>%vanio_web.google_maps_api_key%</argument>
+            <argument>%vanio_web.multilingual_supported_locales%</argument>
             <tag name="twig.extension"/>
         </service>
 

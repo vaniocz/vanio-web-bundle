@@ -43,6 +43,9 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var string|null */
     private $googleMapsApiKey;
 
+    /** @var string[] */
+    private $supportedLocales;
+
     /** @var array  */
     private $javaScripts = [];
 
@@ -66,7 +69,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         RouteHierarchyResolver $routeHierarchyResolver,
         CacheManager $cacheManager = null,
         string $imageDimensionsCacheDirectory,
-        string $googleMapsApiKey = null
+        string $googleMapsApiKey = null,
+        array $supportedLocales = []
     ) {
         $this->translator = $translator;
         $this->urlGenerator = $urlGenerator;
@@ -77,6 +81,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->cacheManager = $cacheManager;
         $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
         $this->googleMapsApiKey = $googleMapsApiKey;
+        $this->supportedLocales = $supportedLocales;
     }
 
     /**
@@ -131,7 +136,10 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     public function getGlobals(): array
     {
-        return ['googleMapsApiKey' => $this->googleMapsApiKey];
+        return [
+            'googleMapsApiKey' => $this->googleMapsApiKey,
+            'supportedLocales' => $this->supportedLocales,
+        ];
     }
 
     public function getName(): string
