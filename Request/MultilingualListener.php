@@ -67,7 +67,7 @@ class MultilingualListener implements EventSubscriberInterface
                 ? $this->localePrefixes[$preferredLocale]
                 : $preferredLocale;
 
-            if ($localePrefix) {
+            if ((string)$localePrefix !== '') {
                 $redirectPath = sprintf(
                     '%s%s/%s/',
                     $this->request->getBaseUrl(),
