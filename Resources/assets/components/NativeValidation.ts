@@ -16,8 +16,10 @@ export default class NativeValidation
         }
 
         this.element.addEventListener('invalid', this.suppressNativeBubblesOnInvalid, true);
-        this.$element.on('submit', this.preventSubmissionOnSubmitInvalid.bind(this));
-        this.$element.on('input', this.hideErrorsOnInput.bind(this));
+        this.$element.on({
+            submit: this.preventSubmissionOnSubmitInvalid.bind(this),
+            input: this.hideErrorsOnInput.bind(this),
+        });
         this.$element.find(':submit').on('click', this.onSubmit.bind(this));
     }
 

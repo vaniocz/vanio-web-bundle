@@ -25,7 +25,7 @@
     "dropzone": "^5.0.1",
     "jquery": "^3.2.1",
     "jquery-photoswipe": "^1.0.3",
-    "jquery-ts-components": "^0.1.4",
+    "jquery-ts-components": "^0.1.5",
     "photoswipe": "^4.1.2",
     "symfony-collection": "github:maryo/symfony-collection"
   }
