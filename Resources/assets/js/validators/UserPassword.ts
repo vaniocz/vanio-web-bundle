@@ -1,4 +1,4 @@
-import global from '@vanio_web/global';
+import global from '@vanio_web/js/global';
 
 @global('SymfonyComponentSecurityCoreValidatorConstraintsUserPassword')
 export default class UserPassword implements ConstraintValidator

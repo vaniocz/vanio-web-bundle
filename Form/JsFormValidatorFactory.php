@@ -13,6 +13,9 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
     /** @var ValidationConstraintsGuesser|null */
     private $validationConstraintsGuesser;
 
+    /** @var \SplObjectStorage|null */
+    private $translatedConstraints;
+
     public function setValidationsConstraintsGuesser(ValidationConstraintsGuesser $validationConstraintsGuesser)
     {
         $this->validationConstraintsGuesser = $validationConstraintsGuesser;
@@ -56,18 +59,26 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
 
     protected function parseConstraints(array $constraints): array
     {
+        if ($this->translatedConstraints === null) {
+            $this->translatedConstraints = new \SplObjectStorage;
+        }
+
         $data = [];
 
         foreach ($constraints as $constraint) {
-            foreach ($constraint as $property => &$value) {
-                if (Strings::contains(strtolower($property), 'message')) {
-                    $value = $this->replaceConstraintMessageParameters($constraint, $this->translateMessage($value));
+            if ($constraint instanceof UniqueEntity) {
+                continue;
+            } elseif (!isset($this->translatedConstraints[$constraint])) {
+                foreach ($constraint as $property => &$value) {
+                    if (Strings::contains(strtolower($property), 'message')) {
+                        $value = $this->replaceConstraintMessageParameters($constraint, $this->translateMessage($value));
+                    }
                 }
+
+                $this->translatedConstraints[$constraint] = true;
             }
 
-            if (!$constraint instanceof UniqueEntity) {
-                $data[get_class($constraint)][] = $constraint;
-            }
+            $data[get_class($constraint)][] = $constraint;
         }
 
         return $data;

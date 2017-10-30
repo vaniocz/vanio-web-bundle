@@ -11,5 +11,5 @@
         },
         "lib": ["dom", "es6", "scripthost"]
     },
-    "include": ["Resources/assets/**/*"]
+    "include": ["Resources/assets/js/**/*"]
 }

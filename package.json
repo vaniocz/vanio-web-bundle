@@ -2,7 +2,7 @@
   "name": "vanio-web-bundle",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Vanio Web Bundle JavaScript dependencies",
+  "description": "Vanio Web Bundle frontend dependencies",
   "author": "Marek Štípek <mario.dweller@seznam.cz>",
   "engines": {
     "node": ">=6"
