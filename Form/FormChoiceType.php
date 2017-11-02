@@ -47,13 +47,16 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        parent::finishView($view, $form, $options);
         $builder = $form->getConfig()->getAttribute('builder');
 
         foreach ($view[$options['choice_name']]->vars['choices'] as $choiceView) {
             $formChoiceForm = $this->createForm($builder, $this->resolveFormOptions($options, $choiceView->data));
             $formView = $formChoiceForm->setParent($form)->createView($view);
             $view[$options['choice_name']]->vars['forms'][$choiceView->value] = $formView;
+
+            if ($formView->vars['multipart']) {
+                $view->vars['multipart'] = true;
+            }
         }
     }
 

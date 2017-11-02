@@ -6,14 +6,84 @@
         </header>
 
         <body>
-            <trans-unit id="2d8840721dd9ad7e1e964c8a4208be67" resname="uploadedImage.singleUploadMessage">
-                <source>uploadedImage.singleUploadMessage</source>
+            <trans-unit id="4dbf900de52108c823d85199c9a1fca3" resname="file.singleInputPlaceholder">
+                <source>file.singleInputPlaceholder</source>
+                <target>Choose file…</target>
+            </trans-unit>
+
+            <trans-unit id="af99498061a4a97fc65cfe92751bc216" resname="file.multipleInputPlaceholder">
+                <source>file.multipleInputPlaceholder</source>
+                <target>Choose files…</target>
+            </trans-unit>
+
+            <trans-unit id="39db8ee79f62ae33bdec400529163be8" resname="file.singleInputText">
+                <source>file.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="943fe2e8aa68b3a20e38fa5abf7dfe6d" resname="file.multipleInputText">
+                <source>file.multipleInputText</source>
+                <target>{{ count }} files selected.</target>
+            </trans-unit>
+
+            <trans-unit id="59b5858ffb2acef9ca16b27cf84591be" resname="file.singleButtonText">
+                <source>file.singleButtonText</source>
+                <target>Choose</target>
+            </trans-unit>
+
+            <trans-unit id="5b0364559a5ce0296bb9d039760486dc" resname="file.multipleButtonText">
+                <source>file.multipleButtonText</source>
+                <target>Choose</target>
+            </trans-unit>
+
+            <trans-unit id="cc227e7f6404891ae803708d2d09ede7" resname="image.singleInputPlaceholder">
+                <source>image.singleInputPlaceholder</source>
+                <target>Choose image…</target>
+            </trans-unit>
+
+            <trans-unit id="3d069c50b193102d5036f60bce097df5" resname="image.multipleInputPlaceholder">
+                <source>image.multipleInputPlaceholder</source>
+                <target>Choose images…</target>
+            </trans-unit>
+
+            <trans-unit id="f78a13d235d4c46a3126fa7ab258190d" resname="image.singleInputText">
+                <source>image.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="1358a06378d6361148d308e81bafa217" resname="image.multipleInputText">
+                <source>image.multipleInputText</source>
+                <target>{{ count }} images selected.</target>
+            </trans-unit>
+
+            <trans-unit id="60d060204beda17eae9e7d7167c61903" resname="uploadedFile.singleUploadText">
+                <source>uploadedFile.singleUploadText</source>
+                <target>Choose file by clicking or dropping here.</target>
+            </trans-unit>
+
+            <trans-unit id="6d3149c09c2300c5369e2f0bbe449326" resname="uploadedFile.multipleUploadText">
+                <source>uploadedFile.multipleUploadText</source>
+                <target>Choose files by clicking or dropping here.</target>
+            </trans-unit>
+
+            <trans-unit id="4770bc7a07ec96686b14465dcd1d2891" resname="uploadedFile.invalidMessage">
+                <source>uploadedFile.invalidMessage</source>
+                <target>Invalid file type.</target>
+            </trans-unit>
+
+            <trans-unit id="06b933a85601fa87bb5a0efa7c0cc78d" resname="uploadedImage.singleUploadText">
+                <source>uploadedImage.singleUploadText</source>
                 <target>Choose image by clicking or dropping here.</target>
             </trans-unit>
 
-            <trans-unit id="8a5d91054f23f56dbd883dfac4ccb786" resname="uploadedImage.multipleUploadMessage">
-                <source>uploadedImage.multipleUploadMessage</source>
+            <trans-unit id="b84c6d74ed252e2a98ffe3f07fa979d0" resname="uploadedImage.multipleUploadText">
+                <source>uploadedImage.multipleUploadText</source>
                 <target>Choose images by clicking or dropping here.</target>
+            </trans-unit>
+
+            <trans-unit id="524681ed7ce774d8b4d39a7a2dce7044" resname="uploadedImage.invalidMessage">
+                <source>uploadedImage.invalidMessage</source>
+                <target>Invalid file type. Choose an image.</target>
             </trans-unit>
 
             <trans-unit id="781e72f9d79686d1595044d10ff136bb" resname="location.address">

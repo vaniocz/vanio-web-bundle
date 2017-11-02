@@ -6,24 +6,94 @@
         </header>
 
         <body>
-            <trans-unit id="2d8840721dd9ad7e1e964c8a4208be67" resname="uploadedImage.singleUploadMessage">
-                <source>uploadedImage.singleUploadMessage</source>
+            <trans-unit id="4dbf900de52108c823d85199c9a1fca3" resname="file.singleInputPlaceholder">
+                <source>file.singleInputPlaceholder</source>
+                <target>Vybrat soubor…</target>
+            </trans-unit>
+
+            <trans-unit id="af99498061a4a97fc65cfe92751bc216" resname="file.multipleInputPlaceholder">
+                <source>file.multipleInputPlaceholder</source>
+                <target>Vybrat soubory…</target>
+            </trans-unit>
+
+            <trans-unit id="39db8ee79f62ae33bdec400529163be8" resname="file.singleInputText">
+                <source>file.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="943fe2e8aa68b3a20e38fa5abf7dfe6d" resname="file.multipleInputText">
+                <source>file.multipleInputText</source>
+                <target>Vybráno {{ count }} souborů.</target>
+            </trans-unit>
+
+            <trans-unit id="59b5858ffb2acef9ca16b27cf84591be" resname="file.singleButtonText">
+                <source>file.singleButtonText</source>
+                <target>Vybrat</target>
+            </trans-unit>
+
+            <trans-unit id="5b0364559a5ce0296bb9d039760486dc" resname="file.multipleButtonText">
+                <source>file.multipleButtonText</source>
+                <target>Vybrat</target>
+            </trans-unit>
+
+            <trans-unit id="cc227e7f6404891ae803708d2d09ede7" resname="image.singleInputPlaceholder">
+                <source>image.singleInputPlaceholder</source>
+                <target>Vybrat obrázek…</target>
+            </trans-unit>
+
+            <trans-unit id="3d069c50b193102d5036f60bce097df5" resname="image.multipleInputPlaceholder">
+                <source>image.multipleInputPlaceholder</source>
+                <target>Vybrat obrázky…</target>
+            </trans-unit>
+
+            <trans-unit id="f78a13d235d4c46a3126fa7ab258190d" resname="image.singleInputText">
+                <source>image.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="1358a06378d6361148d308e81bafa217" resname="image.multipleInputText">
+                <source>image.multipleInputText</source>
+                <target>Vybráno {{ count }} obrázků.</target>
+            </trans-unit>
+
+            <trans-unit id="40bd38cc9a90fa906afbbefbfa99366e" resname="image.singleButtonText">
+                <source>image.singleButtonText</source>
+                <target>Vybrat</target>
+            </trans-unit>
+
+            <trans-unit id="94d1e9e16186ddf1b4ff886c40ba6d03" resname="image.multipleButtonText">
+                <source>image.multipleButtonText</source>
+                <target>Vybrat</target>
+            </trans-unit>
+
+            <trans-unit id="60d060204beda17eae9e7d7167c61903" resname="uploadedFile.singleUploadText">
+                <source>uploadedFile.singleUploadText</source>
+                <target>Soubory vyberete klepnutím nebo přetáhnutím zde.</target>
+            </trans-unit>
+
+            <trans-unit id="6d3149c09c2300c5369e2f0bbe449326" resname="uploadedFile.multipleUploadText">
+                <source>uploadedFile.multipleUploadText</source>
+                <target>Soubory vyberete klepnutím nebo přetáhnutím zde.</target>
+            </trans-unit>
+
+            <trans-unit id="4770bc7a07ec96686b14465dcd1d2891" resname="uploadedFile.invalidMessage">
+                <source>uploadedFile.invalidMessage</source>
+                <target>Neplatný typ souboru.</target>
+            </trans-unit>
+
+            <trans-unit id="06b933a85601fa87bb5a0efa7c0cc78d" resname="uploadedImage.singleUploadText">
+                <source>uploadedImage.singleUploadText</source>
                 <target>Obrázek vyberete klepnutím nebo přetáhnutím zde.</target>
             </trans-unit>
 
-            <trans-unit id="8a5d91054f23f56dbd883dfac4ccb786" resname="uploadedImage.multipleUploadMessage">
-                <source>uploadedImage.multipleUploadMessage</source>
+            <trans-unit id="b84c6d74ed252e2a98ffe3f07fa979d0" resname="uploadedImage.multipleUploadText">
+                <source>uploadedImage.multipleUploadText</source>
                 <target>Obrázky vyberete klepnutím nebo přetáhnutím zde.</target>
             </trans-unit>
 
             <trans-unit id="524681ed7ce774d8b4d39a7a2dce7044" resname="uploadedImage.invalidMessage">
                 <source>uploadedImage.invalidMessage</source>
                 <target>Neplatný typ souboru. Vyberte obrázek.</target>
-            </trans-unit>
-
-            <trans-unit id="6b1dd62fd62cb3bcf26d82f577b6e10b" resname="uploadedFile.multipleUploadMessage">
-                <source>uploadedFile.multipleUploadMessage</source>
-                <target>Soubory vyberete klepnutím nebo přetáhnutím zde.</target>
             </trans-unit>
 
             <trans-unit id="781e72f9d79686d1595044d10ff136bb" resname="location.address">

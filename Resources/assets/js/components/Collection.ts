@@ -1,4 +1,4 @@
-import {component} from 'jquery-ts-components';
+import {component, register} from 'jquery-ts-components';
 
 @component('Collection')
 export default class Collection
@@ -14,7 +14,7 @@ export default class Collection
             fade_in: false,
             fade_out: false,
             after_init: this.updateEntriesCount.bind(this),
-            after_add: this.updateEntriesCount.bind(this),
+            after_add: this.onAdd.bind(this),
             after_remove: this.updateEntriesCount.bind(this),
             drag_drop_options: {
                 handle: '.collection-move',
@@ -35,6 +35,12 @@ export default class Collection
     private get $entries(): JQuery
     {
         return this.$body.find(this.settings.elements_selector!);
+    }
+
+    private onAdd($collection: JQuery, $entry: JQuery): void
+    {
+        register($entry);
+        this.updateEntriesCount();
     }
 
     private updateEntriesCount(): void

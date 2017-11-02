@@ -15,6 +15,39 @@
     </div>
 {% endblock %}
 
+{% block file_widget %}
+    <label
+        class="custom-file form-control"
+        data-input-placeholder="{{ inputPlaceholder ?? "file.#{attr.multiple is defined ? 'multiple' : 'single'}InputPlaceholder"|trans({}, translation_domain) }}"
+        data-input-text="{{ inputText ?? "file.#{attr.multiple is defined ? 'multiple' : 'single'}InputText"|trans({}, translation_domain) }}"
+        data-button-text="{{ buttonText ?? "file.#{attr.multiple is defined ? 'multiple' : 'single'}ButtonText"|trans({}, translation_domain) }}"
+        data-component-file-input
+
+        {% if filename is defined ? filename is not empty : data is not empty %}
+            data-filename="{{ filename ?? data.basename }}"
+        {% endif %}
+    >
+        {{ form_widget(form) }}
+    </label>
+{% endblock %}
+
+{% block vanio_file_widget %}
+    {{ form_widget(form.file, {
+        filename: data ? data.metaData.name : null,
+        inputPlaceholder: inputPlaceholder ?? null,
+        inputText: inputText ?? null,
+        buttonText: buttonText ?? null,
+    }) }}
+{% endblock %}
+
+{% block image_widget %}
+    {{ form_widget(form, {
+        inputPlaceholder: "image.#{multiple ? 'multiple' : 'single'}InputPlaceholder"|trans({}, translation_domain),
+        inputText: "image.#{multiple ? 'multiple' : 'single'}InputText"|trans({}, translation_domain),
+        buttonText: "image.#{multiple ? 'multiple' : 'single'}ButtonText"|trans({}, translation_domain),
+    }) }}
+{% endblock %}
+
 {% block uploaded_file_widget %}
     {% set files = {} %}
     {% for key, file in multiple ? data : (data ? [data] : []) %}
@@ -23,7 +56,7 @@
             name: file.metadata.name ?? file.file.basename,
             mime: file.metadata.mime ?? null,
             size: file.metadata.size,
-            url: thumbnail_filter is defined ? url|imagine_filter(thumbnail_filter) : url,
+            url: thumbnail_filter is not empty ? url|imagine_filter(thumbnail_filter) : url,
             key: key,
             status: 'uploaded',
         }} %}
@@ -39,7 +72,7 @@
     <div class="dropzone-widget" data-component-dropzone="{{ options|json_encode }}" data-dropzone-target="#{{ form.files.vars.id }}" data-dropzone-files="{{ files|json_encode }}">
         <div class="dz-message">
             <span class="icon"></span>
-            <h4>{{ uploadMessage ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}UploadMessage"|trans({}, translation_domain) }}</h4>
+            <h4>{{ uploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}UploadText"|trans({}, translation_domain) }}</h4>
         </div>
     </div>
 
@@ -48,7 +81,7 @@
 
 {% block uploaded_image_widget %}
     {{ form_widget(form, {
-        uploadMessage: "uploadedImage.#{multiple ? 'multiple' : 'single'}UploadMessage"|trans({}, translation_domain),
+        uploadText: "uploadedImage.#{multiple ? 'multiple' : 'single'}UploadText"|trans({}, translation_domain),
         invalidMessage: "uploadedImage.invalidMessage"|trans({}, translation_domain),
     }) }}
 {% endblock %}
