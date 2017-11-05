@@ -3,11 +3,12 @@ namespace Vanio\WebBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
+use Vanio\DomainBundle\Doctrine\EntityRepository;
 use Vanio\DomainBundle\Model\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=EntityRepository::class)
  * @Vich\Uploadable
  */
 class UploadedFile

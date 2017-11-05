@@ -3,10 +3,11 @@ namespace Vanio\WebBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class VanioWebExtension extends Extension
+class VanioWebExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -63,5 +64,10 @@ class VanioWebExtension extends Extension
         }
 
         $container->setParameter('twig.form.resources', $resources);
+    }
+
+    public function prepend(ContainerBuilder $container)
+    {
+        $container->setParameter('web_root', '%kernel.root_dir%/../web');
     }
 }

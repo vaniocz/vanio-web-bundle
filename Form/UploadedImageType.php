@@ -17,15 +17,9 @@ class UploadedImageType extends AbstractType
                 'class' => Image::class,
                 'supported_image_types' => [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP],
                 'required_message' => 'Choose an image.',
-                'thumbnail_filter' => null,
             ])
             ->setNormalizer('accept', $this->acceptNormalizer())
-            ->setAllowedTypes('thumbnail_filter', ['string', 'null']);
-    }
-
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-        $view->vars['thumbnail_filter'] = $options['thumbnail_filter'];
+            ->setAllowedTypes('supported_image_types', ['array']);
     }
 
     public function getParent(): string

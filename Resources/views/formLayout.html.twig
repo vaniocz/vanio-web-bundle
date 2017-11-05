@@ -49,34 +49,23 @@
 {% endblock %}
 
 {% block uploaded_file_widget %}
-    {% set files = {} %}
-    {% for key, file in multiple ? data : (data ? [data] : []) %}
-        {% set url = file.file.pathname|replace({(web_root): '', '\\': '/'}) %}
-        {% set files = files + {(key): {
-            name: file.metadata.name ?? file.file.basename,
-            mime: file.metadata.mime ?? null,
-            size: file.metadata.size,
-            url: thumbnail_filter is not empty ? url|imagine_filter(thumbnail_filter) : url,
-            key: key,
-            status: 'uploaded',
-        }} %}
-    {% endfor %}
-
     {% set options = {
-        url: path('vanio_web_uploaded_files_upload'),
+        url: path('vanio_web_uploaded_file_upload', {thumbnailFilter: thumbnailFilter}),
+        target: "##{form.files.vars.id}",
         maxFiles: multiple ? null : 1,
         acceptedFiles: accept,
-        dictInvalidFileType: invalidMessage ?? 'uploadedFile.invalidMessage'|trans({}, translation_domain)
+        dictInvalidFileType: invalidMessage ?? 'uploadedFile.invalidMessage'|trans({}, translation_domain),
     } %}
 
-    <div class="dropzone-widget" data-component-dropzone="{{ options|json_encode }}" data-dropzone-target="#{{ form.files.vars.id }}" data-dropzone-files="{{ files|json_encode }}">
+    <div data-component-uploaded-file="{{ options|json_encode }}">
         <div class="dz-message">
             <span class="icon"></span>
             <h4>{{ uploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}UploadText"|trans({}, translation_domain) }}</h4>
         </div>
     </div>
 
-    {{ form_widget(form) }}
+    {{ form_widget(form.files, {attr: {style: "#{attr.style ?? ''}; display: none"}}) }}
+    {{ form_rest(form) }}
 {% endblock %}
 
 {% block uploaded_image_widget %}

@@ -43,19 +43,19 @@
             {% set label_attr = {class: "#{class_name(label_attr.class ?? '')} #{class_name(parent_label_class)}"} + label_attr %}
         {% endif %}
 
-        {% if label is not same as(false) and label is empty %}
-            {% if label_format is not empty %}
-                {% set label = label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) %}
-            {% else %}
-                {% set label = translate_form_label(form, translation_domain) %}
-            {% endif %}
-        {% endif %}
-
         <label {{ attributes(label_attr) }}>
             {{ widget|raw }}
 
             {% if label is not same as(false) %}
-                {{ label }}
+                {% if label is empty %}
+                    {% if label_format is empty %}
+                        {{ translate_form_label(form, translation_domain) }}
+                    {% else %}
+                        {{ label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) }}
+                    {% endif %}
+                {% elseif translation_domain is not same as(false) %}
+                    {{ label|trans({}, translation_domain) }}
+                {% endif %}
             {% endif %}
         </label>
     {% endif %}

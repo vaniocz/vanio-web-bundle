@@ -1,42 +1,53 @@
 <?php
 namespace Vanio\WebBundle\Form;
 
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vanio\DomainBundle\Assert\Assertion;
 use Vanio\DomainBundle\Doctrine\EntityRepository;
 use Vanio\DomainBundle\Model\File;
 use Vanio\WebBundle\Model\UploadedFile;
 
 class UploadedFileType extends AbstractType implements DataMapperInterface
 {
-    const STATUS_UPLOADED = 'uploaded';
-    const STATUS_SUCCESS = 'success';
-
     /** @var EntityRepository */
     private $uploadedFileRepository;
 
-    /** @var SessionStorageInterface */
-    private $sessionStorage;
+    /** @var RequestStack */
+    private $requestStack;
 
-    public function __construct(EntityRepository $uploadedFileRepository, SessionStorageInterface $sessionStorage)
-    {
+    /** @var CacheManager|null */
+    private $cacheManager;
+
+    /** @var string */
+    private $webRoot;
+
+    public function __construct(
+        EntityRepository $uploadedFileRepository,
+        RequestStack $requestStack,
+        string $webRoot,
+        CacheManager $cacheManager = null
+    ) {
         $this->uploadedFileRepository = $uploadedFileRepository;
-        $this->sessionStorage = $sessionStorage;
+        $this->requestStack = $requestStack;
+        $this->cacheManager = $cacheManager;
+        $this->webRoot = str_replace('\\', '/', realpath($webRoot));
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->setDataMapper($this);
-        $builder->add('files', HiddenType::class, [
-            'error_bubbling' => false,
+        $builder->add('files', TextType::class, [
             'required' => $options['required'],
             'required_message' => $options['required_message'],
+            'error_bubbling' => true,
         ]);
     }
 
@@ -47,17 +58,21 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
                 'class' => File::class,
                 'multiple' => false,
                 'accept' => null,
+                'thumbnail_filter' => null,
                 'required_message' => 'Choose a file.',
+                'error_bubbling' => false,
             ])
             ->setAllowedTypes('class', 'string')
             ->setAllowedTypes('multiple', 'bool')
-            ->setAllowedTypes('accept', ['string', 'null']);
+            ->setAllowedTypes('accept', ['string', 'null'])
+            ->setAllowedTypes('thumbnail_filter', ['string', 'null']);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['multiple'] = $options['multiple'];
         $view->vars['accept'] = $options['accept'];
+        $view->vars['thumbnailFilter'] = $options['thumbnail_filter'];
     }
 
     /**
@@ -67,16 +82,22 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
     public function mapDataToForms($data, $forms)
     {
         $forms = iterator_to_array($forms);
-        /** @var FormInterface $form */
-        $form = reset($forms);
+        $form = $forms['files'];
+        $config = $form->getParent()->getConfig();
         $formData = [];
 
-        if (!$form->getParent()->getConfig()->getOption('multiple')) {
+        if (!$config->getOption('multiple')) {
             $data = $data === null ? [] : [$data];
         }
 
         foreach ($data as $key => $file) {
-            $formData[] = 'uploaded:' . $key;
+            $formData[] = [
+                'key' => $key,
+                'path' => $this->resolveFilePath($file, $config->getOption('thumbnail_filter')),
+                'name' => $file->metaData()['name'] ?? null,
+                'size' => $file->metaData()['size'] ?? null,
+                'mimeType' => $file->metaData()['mimeType'] ?? null,
+            ];
         }
 
         $form->setData($formData === [] ? null : json_encode($formData));
@@ -89,42 +110,48 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
     public function mapFormsToData($forms, &$data)
     {
         $forms = iterator_to_array($forms);
-        /** @var FormInterface $form */
-        $form = reset($forms);
+        $form = $forms['files'];
+        $config = $form->getParent()->getConfig();
         $formData = $form->getData();
-        $formData = $formData === null ? [] : json_decode($form->getData());
-        $multiple = $form->getParent()->getConfig()->getOption('multiple');
-        $data = $multiple ? $data : [$data];
+        $formData = $formData === null ? [] : json_decode($form->getData(), true);
         $files = [];
+        $class = $config->getOption('class');
 
-        foreach ($formData as $file) {
-            list($status, $key) = explode(':', $file, 2);
+        if (!$multiple = $config->getOption('multiple')) {
+            $data = [$data];
+        }
 
-            if ($status === self::STATUS_SUCCESS) {
-                $file = $this->getUploadedFile($key)->file();
-                $class = $form->getParent()->getConfig()->getOption('class');
-                $file = new $class($file);
-            } else {
-                $file = $data[$key];
-            }
-
-            if ($status === self::STATUS_UPLOADED) {
-                $files[$key] = $file;
-            } else {
-                $files[] = $file;
+        foreach ($formData as $fileData) {
+            if (isset($fileData['key'])) {
+                $files[$fileData['key']] = $data[$fileData['key']];
+            } elseif (isset($fileData['id'])) {
+                $file = $this->getUploadedFile($fileData['id'])->file();
+                $files[] = new $class($file);
             }
         }
 
         $data = $multiple ? $files : (reset($files) ?: null);
     }
 
-    protected function sessionStorage(): SessionStorageInterface
+    private function resolveFilePath(File $file, string $thumbnailFilter = null): string
     {
-        return $this->sessionStorage;
+        $path = str_replace('\\', '/', $file->file()->getRealPath());
+        $message = sprintf('The file "%s" is placed outside of web root "%s".', $path, $this->webRoot);
+        Assertion::startsWith($path, $this->webRoot, $message);
+        $path = substr($path, strlen($this->webRoot));
+
+        if ($this->cacheManager && $thumbnailFilter !== null && $file->isImage()) {
+            $path = $this->cacheManager->getBrowserPath($path, $thumbnailFilter);
+        }
+
+        return $path;
     }
 
-    private function getUploadedFile(string $uploadedFileId): UploadedFile
+    private function getUploadedFile(string $id): UploadedFile
     {
-        return $this->uploadedFileRepository->get($uploadedFileId);
+        return $this->uploadedFileRepository->getOneBy([
+            'id' => $id,
+            'sessionId' => $this->requestStack->getCurrentRequest()->getSession()->getId(),
+        ]);
     }
 }

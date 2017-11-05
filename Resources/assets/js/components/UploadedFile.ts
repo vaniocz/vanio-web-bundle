@@ -1,35 +1,43 @@
 import {component} from 'jquery-ts-components';
 import {DropzoneOptions, DropzoneFile} from 'dropzone';
 
-interface AjaxResponse
+interface UploadedFileOptions extends DropzoneOptions
 {
-    id: string,
+    target: string;
+    thumbnailFilter?: string;
 }
 
-interface FileInfo extends DropzoneFile
-{
+interface FileMetadata {
+    readonly size: number;
+    readonly name: string;
+    mimeType?: string;
+    path?: string;
     id?: string;
     key?: string;
 }
 
-@component('Dropzone')
-export default class DropzoneComponent
+interface FileInfo extends DropzoneFile, FileMetadata
+{}
+
+@component('UploadedFile')
+export default class UploadedFile
 {
     private dropzone: Dropzone;
-    private options: DropzoneOptions;
+    private options: UploadedFileOptions;
     private $element: JQuery;
     private $target: JQuery;
     private $submit: JQuery;
 
-    public constructor(element: JQuery|HTMLFormElement|string, options: DropzoneOptions)
+    public constructor(element: JQuery|HTMLFormElement|string, options: UploadedFileOptions)
     {
         this.options = options;
+        this.options.createImageThumbnails = false;
         this.options.addRemoveLinks = true;
         this.options.dictRemoveFile = '';
         this.options.dictCancelUpload = '';
         this.$element = $(element);
         this.$element.addClass('dropzone');
-        this.$target = $(this.$element.data('dropzoneTarget'));
+        this.$target = $(options.target);
         this.$submit = $(':submit', this.$target.prop('form'));
         let self = this;
 
@@ -44,18 +52,12 @@ export default class DropzoneComponent
     private initialize(): void
     {
         this.dropzone.on('addedfile', this.onFileAdded.bind(this));
-        this.dropzone.on('removedfile', this.onFileRemoved.bind(this));
+        this.dropzone.on('removedfile', this.updateTargetValue.bind(this));
         this.dropzone.on('success', this.onFileUploadSuccess.bind(this));
         this.dropzone.on('queuecomplete', this.onQueueComplete.bind(this));
-        let files = this.$element.data('dropzoneFiles');
         const value = this.$target.val() as string;
-        let selected = value === '' ? [] : JSON.parse(value);
-
-        $.each(files, (key: string) => {
-            if (selected.indexOf('uploaded:' + key) !== -1) {
-                this.addUploadedFile(files[key]);
-            }
-        });
+        const files = value === '' ? [] : JSON.parse(value);
+        files.forEach(this.addUploadedFile.bind(this));
     }
 
     private onFileAdded(file: DropzoneFile): void
@@ -67,14 +69,12 @@ export default class DropzoneComponent
         this.$submit.button('loading');
     }
 
-    private onFileRemoved(file: DropzoneFile): void
-    {
-        this.updateTargetValue();
-    }
-
-    private onFileUploadSuccess(file: FileInfo, response: AjaxResponse): void
+    private onFileUploadSuccess(file: FileInfo, response: FileMetadata): void
     {
         file.id = response.id;
+        file.path = response.path;
+        file.mimeType = response.mimeType;
+        this.addThumbnail(file);
         this.updateTargetValue();
     }
 
@@ -83,27 +83,35 @@ export default class DropzoneComponent
         this.$submit.button('reset');
     }
 
-    private addUploadedFile(file: any): void
+    private addUploadedFile(file: FileMetadata): void
     {
-        this.dropzone.files.push(file);
+        this.dropzone.files.push(file as DropzoneFile);
         this.dropzone.emit('addedfile', file);
-
-        if (file.url && file.mime && file.mime.indexOf('image/') === 0) {
-            this.dropzone.emit('thumbnail', file, file.url);
-        }
-
+        this.addThumbnail(file);
         this.dropzone.emit('complete', file);
+    }
+
+    private addThumbnail(file: FileMetadata): void
+    {
+        if (file.path && file.mimeType && file.mimeType.indexOf('image/') === 0) {
+            this.dropzone.emit('thumbnail', file, file.path);
+        }
     }
 
     private updateTargetValue(): void
     {
-        let files: string[] = [];
+        let files: FileMetadata[] = [];
         let file: FileInfo;
 
         for (file of this.dropzone.files) {
-            if (file.status === 'success' || file.status === 'uploaded') {
-                files.push(`${file.status}:${file.status === 'success' ? file.id : file.key}`);
-            }
+            files.push({
+                id: file.id,
+                key: file.key,
+                path: file.path,
+                name: file.name,
+                size: file.size,
+                mimeType: file.mimeType,
+            });
         }
 
         this.$target.val(files.length === 0 ? '' : JSON.stringify(files));
