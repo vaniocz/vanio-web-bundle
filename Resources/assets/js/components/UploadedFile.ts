@@ -10,8 +10,8 @@ interface UploadedFileOptions extends DropzoneOptions
 interface FileMetadata {
     readonly size: number;
     readonly name: string;
-    mimeType?: string;
-    path?: string;
+    url?: string;
+    thumbnailUrl?: string;
     id?: string;
     key?: string;
 }
@@ -72,8 +72,8 @@ export default class UploadedFile
     private onFileUploadSuccess(file: FileInfo, response: FileMetadata): void
     {
         file.id = response.id;
-        file.path = response.path;
-        file.mimeType = response.mimeType;
+        file.url = response.url;
+        file.thumbnailUrl = response.thumbnailUrl;
         this.addThumbnail(file);
         this.updateTargetValue();
     }
@@ -93,8 +93,8 @@ export default class UploadedFile
 
     private addThumbnail(file: FileMetadata): void
     {
-        if (file.path && file.mimeType && file.mimeType.indexOf('image/') === 0) {
-            this.dropzone.emit('thumbnail', file, file.path);
+        if (file.thumbnailUrl) {
+            this.dropzone.emit('thumbnail', file, file.thumbnailUrl);
         }
     }
 
@@ -107,10 +107,10 @@ export default class UploadedFile
             files.push({
                 id: file.id,
                 key: file.key,
-                path: file.path,
+                url: file.url,
+                thumbnailUrl: file.thumbnailUrl,
                 name: file.name,
                 size: file.size,
-                mimeType: file.mimeType,
             });
         }
 

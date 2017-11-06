@@ -69,5 +69,18 @@ class VanioWebExtension extends Extension implements PrependExtensionInterface
     public function prepend(ContainerBuilder $container)
     {
         $container->setParameter('web_root', '%kernel.root_dir%/../web');
+        $container->prependExtensionConfig('liip_imagine', [
+            'filter_sets' => [
+                'uploaded_file_thumbnail' => [
+                    'quality' => 90,
+                    'filters' => [
+                        'thumbnail' => [
+                            'size' => [120, 120],
+                            'mode' => 'outbound',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
     }
 }

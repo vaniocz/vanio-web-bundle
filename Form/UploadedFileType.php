@@ -58,7 +58,7 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
                 'class' => File::class,
                 'multiple' => false,
                 'accept' => null,
-                'thumbnail_filter' => null,
+                'thumbnail_filter' => 'uploaded_file_thumbnail',
                 'required_message' => 'Choose a file.',
                 'error_bubbling' => false,
             ])
@@ -91,12 +91,16 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         }
 
         foreach ($data as $key => $file) {
+            $path = $this->resolveFilePath($file);
+            $thumbnailFilter = $config->getOption('thumbnail_filter');
             $formData[] = [
                 'key' => $key,
-                'path' => $this->resolveFilePath($file, $config->getOption('thumbnail_filter')),
+                'url' => $path,
+                'thumbnailUrl' => $thumbnailFilter !== null && $file->isImage() && $this->cacheManager
+                    ? $this->cacheManager->getBrowserPath($path, $thumbnailFilter)
+                    : null,
                 'name' => $file->metaData()['name'] ?? null,
                 'size' => $file->metaData()['size'] ?? null,
-                'mimeType' => $file->metaData()['mimeType'] ?? null,
             ];
         }
 
@@ -133,16 +137,12 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $data = $multiple ? $files : (reset($files) ?: null);
     }
 
-    private function resolveFilePath(File $file, string $thumbnailFilter = null): string
+    private function resolveFilePath(File $file): string
     {
         $path = str_replace('\\', '/', $file->file()->getRealPath());
         $message = sprintf('The file "%s" is placed outside of web root "%s".', $path, $this->webRoot);
         Assertion::startsWith($path, $this->webRoot, $message);
         $path = substr($path, strlen($this->webRoot));
-
-        if ($this->cacheManager && $thumbnailFilter !== null && $file->isImage()) {
-            $path = $this->cacheManager->getBrowserPath($path, $thumbnailFilter);
-        }
 
         return $path;
     }

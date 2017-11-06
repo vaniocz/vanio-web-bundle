@@ -57,20 +57,22 @@
         dictInvalidFileType: invalidMessage ?? 'uploadedFile.invalidMessage'|trans({}, translation_domain),
     } %}
 
-    <div data-component-uploaded-file="{{ options|json_encode }}">
+    <div class="uploaded-file" data-component-uploaded-file="{{ options|json_encode }}">
         <div class="dz-message">
             <span class="icon"></span>
-            <h4>{{ uploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}UploadText"|trans({}, translation_domain) }}</h4>
+            <h4 class="uploaded-file__short-upload-text">{{ shortUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}ShortUploadText"|trans({}, translation_domain) }}</h4>
+            <h4 class="uploaded-file__long-upload-text">{{ longUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}LongUploadText"|trans({}, translation_domain) }}</h4>
         </div>
     </div>
 
-    {{ form_widget(form.files, {attr: {style: "#{attr.style ?? ''}; display: none"}}) }}
+    {{ form_widget(form.files, {attr: {style: "display: none; #{attr.style ?? ''}"}}) }}
     {{ form_rest(form) }}
 {% endblock %}
 
 {% block uploaded_image_widget %}
     {{ form_widget(form, {
-        uploadText: "uploadedImage.#{multiple ? 'multiple' : 'single'}UploadText"|trans({}, translation_domain),
+        shortUploadText: "uploadedImage.#{multiple ? 'multiple' : 'single'}ShortUploadText"|trans({}, translation_domain),
+        longUploadText: "uploadedImage.#{multiple ? 'multiple' : 'single'}LongUploadText"|trans({}, translation_domain),
         invalidMessage: "uploadedImage.invalidMessage"|trans({}, translation_domain),
     }) }}
 {% endblock %}

@@ -4,7 +4,6 @@ namespace Vanio\WebBundle\Controller;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Liip\ImagineBundle\Templating\Helper\ImagineHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,16 +29,14 @@ class UploadedFileController extends Controller
         $path = $this->uploaderHelper()->asset($uploadedFile, 'file');
         $thumbnailFilter = $request->get('thumbnailFilter');
 
-        if ($thumbnailFilter !== null && $file->isImage()) {
-            $path = $this->cacheManager()->getBrowserPath($path, $thumbnailFilter);
-        }
-
         return $this->json([
             'id' => (string) $uploadedFile->id(),
-            'path' => $path,
+            'url' => $path,
+            'thumbnailUrl' => $thumbnailFilter !== null && $file->isImage() && $this->cacheManager()
+                ? $this->cacheManager()->getBrowserPath($path, $thumbnailFilter)
+                : null,
             'name' => $file->metaData()['name'] ?? null,
             'size' => $file->metaData()['size'] ?? null,
-            'mimeType' => $file->metaData()['mimeType'] ?? null,
         ]);
     }
 
@@ -63,8 +60,11 @@ class UploadedFileController extends Controller
         return $this->get('vich_uploader.templating.helper.uploader_helper');
     }
 
-    private function cacheManager(): CacheManager
+    /**
+     * @return CacheManager|null
+     */
+    private function cacheManager()
     {
-        return $this->container->get('liip_imagine.cache.manager');
+        return $this->container->get('liip_imagine.cache.manager', Container::NULL_ON_INVALID_REFERENCE);
     }
 }
