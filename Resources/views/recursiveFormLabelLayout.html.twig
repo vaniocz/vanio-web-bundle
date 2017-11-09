@@ -44,17 +44,17 @@
         {% endif %}
 
         <label {{ attributes(label_attr) }}>
-            {{ widget|raw }}
+            {{- widget|raw -}}
 
-            {% if label is not same as(false) %}
+            {% if label is not same as(false) -%}
                 {% if label is empty %}
                     {% if label_format is empty %}
                         {{ translate_form_label(form, translation_domain) }}
                     {% else %}
                         {{ label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) }}
                     {% endif %}
-                {% elseif translation_domain is not same as(false) %}
-                    {{ label|trans({}, translation_domain) }}
+                {% else -%}
+                    {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}
                 {% endif %}
             {% endif %}
         </label>
