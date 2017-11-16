@@ -56,7 +56,7 @@
                 {% else -%}
                     {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}
                 {% endif %}
-            {% endif %}
+            {% endif -%}
         </label>
     {% endif %}
 {% endblock %}

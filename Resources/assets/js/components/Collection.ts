@@ -22,9 +22,10 @@ export default class Collection
                 containment: 'parent',
                 tolerance: 'pointer',
                 forcePlaceholderSize: true,
+                helper: this.resolveDragDropHelper.bind(this),
             },
         }, options);
-        this.$body.collection(options);
+        this.$body.collection(options)
     }
 
     private get settings(): JQueryCollectionOptions
@@ -41,6 +42,22 @@ export default class Collection
     {
         register($entry);
         this.updateEntriesCount();
+    }
+
+    private resolveDragDropHelper(event: JQueryEventObject, $entry: JQuery): JQuery
+    {
+        if ($entry.css('display') !== 'table-row') {
+            return $entry;
+        }
+
+        const $children = $entry.children();
+        const $clone = $entry.clone();
+        $clone.children().each((index: number, child: HTMLElement) => {
+            const $child = $children.eq(index);
+            $(child).width($child.css('box-sizing') === 'border-box' ? $child.outerWidth()! : $child.width()!);
+        });
+
+        return $clone;
     }
 
     private updateEntriesCount(): void
