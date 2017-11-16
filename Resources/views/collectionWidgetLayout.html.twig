@@ -11,7 +11,13 @@
             <div class="collection__header">
                 {% for child in prototype %}
                     {% if child.vars.block_prefixes[child.vars.block_prefixes|length - 2] != 'hidden' %}
-                        <div class="form-group">{{ form_label(child) }}</div>
+                        {% set label = form_label(child) %}
+
+                        {% if label matches '~\\sclass\\s*=\\s*["\'](?:[^"\']*\\s+)?form-group(?:\\s+[^"\']*)?["\']~' %}
+                            {{ label|raw }}
+                        {% else %}
+                            <div class="form-group">{{ label|raw }}</div>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
 
