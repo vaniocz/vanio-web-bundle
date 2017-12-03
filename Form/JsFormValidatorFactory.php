@@ -6,6 +6,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Vanio\DoctrineGenericTypes\Bundle\Form\ScalarObjectType;
 use Vanio\Stdlib\Strings;
 
 class JsFormValidatorFactory extends BaseJsFormValidatorFactory
@@ -32,10 +33,9 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
     protected function getValidationData(Form $form): array
     {
         $validationData = parent::getValidationData($form);
+        $parent = $form->getParent();
 
-        if (!$parent = $form->getParent()) {
-            return $validationData;
-        } elseif (!$parent->getConfig()->getOption('guess_constraints')) {
+        if (!$parent || !$parent->getConfig()->getOption('guess_constraints')) {
             return $validationData;
         } elseif (!$class = $parent->getConfig()->getOption('class', $parent->getConfig()->getDataClass())) {
             return $validationData;
@@ -43,7 +43,11 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
             return $validationData;
         }
 
-        $constraints = array_merge(...array_values($constraints));
+        if (is_a($parent->getConfig()->getType()->getInnerType(), ScalarObjectType::class)) {
+            $constraints = array_merge(...array_values($constraints));
+        } elseif (!$constraints = $constraints[(string) $form->getPropertyPath()] ?? []) {
+            return $validationData;
+        }
 
         if (!$parent->isRequired()) {
             $constraints = array_filter($constraints, [$this, 'isNotNotBlankConstraint']);

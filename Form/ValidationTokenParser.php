@@ -220,16 +220,10 @@ class ValidationTokenParser implements ValidationParser
         }
 
         $file->seek($lineNumber - 1);
-        $contents = '<?php ';
+        $contents = '<?php ' . $file->current();
 
-        while ($line = $file->fgets()) {
-            $contents .= $line;
-
-            if ($lineNumber === $class->getEndLine()) {
-                break;
-            }
-
-            $lineNumber++;
+        while ($lineNumber++ <= $class->getEndLine()) {
+            $contents .= $file->fgets();
         }
 
         return $contents;
