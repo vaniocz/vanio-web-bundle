@@ -222,7 +222,7 @@ class ValidationTokenParser implements ValidationParser
         $file->seek($lineNumber - 1);
         $contents = '<?php ' . $file->current();
 
-        while ($lineNumber++ <= $class->getEndLine()) {
+        while ($lineNumber++ < $class->getEndLine()) {
             $contents .= $file->fgets();
         }
 
