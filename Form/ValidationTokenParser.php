@@ -70,30 +70,33 @@ class ValidationTokenParser implements ValidationParser
             Strings::startsWith($method, 'nullOr') ? substr($method, 6) : $method
         );
         $arguments = $this->parseFunctionArguments();
-        $validationRule = ['class' => $class, 'method' => $method];
+        $validationRule = [
+            'class' => $class,
+            'method' => $method,
+        ];
 
         foreach ($reflectionMethod->getParameters() as $parameter) {
             if (!$argument = $arguments[$parameter->getPosition()] ?? null) {
                 continue;
             }
 
-            switch ($parameter->name) {
-                case 'message':
-                    $validationRule['message'] = $this->resolveScalarToken($argument);
-                    break;
-                case 'propertyPath':
-                    $validationRule['property_path'] = $this->resolveScalarToken($argument);
-                    break;
-                case 'value':
-                case 'value1':
-                    $validationRule['property_path'] = $this->resolveVariableNameToken($argument);
-                    break;
-                default:
-                    try {
+            try {
+                switch ($parameter->name) {
+                    case 'message':
+                        $validationRule['message'] = $this->resolveScalarToken($argument);
+                        break;
+                    case 'propertyPath':
+                        $validationRule['property_path'] = $this->resolveScalarToken($argument);
+                        break;
+                    case 'value':
+                    case 'value1':
+                        $validationRule['property_path'] = $this->resolveVariableNameToken($argument);
+                        break;
+                    default:
                         $validationRule[$parameter->name] = $this->resolveScalarToken($argument);
-                    } catch (\UnexpectedValueException $e) {
-                        return null;
-                    }
+                }
+            } catch (\UnexpectedValueException $e) {
+                return null;
             }
         }
 
@@ -183,13 +186,17 @@ class ValidationTokenParser implements ValidationParser
      */
     private function resolveVariableNameToken(array $tokens)
     {
-        if (($tokens[0][0] ?? null) !== T_VARIABLE) {
+        if (($tokens[0][0] ?? null) !== T_VARIABLE || count($tokens) > 1 && ($tokens[0][1] ?? null) !== '$this') {
             return null;
         }
 
         $variableName = '';
 
         foreach ($tokens as $token) {
+            if (!isset($token[1])) {
+                return null;
+            }
+
             $variableName .= $token[1];
         }
 
