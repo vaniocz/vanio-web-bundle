@@ -5,6 +5,7 @@ use Doctrine\Common\Cache\FilesystemCache;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -119,6 +120,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('without', [$this, 'without']),
             new \Twig_SimpleFilter('without_keys', [$this, 'withoutKeys']),
             new \Twig_SimpleFilter('without_empty', [$this, 'withoutEmpty']),
+            new \Twig_SimpleFilter('group_by', [$this, 'groupBy']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
@@ -367,6 +369,25 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function withoutEmpty(array $array): array
     {
         return array_filter($array, [$this, 'isNotEmpty']);
+    }
+
+    public function groupBy(array $array, string ...$propertyPaths): array
+    {
+        $grouped = [];
+        $propertyPath = array_shift($propertyPaths);
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($array as $value) {
+            $grouped[(string) $propertyAccessor->getValue($value, $propertyPath)][] = $value;
+        }
+
+        if ($propertyPaths) {
+            foreach ($grouped as $key => $value) {
+                $grouped[$key] = $this->groupBy($value, ...$propertyPaths);
+            }
+        }
+
+        return $grouped;
     }
 
     /**
