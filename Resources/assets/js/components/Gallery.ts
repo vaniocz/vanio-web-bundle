@@ -8,11 +8,13 @@ export default class Gallery
     private $element: JQuery;
     private options: JQueryPhotoSwipeOptions;
 
+    public static defaultOptions = {};
+
     public constructor(element: JQuery|HTMLFormElement|string, options: JQueryPhotoSwipeOptions)
     {
         this.$element = $(element);
-        this.options = options;
-        this.$element.photoSwipe(options);
+        this.options = $.extend(Gallery.defaultOptions, options);
+        this.$element.photoSwipe(this.options);
         this.removePhotoSwipeTitles();
     }
 
