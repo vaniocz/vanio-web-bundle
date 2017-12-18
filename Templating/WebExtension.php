@@ -120,6 +120,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('without', [$this, 'without']),
             new \Twig_SimpleFilter('without_keys', [$this, 'withoutKeys']),
             new \Twig_SimpleFilter('without_empty', [$this, 'withoutEmpty']),
+            new \Twig_SimpleFilter('intersect', 'array_intersect'),
             new \Twig_SimpleFilter('group_by', [$this, 'groupBy']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
