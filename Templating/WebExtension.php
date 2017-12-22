@@ -4,6 +4,7 @@ namespace Vanio\WebBundle\Templating;
 use Doctrine\Common\Cache\FilesystemCache;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
@@ -91,8 +92,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function getFunctions(): array
     {
         return [
-            new \Twig_SimpleFunction('class_name', [$this, 'renderClassName']),
-            new \Twig_SimpleFunction('attributes', [$this, 'renderAttributes'], [
+            new \Twig_SimpleFunction('class_name', [$this, 'className']),
+            new \Twig_SimpleFunction('attributes', [$this, 'attributes'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
@@ -102,6 +103,10 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
             new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
+            new \Twig_SimpleFunction('form_widget_attributes', [$this, 'formWidgetAttributes'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
+            ]),
             new \Twig_SimpleFunction('referer', [$this, 'referer']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
@@ -153,21 +158,21 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
      * @param string|string[] $classes
      * @return string
      */
-    public function renderClassName($classes): string
+    public function className($classes): string
     {
         return is_array($classes)
             ? implode(' ', array_keys(array_filter($classes)))
             : $classes;
     }
 
-    public function renderAttributes(\Twig_Environment $environment, array $attributes): string
+    public function attributes(\Twig_Environment $environment, array $attributes): string
     {
         $html = '';
 
         foreach ($attributes as $name => $value) {
             if (is_array($value)) {
                 if ($name === 'class') {
-                    $value = $this->renderClassName($value);
+                    $value = $this->className($value);
                 } elseif (Strings::startsWith($name, 'data-component-')) {
                     $value = json_encode($value);
                 }
@@ -232,7 +237,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return true;
     }
 
-    public function formDefaultTheme(string $theme): void
+    public function formDefaultTheme(string $theme)
     {
         $defaultThemes = $this->twigFormRendererEngine->getDefaultThemes();
         $defaultThemes[] = $theme;
@@ -240,6 +245,28 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $defaultThemes = array_diff($defaultThemes, $themesToAppend);
         $defaultThemes = array_merge($defaultThemes, $themesToAppend);
         $this->twigFormRendererEngine->setDefaultThemes($defaultThemes);
+    }
+
+    public function formWidgetAttributes(\Twig_Environment $environment, FormView $formView): string
+    {
+        $attributes = [];
+
+        if (!empty($formView->vars['id'])) {
+            $attributes['id'] = $formView->vars['id'];
+        }
+
+        $attributes += $formView->vars['attr'];
+
+        foreach (['placeholder', 'title'] as $attribute) {
+            if (!isset($attributes[$attribute])) {
+                continue;
+            }
+
+            $translationDomain = $formView->vars['translation_domain'] ?? null;
+            $attributes[$attribute] = $this->translator->trans($attributes[$attribute], [], $translationDomain);
+        }
+
+        return $this->attributes($environment, $attributes);
     }
 
     public function referer(string $fallbackPath = null): string
