@@ -16,6 +16,7 @@ import '@vanio_web/js/components/Gallery';
 import '@vanio_web/js/components/Location';
 import '@vanio_web/js/components/NativeValidation';
 import '@vanio_web/js/components/PaginatedList';
+import '@vanio_web/js/components/Toggle';
 import '@vanio_web/js/components/Tooltip';
 import '@vanio_web/js/components/UploadedFile';
 import '@vanio_web/js/validators/UserPassword';
