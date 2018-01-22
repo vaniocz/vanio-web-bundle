@@ -248,22 +248,24 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->twigFormRendererEngine->setDefaultThemes($defaultThemes);
     }
 
-    public function formWidgetAttributes(\Twig_Environment $environment, FormView $formView): string
-    {
-        $attributes = [];
+    public function formWidgetAttributes(
+        \Twig_Environment $environment,
+        FormView $formView,
+        array $variables = []
+    ): string {
+        $variables += $formView->vars;
+        $attributes = $variables['attr'] + $formView->vars['attr'];
 
-        if (!empty($formView->vars['id'])) {
-            $attributes['id'] = $formView->vars['id'];
+        if (!empty($variables['id'])) {
+            $attributes['id'] = $variables['id'];
         }
-
-        $attributes += $formView->vars['attr'];
 
         foreach (['placeholder', 'title'] as $attribute) {
             if (!isset($attributes[$attribute])) {
                 continue;
             }
 
-            $translationDomain = $formView->vars['translation_domain'] ?? null;
+            $translationDomain = $variables['translation_domain'] ?? null;
             $attributes[$attribute] = $this->translator->trans($attributes[$attribute], [], $translationDomain);
         }
 
