@@ -45,18 +45,6 @@ class CanonizationExtension extends AbstractTypeExtension
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver
-            ->setDefault('canonize', false)
-            ->setAllowedTypes('canonize', 'bool');
-    }
-
-    public function getExtendedType(): string
-    {
-        return FormType::class;
-    }
-
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         $root = $form->getRoot();
@@ -84,6 +72,18 @@ class CanonizationExtension extends AbstractTypeExtension
         if ($form->isRoot()) {
             $this->redirectToCanonicalUrl($form, $view);
         }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefault('canonize', false)
+            ->setAllowedTypes('canonize', 'bool');
+    }
+
+    public function getExtendedType(): string
+    {
+        return FormType::class;
     }
 
     /**

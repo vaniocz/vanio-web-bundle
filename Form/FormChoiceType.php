@@ -26,6 +26,21 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
         $builder->get($options['choice_name'])->addEventListener(FormEvents::POST_SUBMIT, [$this, 'onPostSubmit']);
     }
 
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        $builder = $form->getConfig()->getAttribute('builder');
+
+        foreach ($view[$options['choice_name']]->vars['choices'] as $choiceView) {
+            $formChoiceForm = $this->createForm($builder, $this->resolveFormOptions($options, $choiceView->data));
+            $formView = $formChoiceForm->setParent($form)->createView($view);
+            $view[$options['choice_name']]->vars['forms'][$choiceView->value] = $formView;
+
+            if ($formView->vars['multipart']) {
+                $view->vars['multipart'] = true;
+            }
+        }
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
@@ -43,21 +58,6 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
             ->setAllowedTypes('form_name', ['string', 'callable'])
             ->setAllowedTypes('form_type', 'callable')
             ->setAllowedTypes('form_options', ['array', 'callable']);
-    }
-
-    public function finishView(FormView $view, FormInterface $form, array $options)
-    {
-        $builder = $form->getConfig()->getAttribute('builder');
-
-        foreach ($view[$options['choice_name']]->vars['choices'] as $choiceView) {
-            $formChoiceForm = $this->createForm($builder, $this->resolveFormOptions($options, $choiceView->data));
-            $formView = $formChoiceForm->setParent($form)->createView($view);
-            $view[$options['choice_name']]->vars['forms'][$choiceView->value] = $formView;
-
-            if ($formView->vars['multipart']) {
-                $view->vars['multipart'] = true;
-            }
-        }
     }
 
     /**

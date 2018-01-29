@@ -51,6 +51,13 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         ]);
     }
 
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        $view->vars['multiple'] = $options['multiple'];
+        $view->vars['accept'] = $options['accept'];
+        $view->vars['thumbnailFilter'] = $options['thumbnail_filter'];
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
@@ -66,13 +73,6 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
             ->setAllowedTypes('multiple', 'bool')
             ->setAllowedTypes('accept', ['string', 'null'])
             ->setAllowedTypes('thumbnail_filter', ['string', 'null']);
-    }
-
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-        $view->vars['multiple'] = $options['multiple'];
-        $view->vars['accept'] = $options['accept'];
-        $view->vars['thumbnailFilter'] = $options['thumbnail_filter'];
     }
 
     /**

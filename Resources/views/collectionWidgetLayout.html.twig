@@ -7,38 +7,40 @@
     {% endif %}
 
     <div {{ block('widget_container_attributes') }}>
-        {% if prototype.vars.compound %}
-            <div class="collection__header">
-                {% for child in prototype %}
-                    {% if child.vars.block_prefixes[child.vars.block_prefixes|length - 2] != 'hidden' %}
-                        {% set label = form_label(child) %}
+        {% if prototype is defined %}
+            {% if prototype.vars.compound %}
+                <div class="collection__header">
+                    {% for child in prototype %}
+                        {% if child.vars.block_prefixes[child.vars.block_prefixes|length - 2] != 'hidden' %}
+                            {% set label = form_label(child) %}
 
-                        {% if label matches '~\\sclass\\s*=\\s*["\'](?:[^"\']*\\s+)?form-group(?:\\s+[^"\']*)?["\']~' %}
-                            {{ label|raw }}
-                        {% else %}
-                            <div class="form-group">{{ label|raw }}</div>
+                            {% if label matches '~\\sclass\\s*=\\s*["\'](?:[^"\']*\\s+)?form-group(?:\\s+[^"\']*)?["\']~' %}
+                                {{ label|raw }}
+                            {% else %}
+                                <div class="form-group">{{ label|raw }}</div>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                {% endfor %}
+                    {% endfor %}
 
-                <span class="collection-actions"></span>
+                    <span class="collection-actions"></span>
+                </div>
+            {% endif %}
+
+            <div
+                class="collection__body"
+                data-prototype="<div class='collection__entry'>{{ collection_entry(prototype)|e('html_attr') }}</div>"
+                data-prototype-name="{{ prototype.vars.name }}"
+                data-allow-add="{{ allow_add }}"
+                data-allow-remove="{{ allow_delete }}"
+                data-name-prefix="{{ full_name }}"
+            >
+                {% for child in form %}
+                    <div class="collection__entry">
+                        {{ collection_entry(child) }}
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
-
-        <div
-            class="collection__body"
-            data-prototype="<div class='collection__entry'>{{ collection_entry(prototype)|e('html_attr') }}</div>"
-            data-prototype-name="{{ prototype.vars.name }}"
-            data-allow-add="{{ allow_add }}"
-            data-allow-remove="{{ allow_delete }}"
-            data-name-prefix="{{ full_name }}"
-        >
-            {% for child in form %}
-                <div class="collection__entry">
-                    {{ collection_entry(child) }}
-                </div>
-            {% endfor %}
-        </div>
 
         {{ form_rest(form) }}
     </div>
