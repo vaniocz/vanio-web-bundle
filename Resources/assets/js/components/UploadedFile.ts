@@ -27,6 +27,7 @@ export default class UploadedFile
     private $element: JQuery;
     private $target: JQuery;
     private $submit: JQuery;
+    private busy = false;
 
     public constructor(element: JQuery|HTMLFormElement|string, options: UploadedFileOptions)
     {
@@ -51,6 +52,14 @@ export default class UploadedFile
 
     private initialize(): void
     {
+        const uploadedFiles = this.$submit.data('uploadedFiles') || [];
+
+        if (!uploadedFiles.length) {
+            this.$submit.data('initialDisabled', this.$submit.is('disabled'));
+        }
+
+        uploadedFiles.push(this);
+        this.$submit.data('uploadedFiles', uploadedFiles)
         this.dropzone.on('addedfile', this.onFileAdded.bind(this));
         this.dropzone.on('removedfile', this.updateTargetValue.bind(this));
         this.dropzone.on('success', this.onFileUploadSuccess.bind(this));
@@ -66,7 +75,8 @@ export default class UploadedFile
             this.dropzone.removeFile(this.dropzone.files[0]);
         }
 
-        this.$submit.button('loading');
+        this.busy = true;
+        this.$submit.attr('disabled', 'disabled');
     }
 
     private onFileUploadSuccess(file: FileInfo, response: FileMetadata): void
@@ -80,7 +90,21 @@ export default class UploadedFile
 
     private onQueueComplete(): void
     {
-        this.$submit.button('reset');
+        this.busy = false;
+
+        if (this.$submit.data('initialDisabled')) {
+            return;
+        }
+
+        let uploadedFile: UploadedFile;
+
+        for (uploadedFile of this.$submit.data('uploadedFiles')) {
+            if (uploadedFile.busy) {
+                return;
+            }
+        }
+
+        this.$submit.removeAttr('disabled');
     }
 
     private addUploadedFile(file: FileMetadata): void

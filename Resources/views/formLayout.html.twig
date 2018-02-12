@@ -57,16 +57,18 @@
         dictInvalidFileType: invalidMessage ?? 'uploadedFile.invalidMessage'|trans({}, translation_domain),
     } %}
 
-    <div class="uploaded-file" data-component-uploaded-file="{{ options|json_encode }}">
-        <div class="dz-message">
-            <span class="icon"></span>
-            <h4 class="uploaded-file__short-upload-text">{{ shortUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}ShortUploadText"|trans({}, translation_domain) }}</h4>
-            <h4 class="uploaded-file__long-upload-text">{{ longUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}LongUploadText"|trans({}, translation_domain) }}</h4>
+    <div {{ block('widget_container_attributes') }}>
+        <div class="uploaded-file" data-component-uploaded-file="{{ options|json_encode }}">
+            <div class="dz-message">
+                <span class="icon"></span>
+                <h4 class="uploaded-file__short-upload-text">{{ shortUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}ShortUploadText"|trans({}, translation_domain) }}</h4>
+                <h4 class="uploaded-file__long-upload-text">{{ longUploadText ?? "uploadedFile.#{multiple ? 'multiple' : 'single'}LongUploadText"|trans({}, translation_domain) }}</h4>
+            </div>
         </div>
-    </div>
 
-    {{ form_widget(form.files, {attr: {style: "display: none; #{attr.style ?? ''}"}}) }}
-    {{ form_rest(form) }}
+        {{ form_widget(form.files, {attr: {style: "display: none; #{attr.style ?? ''}"}}) }}
+        {{ form_rest(form) }}
+    </div>
 {% endblock %}
 
 {% block uploaded_image_widget %}
