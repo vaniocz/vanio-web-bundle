@@ -130,6 +130,9 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
+            new \Twig_SimpleFilter('basename', [$this, 'basename']),
+            new \Twig_SimpleFilter('filename', [$this, 'filename']),
+            new \Twig_SimpleFilter('extension', [$this, 'extension']),
             new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
         ];
     }
@@ -445,6 +448,21 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return Strings::contains($template, ['{{', '{%', '{#'])
             ? $environment->createTemplate($template)->render($context)
             : $template;
+    }
+
+    public function basename(string $path): string
+    {
+        return basename($path);
+    }
+
+    public function filename(string $path): string
+    {
+        return pathinfo($path, PATHINFO_FILENAME);
+    }
+
+    public function extension(string $path): string
+    {
+        return pathinfo($path, PATHINFO_EXTENSION);
     }
 
     public function humanFileSize(int $bytes, int $decimals = 0): string
