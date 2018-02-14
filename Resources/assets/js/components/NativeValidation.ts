@@ -3,24 +3,31 @@ import {component} from 'jquery-ts-components';
 @component('NativeValidation')
 export default class NativeValidation
 {
-    private element: HTMLFormElement;
     private $element: JQuery;
+    private $form: JQuery;
+    private $submit: JQuery;
+    private form: HTMLFormElement;
 
     public constructor(element: JQuery|HTMLFormElement|string)
     {
         this.$element = $(element);
-        this.element = this.$element[0] as HTMLFormElement;
+        this.$form = this.$element.is('form') ? this.$element : this.$element.closest('form');
+        this.form = this.$form[0] as HTMLFormElement;
 
-        if (typeof this.element.checkValidity !== 'function') {
+        if (typeof this.form.checkValidity !== 'function') {
             return;
         }
 
-        this.element.addEventListener('invalid', this.suppressNativeBubblesOnInvalid, true);
-        this.$element.on({
-            submit: this.preventSubmissionOnSubmitInvalid.bind(this),
-            input: this.hideErrorsOnInput.bind(this),
-        });
-        this.$element.find(':submit').on('click', this.onSubmit.bind(this));
+        if (this.$element.is(':submit')) {
+            this.$submit = this.$element;
+        } else {
+            this.$submit = this.$element.find(':submit');
+            this.$form.submit(this.preventSubmissionOnSubmitInvalid.bind(this));
+        }
+
+        this.$form.on('input', this.hideErrorsOnInput.bind(this));
+        this.$submit.on('click', this.onSubmit.bind(this));
+        this.form.addEventListener('invalid', this.suppressNativeBubblesOnInvalid, true);
     }
 
     private suppressNativeBubblesOnInvalid(event: Event)
@@ -30,20 +37,20 @@ export default class NativeValidation
 
     private preventSubmissionOnSubmitInvalid(event: JQueryEventObject)
     {
-        if (!this.element.checkValidity()) {
+        if (!this.form.checkValidity()) {
             event.preventDefault();
         }
     }
 
     private onSubmit(event: JQueryEventObject)
     {
-        if (this.element.checkValidity()) {
+        if (this.form.checkValidity()) {
             return;
         }
 
         event.preventDefault();
-        const $invalidFields = this.$element.find(':invalid');
-        this.$element.find('.form-errors').remove();
+        const $invalidFields = this.$form.find(':invalid');
+        this.$form.find('.form-errors').remove();
         $invalidFields.each((index, field) => this.renderErrors($(field)));
         $invalidFields.first().focus();
     }
@@ -52,13 +59,17 @@ export default class NativeValidation
     {
         const $field = $(event.target);
         const $container = $field.parent().hasClass('input-group') ? $field.parent() : $field;
-        $container.next('.form-errors').remove();
+        $container
+            .removeClass('has-error')
+            .next('.form-errors').remove();
     }
 
     private renderErrors($field: JQuery)
     {
         const $container = $field.parent().hasClass('input-group') ? $field.parent() : $field;
         const message = $field.data('validationMessage') || $field.prop('validationMessage');
-        $container.after(`<ul class="form-errors"><li>${message}</li></ul>`);
+        $container
+            .addClass('has-error')
+            .after(`<ul class="form-errors"><li>${message}</li></ul>`);
     }
 }
