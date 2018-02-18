@@ -26,18 +26,32 @@ class UploadedFileController extends Controller
         $uploadedFile = new UploadedFile($file, $request->getSession()->getId());
         $this->uploadedFileRepository()->add($uploadedFile);
         $this->entityManager()->flush();
-        $path = $this->uploaderHelper()->asset($uploadedFile, 'file');
-        $thumbnailFilter = $request->get('thumbnailFilter');
 
         return $this->json([
             'id' => (string) $uploadedFile->id(),
-            'url' => $path,
-            'thumbnailUrl' => $thumbnailFilter !== null && $file->isImage() && $this->cacheManager()
-                ? $this->cacheManager()->getBrowserPath($path, $thumbnailFilter)
-                : null,
+            'url' => $this->uploaderHelper()->asset($uploadedFile, 'file'),
+            'thumbnailUrl' => $this->resolveThumbnailUrl($file, $request->get('thumbnailFilter')),
             'name' => $file->metaData()['name'] ?? null,
             'size' => $file->metaData()['size'] ?? null,
         ]);
+    }
+
+    /**
+     * @param File $file
+     * @param string|null $thumbnailFilter
+     * @return string|null
+     */
+    private function resolveThumbnailUrl(File $file, string $thumbnailFilter = null)
+    {
+        if ($thumbnailFilter === null || !$this->cacheManager() || !$file->isImage()) {
+            return null;
+        }
+
+        $path = $this->uploaderHelper()->asset($uploadedFile, 'file');
+
+        return $file->metaData()['mimeType'] === 'image/svg+xml'
+            ? $path
+            : $this->cacheManager()->getBrowserPath($path, $thumbnailFilter);
     }
 
     private function uploadedFileRepository(): EntityRepository

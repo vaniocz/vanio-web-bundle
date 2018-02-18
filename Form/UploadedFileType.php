@@ -84,6 +84,7 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $forms = iterator_to_array($forms);
         $form = $forms['files'];
         $config = $form->getParent()->getConfig();
+        $thumbnailFilter = $config->getOption('thumbnail_filter');
         $formData = [];
 
         if (!$config->getOption('multiple')) {
@@ -91,14 +92,10 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         }
 
         foreach ($data as $key => $file) {
-            $path = $this->resolveFilePath($file);
-            $thumbnailFilter = $config->getOption('thumbnail_filter');
             $formData[] = [
                 'key' => $key,
-                'url' => $path,
-                'thumbnailUrl' => $thumbnailFilter !== null && $file->isImage() && $this->cacheManager
-                    ? $this->cacheManager->getBrowserPath($path, $thumbnailFilter)
-                    : null,
+                'url' => $this->resolveFilePath($file),
+                'thumbnailUrl' => $this->resolveThumbnailUrl($file, $thumbnailFilter),
                 'name' => $file->metaData()['name'] ?? null,
                 'size' => $file->metaData()['size'] ?? null,
             ];
@@ -145,6 +142,24 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $path = substr($path, strlen($this->webRoot));
 
         return $path;
+    }
+
+    /**
+     * @param File $file
+     * @param string|null $thumbnailFilter
+     * @return string|null
+     */
+    private function resolveThumbnailUrl(File $file, string $thumbnailFilter = null)
+    {
+        if ($thumbnailFilter === null || !$this->cacheManager || !$file->isImage()) {
+            return null;
+        }
+
+        $path = $this->resolveFilePath($file);
+
+        return $file->metaData()['mimeType'] === 'image/svg+xml'
+            ? $path
+            : $this->cacheManager->getBrowserPath($path, $thumbnailFilter);
     }
 
     private function getUploadedFile(string $id): UploadedFile
