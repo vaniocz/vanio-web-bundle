@@ -38,7 +38,7 @@ class SnippetRenderer implements EventSubscriberInterface
             return;
         }
 
-        if ($template->getEngine() !== 'twig') {
+        if (is_callable([$template, 'getEngine']) && $template->getEngine() !== 'twig') {
             return;
         }
 
