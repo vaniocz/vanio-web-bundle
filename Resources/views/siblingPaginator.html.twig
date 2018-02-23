@@ -4,16 +4,16 @@
     {% set page = filter.page %}
 {% endif %}
 
-{% if page is defined and records|length > page.recordsPerPage %}
+{% if page is defined and records|length > page.recordsOnFirstPage %}
     <div class="sibling-paginator">
         <p class="paginator-info">
-            {{ 'siblingPaginator.info'|trans({'%recordCount%': min(page.recordsPerPage, records|length), '%recordTotalCount%': records|length}, 'paginator')|raw }}
+            {{ 'siblingPaginator.info'|trans({'%recordCount%': min(page.toPage == 1 ? page.recordsOnFirstPage : page.recordsPerPage, records|length), '%recordTotalCount%': records|length}, 'paginator')|raw }}
         </p>
 
         {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
 
         {% if page.fromPage > 1 %}
-            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.recordsPerPage}, 'paginator')}) }}
+            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.toPage == 2 ? page.recordsOnFirstPage : page.recordsPerPage}, 'paginator')}) }}
         {% endif %}
 
         {% if records|length > page.lastRecord %}

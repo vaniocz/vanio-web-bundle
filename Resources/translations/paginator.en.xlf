@@ -8,7 +8,7 @@
         <body>
             <trans-unit id="a48d0c4b4e9b3386c6de6794038b00c1" resname="paginator.info">
                 <source>paginator.info</source>
-                <target>Showing %fromPage%. – %toPage%. of %recordTotalCount% records.</target>
+                <target>Showing %firstRecord%. – %lastRecord%. of %recordTotalCount% records.</target>
             </trans-unit>
 
             <trans-unit id="1cd54e08ae664141b14c24118e187975" resname="siblingPaginator.info">

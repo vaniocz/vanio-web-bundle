@@ -7,13 +7,13 @@
 {% if page is defined %}
     <div class="paginator">
         <p class="paginator-info">
-            {{ 'paginator.info'|trans({'%fromPage%': (page.pageNumber - 1 ) * page.recordsPerPage + 1, '%toPage%': min(page.pageNumber * page.recordsPerPage, records|length), '%recordTotalCount%': records|length}, 'paginator')|raw }}
+            {{ 'paginator.info'|trans({'%firstRecord%': page.firstRecord + 1, '%lastRecord%': page.lastRecord + 1, '%recordTotalCount%': records|length}, 'paginator')|raw }}
         </p>
 
-        {% if records|length > page.recordsPerPage %}
+        {% if records|length > page.recordsOnFirstPage %}
             {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
             {% set neighboursCount = neighboursCount ?? 3 %}
-            {% set maximalPage = (records|length / page.recordsPerPage)|round(0, 'ceil') %}
+            {% set maximalPage = page.maximalPage(records|length) %}
 
             <div class="paginator-pages">
                 <ul class="pagination">
