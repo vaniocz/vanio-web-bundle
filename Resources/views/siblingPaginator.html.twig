@@ -13,7 +13,7 @@
         {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
 
         {% if page.fromPage > 1 %}
-            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.recordsPerPage}, 'paginator')}) }}
+            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.toPage == 2 ? page.recordsOnFirstPage : page.recordsPerPage}, 'paginator')}) }}
         {% endif %}
 
         {% if records|length > page.lastRecord %}
