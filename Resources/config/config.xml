@@ -99,6 +99,7 @@
             <argument type="service" id="vanio_web.request.referer_resolver"/>
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
             <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
+            <argument>%web_root%</argument>
             <argument>%kernel.cache_dir%/vanio_web</argument>
             <argument>%vanio_web.google_maps_api_key%</argument>
             <argument>%vanio_web.multilingual_supported_locales%</argument>

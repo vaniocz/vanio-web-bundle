@@ -42,6 +42,9 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var FilesystemCache */
     private $imageDimensionsCache;
 
+    /** @var string */
+    private $webRoot;
+
     /** @var string|null */
     private $googleMapsApiKey;
 
@@ -70,6 +73,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         RefererResolver $refererResolver,
         RouteHierarchyResolver $routeHierarchyResolver,
         CacheManager $cacheManager = null,
+        string $webRoot,
         string $imageDimensionsCacheDirectory,
         string $googleMapsApiKey = null,
         array $supportedLocales = []
@@ -81,6 +85,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->refererResolver = $refererResolver;
         $this->routeHierarchyResolver = $routeHierarchyResolver;
         $this->cacheManager = $cacheManager;
+        $this->webRoot = $webRoot;
         $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
         $this->googleMapsApiKey = $googleMapsApiKey;
         $this->supportedLocales = $supportedLocales;
@@ -97,6 +102,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
+            new \Twig_SimpleFunction('web_path', [$this, 'webPath']),
             new \Twig_SimpleFunction('require_js', [$this, 'requireJs']),
             new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
             new \Twig_SimpleFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
@@ -193,6 +199,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         return ltrim($html);
+    }
+
+    public function webPath(string $path): string
+    {
+        return $this->webRoot . $path;
     }
 
     public function requireJs(string $javaScript, string $name = null)
