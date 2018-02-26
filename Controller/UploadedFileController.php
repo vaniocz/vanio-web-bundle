@@ -30,26 +30,26 @@ class UploadedFileController extends Controller
         return $this->json([
             'id' => (string) $uploadedFile->id(),
             'url' => $this->uploaderHelper()->asset($uploadedFile, 'file'),
-            'thumbnailUrl' => $this->resolveThumbnailUrl($file, $request->get('thumbnailFilter')),
+            'thumbnailUrl' => $this->resolveThumbnailUrl($uploadedFile, $request->get('thumbnailFilter')),
             'name' => $file->metaData()['name'] ?? null,
             'size' => $file->metaData()['size'] ?? null,
         ]);
     }
 
     /**
-     * @param File $file
+     * @param UploadedFile $uploadedFile
      * @param string|null $thumbnailFilter
      * @return string|null
      */
-    private function resolveThumbnailUrl(File $file, string $thumbnailFilter = null)
+    private function resolveThumbnailUrl(UploadedFile $uploadedFile, string $thumbnailFilter = null)
     {
-        if ($thumbnailFilter === null || !$this->cacheManager() || !$file->isImage()) {
+        if ($thumbnailFilter === null || !$this->cacheManager() || !$uploadedFile->file()->isImage()) {
             return null;
         }
 
         $path = $this->uploaderHelper()->asset($uploadedFile, 'file');
 
-        return $file->metaData()['mimeType'] === 'image/svg+xml'
+        return $uploadedFile->file()->metaData()['mimeType'] === 'image/svg+xml'
             ? $path
             : $this->cacheManager()->getBrowserPath($path, $thumbnailFilter);
     }
