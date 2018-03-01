@@ -87,8 +87,10 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $thumbnailFilter = $config->getOption('thumbnail_filter');
         $formData = [];
 
-        if (!$config->getOption('multiple')) {
-            $data = $data === null ? [] : [$data];
+        if ($data === null) {
+            $data = [];
+        } elseif (!$config->getOption('multiple')) {
+            $data = [$data];
         }
 
         foreach ($data as $key => $file) {
