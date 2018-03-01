@@ -24,8 +24,8 @@
         {{ currentId|trans({}, translationDomain) -}}
     {% elseif currentPath|length > 1 -%}
         {{ self.translate_recursive(id, translationDomain, currentPath|slice(1)) -}}
-    {% elseif not useFallback %}
-        {{ self.translate_recursive(id, translationDomain, null, true) }}
+    {% elseif not useFallback -%}
+        {{ self.translate_recursive(id, translationDomain, null, true) -}}
     {% else -%}
         {{ currentId -}}
     {% endif -%}
