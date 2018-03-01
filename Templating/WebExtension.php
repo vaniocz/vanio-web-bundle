@@ -230,14 +230,16 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return $scripts;
     }
 
-    public function isTranslated(string $id, string $domain = null, string $locale = null): bool
+    public function isTranslated(string $id, string $domain = null, string $locale = null, bool $includeFallback = true): bool
     {
         if ($domain === null) {
             $domain = 'messages';
         }
 
+        $methodName = $includeFallback ? 'has' : 'defines';
+
         return $this->translator instanceof TranslatorBagInterface
-            && $this->translator->getCatalogue($locale)->has($id, $domain)
+            && $this->translator->getCatalogue($locale)->$methodName($id, $domain)
             && $this->translator->getCatalogue($locale)->get($id, $domain) !== false;
     }
 
