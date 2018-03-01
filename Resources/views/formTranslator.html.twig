@@ -14,17 +14,17 @@
     {% endif -%}
 {% endmacro %}
 
-{% macro translate_recursive(id, translationDomain = null, currentPath = null, includeFallback = false) -%}
+{% macro translate_recursive(id, translationDomain = null, currentPath = null, preferFallback = false) -%}
     {% import _self as self -%}
 
     {% set currentId = currentPath is same as(null) ? id : currentPath|join('.') -%}
     {% set currentPath = currentPath ?? id|split('.') -%}
 
-    {% if is_translated(currentId, translationDomain, null, includeFallback) -%}
+    {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
         {{ currentId|trans({}, translationDomain) -}}
     {% elseif currentPath|length > 1 -%}
         {{ self.translate_recursive(id, translationDomain, currentPath|slice(1)) -}}
-    {% elseif not useFallback -%}
+    {% elseif not preferFallback -%}
         {{ self.translate_recursive(id, translationDomain, null, true) -}}
     {% else -%}
         {{ currentId -}}
