@@ -23,7 +23,7 @@
     {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
         {{ currentId|trans({}, translationDomain) -}}
     {% elseif currentPath|length > 1 -%}
-        {{ self.translate_recursive(id, translationDomain, currentPath|slice(1)) -}}
+        {{ self.translate_recursive(id, translationDomain, currentPath|slice(1), preferFallback) -}}
     {% elseif not preferFallback -%}
         {{ self.translate_recursive(id, translationDomain, null, true) -}}
     {% else -%}
