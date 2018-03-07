@@ -110,7 +110,7 @@ class MultilingualListener implements EventSubscriberInterface
         $targetLocale = null;
 
         usort($this->multilingualRootPaths, function (string $rootPath1, string $rootPath2) {
-            return -(strlen($rootPath1) <=> strlen($rootPath2));
+            return strlen($rootPath2) - strlen($rootPath1);
         });
 
         foreach ($this->multilingualRootPaths as $multilingualRootPath) {
