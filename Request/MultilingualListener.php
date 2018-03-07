@@ -102,28 +102,28 @@ class MultilingualListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if (!$request->attributes->has('_locale')) {
-            $pathInfo = $request->getPathInfo();
-            $targetLocale = null;
+        if ($request->attributes->has('_locale')) {
+            return;
+        }
 
-            foreach ($this->multilingualRootPaths as $multilingualRootPath) {
-                if (Strings::startsWith($pathInfo, $multilingualRootPath)) {
-                    $pathInfoWithoutRoot = substr($pathInfo, strlen($multilingualRootPath));
-                    $locale = explode('/', ltrim($pathInfoWithoutRoot, '/'))[0];
+        $pathInfo = $request->getPathInfo();
+        $targetLocale = null;
 
-                    if (in_array($locale, $this->supportedLocales)) {
-                        $targetLocale = $locale;
-                        break;
-                    }
+        foreach ($this->multilingualRootPaths as $multilingualRootPath) {
+            if (Strings::startsWith($pathInfo, $multilingualRootPath)) {
+                $pathInfoWithoutRoot = substr($pathInfo, strlen($multilingualRootPath));
+                $locale = explode('/', ltrim($pathInfoWithoutRoot, '/'))[0];
+
+                if (in_array($locale, $this->supportedLocales)) {
+                    $targetLocale = $locale;
+                    break;
                 }
             }
+        }
 
-            $targetLocale = $targetLocale ?? $this->preferredLocale();
-
-            if ($targetLocale) {
-                $request->setLocale($targetLocale);
-                $request->attributes->set('_locale', $targetLocale);
-            }
+        if ($targetLocale = $targetLocale ?? $this->preferredLocale()) {
+            $request->setLocale($targetLocale);
+            $request->attributes->set('_locale', $targetLocale);
         }
     }
 
