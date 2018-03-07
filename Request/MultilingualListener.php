@@ -7,8 +7,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
 
 class MultilingualListener implements EventSubscriberInterface
@@ -96,6 +98,39 @@ class MultilingualListener implements EventSubscriberInterface
         }
     }
 
+    public function onException(GetResponseForExceptionEvent $event)
+    {
+        $request = $event->getRequest();
+
+        if ($request->attributes->has('_locale')) {
+            return;
+        }
+
+        $pathInfo = $request->getPathInfo();
+        $targetLocale = null;
+
+        usort($this->multilingualRootPaths, function (string $rootPath1, string $rootPath2) {
+            return strlen($rootPath2) - strlen($rootPath1);
+        });
+
+        foreach ($this->multilingualRootPaths as $multilingualRootPath) {
+            if (Strings::startsWith($pathInfo, $multilingualRootPath)) {
+                $pathInfoWithoutRoot = substr($pathInfo, strlen($multilingualRootPath));
+                $locale = explode('/', ltrim($pathInfoWithoutRoot, '/'))[0];
+
+                if (in_array($locale, $this->supportedLocales)) {
+                    $targetLocale = $locale;
+                    break;
+                }
+            }
+        }
+
+        if ($targetLocale = $targetLocale ?? $this->preferredLocale()) {
+            $request->setLocale($targetLocale);
+            $request->attributes->set('_locale', $targetLocale);
+        }
+    }
+
     private function multilingualRootRequested(): bool
     {
         $pathInfo = rtrim($this->request->getPathInfo(), '/');
@@ -169,6 +204,7 @@ class MultilingualListener implements EventSubscriberInterface
         return [
             KernelEvents::REQUEST => ['onRequest', PHP_INT_MAX],
             KernelEvents::RESPONSE => ['onResponse', PHP_INT_MIN],
+            KernelEvents::EXCEPTION => ['onException', PHP_INT_MAX],
         ];
     }
 }
