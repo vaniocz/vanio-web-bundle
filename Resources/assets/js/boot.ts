@@ -3,7 +3,7 @@ import {register} from 'jquery-ts-components';
 if (typeof __DEVELOPMENT__ !== 'undefined' && __DEVELOPMENT__) {
     addEventListener('message', onDevServerReady);
 } else {
-    register(document.body);
+    $(() => register(document.body));
 }
 
 function onDevServerReady(event: MessageEvent): void
