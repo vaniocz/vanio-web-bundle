@@ -22,7 +22,7 @@ export default class Collection
                 containment: 'parent',
                 tolerance: 'pointer',
                 forcePlaceholderSize: true,
-                helper: this.resolveDragDropHelper.bind(this),
+                helper: this.createDragDropHelper.bind(this),
             },
         }, options);
         this.$body.collection(options)
@@ -44,7 +44,7 @@ export default class Collection
         this.updateEntriesCount();
     }
 
-    private resolveDragDropHelper(event: JQueryEventObject, $entry: JQuery): JQuery
+    private createDragDropHelper(event: JQueryEventObject, $entry: JQuery): JQuery
     {
         if ($entry.css('display') !== 'table-row') {
             return $entry;
@@ -54,7 +54,8 @@ export default class Collection
         const $clone = $entry.clone();
         $clone.children().each((index: number, child: HTMLElement) => {
             const $child = $children.eq(index);
-            $(child).width($child.css('box-sizing') === 'border-box' ? $child.outerWidth()! : $child.width()!);
+            const width = $child.css('box-sizing') === 'border-box' ? $child.outerWidth()! : $child.width()!;
+            $(child).css('width', width);
         });
 
         return $clone;
