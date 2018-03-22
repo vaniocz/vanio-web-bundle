@@ -1,0 +1,22 @@
+{% block form_start %}
+    {% set attr = id is not same as(form.vars.id) ? {id: id, novalidate: 'novalidate'} : {novalidate: 'novalidate'} %}
+
+    {%- do form.setMethodRendered() -%}
+    {% set method = method|upper %}
+
+    {%- if method in ["GET", "POST"] -%}
+        {% set form_method = method %}
+    {%- else -%}
+        {% set form_method = "POST" %}
+    {%- endif -%}
+
+    <form name="{{ name }}" method="{{ form_method|lower }}"{% if action != '' %} action="{{ action }}"{% endif %}{% for attrname, attrvalue in attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}{% if multipart %} enctype="multipart/form-data"{% endif %}>
+
+    {%- if form_method != method -%}
+        <input type="hidden" name="_method" value="{{ method }}" />
+    {%- endif -%}
+
+    {%- if preserveQuery is defined -%}
+        {% include '@VanioWeb/preserveQueryFormFields.html.twig' %}
+    {%- endif -%}
+{% endblock %}

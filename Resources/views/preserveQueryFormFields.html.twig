@@ -1,0 +1,5 @@
+{% set preserveQuery = preserveQuery is iterable ? preserveQuery : [preserveQuery] %}
+
+{% for parameter in preserveQuery if app.request.query.has(parameter) %}
+    <input type="hidden" name="{{ parameter }}" value="{{ app.request.query.get(parameter) }}" />
+{% endfor %}
