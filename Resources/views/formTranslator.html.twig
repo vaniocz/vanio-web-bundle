@@ -1,8 +1,8 @@
-{% macro translate_form_label(form, translationDomain = null) -%}
+{% macro translate_form_label(form, label, translationDomain = null) -%}
     {% import _self as self -%}
 
-    {% if form.vars.label is not empty or form.vars.label_format is not empty -%}
-        {% set label = form.vars.label_format|replace({'%name%': form.vars.name, '%id%': form.vars.id})|default(form.vars.label) -%}
+    {% if label is not empty or form.vars.label_format is not empty -%}
+        {% set label = form.vars.label_format|replace({'%name%': form.vars.name, '%id%': form.vars.id})|default(label) -%}
 
         {% if translationDomain is same as(false) -%}
             {{ label -}}

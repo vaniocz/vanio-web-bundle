@@ -11,7 +11,7 @@
         {% endif %}
 
         <label {{ attributes({class: label_attr.class ?? {} + {required: required, 'control-label': true}} + label_attr) }}>
-            {{- translate_form_label(form, translation_domain) -}}
+            {{- translate_form_label(form, label, translation_domain) -}}
         </label>
     {%- endif %}
 {% endblock -%}
@@ -23,7 +23,7 @@
         {% if label_format is not empty %}
             {% set label = label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) %}
         {% else %}
-            {% set label = translate_form_label(form, translation_domain) %}
+            {% set label = translate_form_label(form, label, translation_domain) %}
         {% endif %}
     {% endif %}
 
@@ -49,7 +49,7 @@
             {% if label is not same as(false) -%}
                 {% if label is empty %}
                     {% if label_format is empty %}
-                        {{ translate_form_label(form, translation_domain) }}
+                        {{ translate_form_label(form, label, translation_domain) }}
                     {% else %}
                         {{ label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) }}
                     {% endif %}
