@@ -59,6 +59,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     /** @var string[] */
     private $themesToAppend = [
+        '@VanioWeb/formStartLayout.html.twig',
         '@VanioWeb/formAttributesLayout.html.twig',
         '@VanioWeb/recursiveFormLabelLayout.html.twig',
         '@VanioWeb/collectionWidgetLayout.html.twig',

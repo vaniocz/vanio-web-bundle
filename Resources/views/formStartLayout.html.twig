@@ -1,0 +1,29 @@
+{% block form_start %}
+    {%- do form.setMethodRendered() -%}
+    {% set method = method|upper %}
+
+    {%- if method in ['GET', 'POST'] -%}
+        {% set form_method = method %}
+    {%- else -%}
+        {% set form_method = 'POST' %}
+    {%- endif -%}
+
+    {% set attr = {
+        id: id is same as(form.vars.id) ? false : id,
+        name: name,
+        method: form_method|lower,
+        action: action == '' ? false : action,
+        multipart: multipart ? 'multipart/form-data' : false,
+        novalidate: true,
+    } -%}
+
+    <form {{ attributes(attr) }}>
+
+    {%- if form_method != method -%}
+        <input type="hidden" name="_method" value="{{ method }}"/>
+    {%- endif -%}
+
+    {% if preserveQuery is defined -%}
+        {% include '@VanioWeb/preserveQueryFormFields.html.twig' %}
+    {%- endif -%}
+{% endblock %}

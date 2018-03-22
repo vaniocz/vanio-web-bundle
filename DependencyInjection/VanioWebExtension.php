@@ -49,6 +49,7 @@ class VanioWebExtension extends Extension implements PrependExtensionInterface
             ? $container->getParameter('twig.form.resources')
             : [];
         $resources[] = '@VanioWeb/formLayout.html.twig';
+        $resources[] = '@VanioWeb/formStartLayout.html.twig';
         $resources[] = '@VanioWeb/formAttributesLayout.html.twig';
 
         if ($config['recursive_form_label']) {
