@@ -39,10 +39,7 @@ FpJsFormElement.prototype.onValidate = function (errors: any[]): void
     }
 
     const $tabsToFocus = findTabsByPanes($invalidFieldToFocus.parents('.tab-pane'));
-
-    $invalidTabs.closest('.tabbable').find('> .nav-tabs > li, > .tab-content > .tab-pane')
-        .removeClass(FpJsFormValidator.hasErrorClass)
-        .removeClass('active');
+    $invalidTabs.closest('.tabbable').find('> .nav-tabs > li').removeClass(FpJsFormValidator.hasErrorClass);
 
     $invalidTabs.each((index: number, invalidTab: HTMLElement) => {
         const $invalidTab = $(invalidTab);
@@ -54,8 +51,7 @@ FpJsFormElement.prototype.onValidate = function (errors: any[]): void
                 && !$invalidTab.siblings().filter($tabsToFocus).length
             )
         ) {
-            $invalidTab.addClass('active');
-            $($link.data('target') || $link.attr('href')).addClass('active');
+            $link.click();
         }
     });
 
