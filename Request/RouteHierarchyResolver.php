@@ -58,8 +58,7 @@ class RouteHierarchyResolver
 
     private function match(string $path, ParameterBag $attributes): array
     {
-        $parameters = $this->matchPath("$path/")
-            ?: $this->matchPath($path);
+        $parameters = $this->matchPath("$path/") ?: $this->matchPath($path);
 
         if (
             $parameters
