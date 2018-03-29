@@ -10,13 +10,14 @@ interface FpJsFormValidator
     getValueLength(value: any): number;
 }
 
-interface FpJsFormElement
+declare class FpJsFormElement
 {
     domNode: HTMLInputElement;
     children: {[name: string]: FpJsFormElement};
 
     get(path: string): FpJsFormElement;
     getValue(): any;
+    onValidate(this: HTMLElement, errors: Object, event: Event): void
 }
 
 declare class FpJsFormError
