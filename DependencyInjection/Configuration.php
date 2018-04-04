@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('google_maps_api_key')->defaultNull()->end()
                 ->booleanNode('multilingual')->defaultFalse()->end()
                 ->arrayNode('multilingual_root_paths')
+                    ->prototype('scalar')->end()
                     ->defaultValue(['/'])
                     ->beforeNormalization()
                         ->ifTrue(function ($value) {
@@ -30,13 +31,13 @@ class Configuration implements ConfigurationInterface
                             return [$value];
                         })
                     ->end()
-                    ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('multilingual_supported_locales')
-                    ->treatNullLike([])
                     ->prototype('scalar')->end()
+                    ->treatNullLike([])
                 ->end()
                 ->arrayNode('multilingual_locale_prefixes')
+                    ->prototype('scalar')->end()
                     ->defaultValue([])
                     ->beforeNormalization()
                         ->ifTrue(function ($value) {
@@ -46,7 +47,6 @@ class Configuration implements ConfigurationInterface
                             return [$value];
                         })
                     ->end()
-                    ->prototype('scalar')->end()
                 ->end()
             ->end();
 

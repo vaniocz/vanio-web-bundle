@@ -4,7 +4,11 @@
 {% endblock %}
 
 {% block scalar_object_widget -%}
-    {{ form_widget(form.value) -}}
+    {% if not valid -%}
+        {% set attr = {class: "#{attr.class ?? ''} has-error"} -%}
+    {% endif -%}
+
+    {{ form_widget(form.value, {attr: attr}) -}}
 {% endblock %}
 
 {% block vanio_date_widget %}
