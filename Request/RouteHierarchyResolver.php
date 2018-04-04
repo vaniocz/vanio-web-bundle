@@ -58,10 +58,12 @@ class RouteHierarchyResolver
 
     private function match(string $path, ParameterBag $attributes): array
     {
-        $parameters = $this->matchPath("$path/", $attributes->get('_locale'))
-            ?: $this->matchPath($path, $attributes->get('_locale'));
+        $parameters = $this->matchPath("$path/") ?: $this->matchPath($path);
 
-        if ($parameters) {
+        if (
+            $parameters
+            && (!isset($parameters['_locale']) || $parameters['_locale'] === $attributes->get('_locale'))
+        ) {
             $attributes = $parameters + $attributes->all();
             unset($parameters['_route'], $parameters['_controller']);
 
@@ -71,15 +73,12 @@ class RouteHierarchyResolver
         return [];
     }
 
-    private function matchPath(string $path, string $locale = null): array
+    private function matchPath(string $path): array
     {
         try {
             $parameters = $this->urlMatcher->match($path);
 
-            if (
-                isset($parameters['_route'])
-                && (!isset($parameters['_locale']) || $parameters['_locale'] === $locale)
-            ) {
+            if (isset($parameters['_route'])) {
                 return $parameters;
             }
         } catch (ResourceNotFoundException $e) {
