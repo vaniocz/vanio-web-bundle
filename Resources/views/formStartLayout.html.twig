@@ -14,7 +14,7 @@
         method: form_method|lower,
         action: action == '' ? false : action,
         multipart: multipart ? 'multipart/form-data' : false,
-        novalidate: true,
+        novalidate: null,
     } -%}
 
     <form {{ attributes(attr) }}>
