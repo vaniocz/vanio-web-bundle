@@ -34,7 +34,7 @@
 {% macro form_path(form, currentPath = null) -%}
     {% import _self as self -%}
 
-    {% if 'collection' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translations' not in form.parent.vars.block_prefixes ?? [] -%}
+    {% if 'collection' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translations' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translationsForms' not in form.parent.vars.block_prefixes ?? [] -%}
         {% set currentPath = currentPath is same as(null) ? form.vars.name : "#{form.vars.name}.#{currentPath}" -%}
     {% endif -%}
 
