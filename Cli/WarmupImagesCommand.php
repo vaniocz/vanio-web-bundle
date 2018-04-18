@@ -85,7 +85,7 @@ class WarmupImagesCommand extends Command
 
         return $imagePaths;
     }
-    
+
     /**
      * @param \DOMElement $image
      * @return string[]
