@@ -184,7 +184,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             if (is_array($value)) {
                 if ($name === 'class') {
                     $value = $this->className($value);
-                } elseif (Strings::startsWith($name, 'data-component-')) {
+                } elseif (Strings::startsWith($name, 'data-')) {
                     $value = json_encode($value);
                 }
             } elseif ($value === true) {
@@ -193,7 +193,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
             if ($value === null) {
                 $html .= sprintf(' %s', $name);
-            } elseif ($value !== false) {
+            } elseif ($value !== false || Strings::startsWith($name, 'data-')) {
                 $value = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, $environment->getCharset());
                 $html .= sprintf(' %s="%s"', $name, $value);
             }
