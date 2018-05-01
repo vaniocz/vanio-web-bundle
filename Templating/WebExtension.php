@@ -181,21 +181,19 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $html = '';
 
         foreach ($attributes as $name => $value) {
-            $isDataAttribute = Strings::startsWith($name, 'data-');
-
             if (is_array($value)) {
                 if ($name === 'class') {
                     $value = $this->className($value);
-                } elseif ($isDataAttribute) {
+                } elseif (Strings::startsWith($name, 'data-')) {
                     $value = json_encode($value);
                 }
-            } elseif ($value === true && !$isDataAttribute) {
-                $value = $name;
+            } elseif ($value === true) {
+                $value = Strings::startsWith($name, 'data-') ? 'true' : $name;
             }
 
             if ($value === null) {
                 $html .= sprintf(' %s', $name);
-            } elseif ($value !== false || $isDataAttribute) {
+            } elseif ($value !== false) {
                 $value = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, $environment->getCharset());
                 $html .= sprintf(' %s="%s"', $name, $value);
             }
