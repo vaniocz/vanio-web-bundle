@@ -24,7 +24,7 @@
         "phpunit/phpunit": "^5.5",
         "matthiasnoback/symfony-dependency-injection-test": "^1.0",
         "vanio/coding-standards": "^0.1",
-        "vanio/vanio-domain-bundle": "~0.2"
+        "vanio/vanio-domain-bundle": "^0.4"
     },
     "autoload": {
         "psr-4": {"Vanio\\WebBundle\\": ""},
@@ -42,7 +42,7 @@
     "prefer-stable": true,
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3.x-dev"
+            "dev-master": "0.4.x-dev"
         }
     }
 }
