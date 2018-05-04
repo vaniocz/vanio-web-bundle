@@ -4,6 +4,7 @@ namespace Vanio\WebBundle\Templating;
 use Doctrine\Common\Cache\FilesystemCache;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -15,6 +16,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Strings;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
+use Vanio\WebBundle\Serializer\Serializer;
 
 class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
@@ -35,6 +37,12 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     /** @var RouteHierarchyResolver */
     private $routeHierarchyResolver;
+
+    /** @var ResponseContext */
+    private $responseContext;
+
+    /** @var Serializer */
+    private $serializer;
 
     /** @var CacheManager|null */
     private $cacheManager;
@@ -73,6 +81,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         RequestStack $requestStack,
         RefererResolver $refererResolver,
         RouteHierarchyResolver $routeHierarchyResolver,
+        ResponseContext $responseContext,
+        Serializer $serializer,
         CacheManager $cacheManager = null,
         string $webRoot,
         string $imageDimensionsCacheDirectory,
@@ -85,6 +95,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->requestStack = $requestStack;
         $this->refererResolver = $refererResolver;
         $this->routeHierarchyResolver = $routeHierarchyResolver;
+        $this->responseContext = $responseContext;
+        $this->serializer = $serializer;
         $this->cacheManager = $cacheManager;
         $this->webRoot = $webRoot;
         $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
@@ -119,6 +131,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
             new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
+            new \Twig_SimpleFunction('form_errors', [$this, 'formErrors']),
+            new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
         ];
     }
 
@@ -141,6 +155,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('filename', [$this, 'filename']),
             new \Twig_SimpleFilter('extension', [$this, 'extension']),
             new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
+            new \Twig_SimpleFilter('serialize', [$this, 'serialize']),
         ];
     }
 
@@ -371,6 +386,29 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         );
     }
 
+    public function formErrors(FormView $form): array
+    {
+        $errors = [];
+
+        /** @var FormError $error */
+        foreach ($form->vars['errors'] as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        foreach ($form as $name => $child) {
+            if ($childErrors = $this->formErrors($child)) {
+                $errors[$name] = $childErrors;
+            }
+        }
+
+        return $errors;
+    }
+
+    public function responseStatus(int $statusCode, string $statusText = null)
+    {
+        $this->responseContext->setStatus($statusCode, $statusText);
+    }
+
     /**
      * @param string|string[] $messages
      * @param array $arguments
@@ -485,6 +523,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $factor = floor((strlen($bytes) - 1) / 3);
 
         return sprintf("%.{$decimals}f %s", $bytes / pow(1024, $factor), $units[(string) $factor] ?? '');
+    }
+
+    public function serialize($data, string $format = 'json'): string
+    {
+        return $this->serializer->serialize($data, $format);
     }
 
     /**

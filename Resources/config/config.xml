@@ -12,8 +12,10 @@
         <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
         <parameter key="vanio_web.request.route_hierarchy_resolver.class">Vanio\WebBundle\Request\RouteHierarchyResolver</parameter>
         <parameter key="vanio_web.request.multilingual_listener.class">Vanio\WebBundle\Request\MultilingualListener</parameter>
+        <parameter key="vanio_web.serializer.serializer.class">Vanio\WebBundle\Serializer\Serializer</parameter>
         <parameter key="vanio_web.http_kernel.embedded_fragment_renderer.class">Vanio\WebBundle\HttpKernel\EmbeddedFragmentRenderer</parameter>
         <parameter key="vanio_web.templating.snippet_renderer.class">Vanio\WebBundle\Templating\SnippetRenderer</parameter>
+        <parameter key="vanio_web.templating.response_context.class">Vanio\WebBundle\Templating\ResponseContext</parameter>
         <parameter key="vanio_web.templating.twig_form_renderer_engine.class">Vanio\WebBundle\Templating\TwigFormRendererEngine</parameter>
         <parameter key="vanio_web.templating.web_extension.class">Vanio\WebBundle\Templating\WebExtension</parameter>
         <parameter key="vanio_web.translation.php_extractor.class">Vanio\WebBundle\Translation\PhpExtractor</parameter>
@@ -83,6 +85,11 @@
             <argument>%vanio_web.multilingual_locale_prefixes%</argument>
         </service>
 
+        <service id="vanio_web.serializer.serializer" class="%vanio_web.serializer.serializer.class%">
+            <argument type="service" id="serializer" on-invalid="null"/>
+            <argument type="service" id="jms_serializer.serializer" on-invalid="null"/>
+        </service>
+
         <service id="vanio_web.http_kernel.embedded_fragment_renderer" class="%vanio_web.http_kernel.embedded_fragment_renderer.class%" parent="fragment.renderer.inline">
             <tag name="kernel.fragment_renderer" alias="embedded"/>
         </service>
@@ -91,6 +98,8 @@
             <argument type="service" id="service_container"/>
         </service>
 
+        <service id="vanio_web.templating.response_context" class="%vanio_web.templating.response_context.class%"/>
+
         <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
             <argument type="service" id="translator"/>
             <argument type="service" id="router"/>
@@ -98,6 +107,8 @@
             <argument type="service" id="request_stack"/>
             <argument type="service" id="vanio_web.request.referer_resolver"/>
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
+            <argument type="service" id="vanio_web.templating.response_context"/>
+            <argument type="service" id="vanio_web.serializer.serializer"/>
             <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
             <argument>%web_root%</argument>
             <argument>%kernel.cache_dir%/vanio_web</argument>
