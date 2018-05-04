@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Strings;
+use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
 use Vanio\WebBundle\Serializer\Serializer;
@@ -156,6 +157,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('extension', [$this, 'extension']),
             new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
             new \Twig_SimpleFilter('serialize', [$this, 'serialize']),
+            new \Twig_SimpleFilter('with_appended_query', [$this, 'withAppendedQuery']),
         ];
     }
 
@@ -528,6 +530,19 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function serialize($data, string $format = 'json'): string
     {
         return $this->serializer->serialize($data, $format);
+    }
+
+    /**
+     * @param string $url
+     * @param mixed[] $query
+     * @return string
+     */
+    public function withAppendedQuery(string $url, array $query): string
+    {
+        $url .= Strings::contains($url, '?') ? '&' : '?';
+        $url .= is_array($query) ? http_build_query($query) : $query;
+
+        return $url;
     }
 
     /**
