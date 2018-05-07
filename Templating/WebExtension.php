@@ -132,7 +132,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
             new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
-            new \Twig_SimpleFunction('form_errors', [$this, 'formErrors']),
+            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrors']),
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
         ];
     }

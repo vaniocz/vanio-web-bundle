@@ -1,7 +1,7 @@
 <?php
 namespace Vanio\WebBundle\Serializer;
 
-use JMS\Serializer\Exception\UnsupportedFormatException;
+use JMS\Serializer\Exception\UnsupportedFormatException as JmsUnsupportedFormatException;
 use JMS\Serializer\SerializerInterface as JmsSerializerInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface as SymfonySerializerInterface;
@@ -16,12 +16,18 @@ class Serializer
         $this->jmsSerializer = $jmsSerializer;
     }
 
-    public function serialize(array $data, string $format): string
+    /**
+     * @param mixed $data
+     * @param string $format
+     * @return string
+     * @throws UnsupportedFormatException
+     */
+    public function serialize($data, string $format): string
     {
         if ($this->jmsSerializer) {
             try {
                 return $this->jmsSerializer->serialize($data, $format);
-            } catch (UnsupportedFormatException $e) {}
+            } catch (JmsUnsupportedFormatException $e) {}
         }
 
         if ($this->symfonySerializer) {
@@ -34,6 +40,6 @@ class Serializer
             return json_encode($data);
         }
 
-        throw new \LogicException(sprintf('Unable to serialize to format "%s".', $format));
+        throw UnsupportedFormatException::create($format);
     }
 }
