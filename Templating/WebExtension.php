@@ -132,7 +132,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
             new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
-            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrors']),
+            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrorMessages']),
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
         ];
     }
@@ -388,22 +388,22 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         );
     }
 
-    public function formErrors(FormView $form): array
+    public function formErrorMessages(FormView $form): array
     {
-        $errors = [];
+        $errorMessages = [];
 
         /** @var FormError $error */
         foreach ($form->vars['errors'] as $error) {
-            $errors[] = $error->getMessage();
+            $errorMessages[] = $error->getMessage();
         }
 
         foreach ($form as $name => $child) {
-            if ($childErrors = $this->formErrors($child)) {
-                $errors[$name] = $childErrors;
+            if ($childErrorMessages = $this->formErrorMessages($child)) {
+                $errorMessages[$name] = $childErrorMessages;
             }
         }
 
-        return $errors;
+        return $errorMessages;
     }
 
     public function responseStatus(int $statusCode, string $statusText = null)
