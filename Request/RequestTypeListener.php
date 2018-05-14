@@ -7,13 +7,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class RequestTypeListener implements EventSubscriberInterface
 {
-    public function onKernelRequest(GetResponseEvent $event)
-    {
-        $event->getRequest()->attributes->set('_request_type', $event->getRequestType());
-    }
-
     public static function getSubscribedEvents(): array
     {
-        return [KernelEvents::REQUEST => 'onKernelRequest'];
+        return [KernelEvents::REQUEST => 'onRequest'];
+    }
+
+    /** @internal */
+    public function onRequest(GetResponseEvent $event)
+    {
+        $event->getRequest()->attributes->set('_request_type', $event->getRequestType());
     }
 }
