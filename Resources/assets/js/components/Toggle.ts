@@ -18,19 +18,15 @@ export default class Toggle
             {className: 'toggle--active', source: element},
             typeof options === 'string' ? {target: options} : options
         );
-
         const $source = $(this.options.source);
         const $target = $(this.options.target);
-        const isSourceCheckbox = $source.is('input[type="checkbox"]');
-        const issourceRadio = $source.is('input[type="radio"]');
-
-        if (isSourceCheckbox || issourceRadio) {
-            const $eventTarget = issourceRadio ? $(`input[name="${$source.attr('name')}"]`) : $source;
-            const toggleClass = () => {
-                $target.toggleClass(this.options.className, $source.is(':checked'));
-            };
-
-            $eventTarget.on('change', (event: JQuery.Event) => { toggleClass(); });
+        
+        if ($source.is(':checkbox') || $source.is(':radio')) {
+            const $eventTarget = $source.is(':radio') && $source.attr('name')
+                ? $(`input[name="${$source.attr('name')}"]`)
+                : $source;
+            const toggleClass = () => $target.toggleClass(this.options.className, $source.is(':checked'));
+            $eventTarget.on('change', (event: JQuery.Event) => toggleClass);
             toggleClass();
         } else {
             $source.on('click', (event: JQuery.Event) => {
