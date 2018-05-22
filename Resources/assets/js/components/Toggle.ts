@@ -26,7 +26,7 @@ export default class Toggle
                 ? $(`input[name="${$source.attr('name')}"]`)
                 : $source;
             const toggleClass = () => $target.toggleClass(this.options.className, $source.is(':checked'));
-            $eventTarget.on('change', (event: JQuery.Event) => toggleClass);
+            $eventTarget.on('change', toggleClass);
             toggleClass();
         } else {
             $source.on('click', (event: JQuery.Event) => {
