@@ -17,6 +17,7 @@ use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
+use Vanio\WebBundle\Request\TargetPathResolver;
 use Vanio\WebBundle\Serializer\Serializer;
 
 class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
@@ -33,8 +34,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var RequestStack */
     private $requestStack;
 
-    /** @var RefererResolver */
-    private $refererResolver;
+    /** @var TargetPathResolver */
+    private $targetPathResolver;
 
     /** @var RouteHierarchyResolver */
     private $routeHierarchyResolver;
@@ -80,7 +81,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         UrlGeneratorInterface $urlGenerator,
         TwigFormRendererEngine $twigFormRendererEngine,
         RequestStack $requestStack,
-        RefererResolver $refererResolver,
+        TargetPathResolver $targetPathResolver,
         RouteHierarchyResolver $routeHierarchyResolver,
         ResponseContext $responseContext,
         Serializer $serializer,
@@ -94,7 +95,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->urlGenerator = $urlGenerator;
         $this->twigFormRendererEngine = $twigFormRendererEngine;
         $this->requestStack = $requestStack;
-        $this->refererResolver = $refererResolver;
+        $this->targetPathResolver = $targetPathResolver;
         $this->routeHierarchyResolver = $routeHierarchyResolver;
         $this->responseContext = $responseContext;
         $this->serializer = $serializer;
@@ -308,7 +309,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     public function referer(string $fallbackPath = null): string
     {
-        return $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
+        return $this->targetPathResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
     }
 
     public function isCurrent(string $route): bool

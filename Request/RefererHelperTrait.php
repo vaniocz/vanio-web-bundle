@@ -11,8 +11,8 @@ trait RefererHelperTrait
     /** @var ContainerInterface|null */
     protected $container;
 
-    /** @var RefererResolver|null */
-    protected $refererResolver;
+    /** @var TargetPathResolver|null */
+    protected $targetPathResolver;
 
     /** @var RequestStack|null */
     protected $requestStack;
@@ -25,22 +25,22 @@ trait RefererHelperTrait
         int $status = Response::HTTP_FOUND,
         array $headers = []
     ): RedirectResponse {
-        if (!$this->container && (!$this->refererResolver || !$this->requestStack)) {
+        if (!$this->container && (!$this->targetPathResolver || !$this->requestStack)) {
             throw new \LogicException(sprintf(
-                'Unable to redirect to referer. You must set both "refererResolver" and "requestStack" properties or make "%s" class container-aware.',
+                'Unable to redirect to referer. You must set both "targetPathResolver" and "requestStack" properties or make "%s" class container-aware.',
                 __CLASS__
             ));
         }
 
-        if (!$this->refererResolver) {
-            $this->refererResolver = $this->container->get('vanio_web.request.referer_resolver');
+        if (!$this->targetPathResolver) {
+            $this->targetPathResolver = $this->container->get('vanio_web.request.target_path_resolver');
         }
 
         if (!$this->requestStack) {
             $this->requestStack = $this->container->get('request_stack');
         }
 
-        $referer = $this->refererResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
+        $referer = $this->targetPathResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
 
         return new RedirectResponse($referer, $status, $headers);
     }
