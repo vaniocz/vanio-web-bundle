@@ -79,9 +79,9 @@ class ValidationConstraintsGuesser
      */
     public function getConstraintMessageParameterMappings($constraint): array
     {
-        return $this->constraintMessageParameterMappings[is_object($constraint)
-            ? get_class($constraint)
-            : $constraint] ?? [];
+        $constraint = is_object($constraint) ? get_class($constraint) : $constraint;
+
+        return $this->constraintMessageParameterMappings[$constraint] ?? [];
     }
 
     private function createValidationConstraint(array $validationRule, array $constraintMapping): Constraint
