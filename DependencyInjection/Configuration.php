@@ -11,6 +11,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder;
         $treeBuilder->root('vanio_web')
             ->children()
+                ->booleanNode('override_default_route_names')->defaultFalse()->end()
                 ->booleanNode('detect_request_type')->defaultFalse()->end()
                 ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
