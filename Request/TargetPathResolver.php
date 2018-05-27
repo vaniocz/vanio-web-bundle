@@ -50,7 +50,7 @@ class TargetPathResolver
             : $targetPath;
         $targetPath = $absoluteBaseUrl . $path;
 
-        if (($allowRefresh || urldecode($request->getUri()) !== $targetPath) && Strings::startsWith($path, '/')) {
+        if (($allowRefresh || urldecode($request->getUri()) !== urldecode($targetPath)) && Strings::startsWith($path, '/')) {
             $path = parse_url($path, PHP_URL_PATH);
 
             if ($path !== false) {
