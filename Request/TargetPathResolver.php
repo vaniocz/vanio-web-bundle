@@ -39,6 +39,7 @@ class TargetPathResolver
     public function resolveTargetPath(Request $request, string $fallbackPath = null): string
     {
         $targetPath = $request->query->get($this->options['target_path_parameter'], '');
+
         return $this->resolvePath($request, $targetPath, $fallbackPath ?? $this->options['target_path_fallback'], true);
     }
 
@@ -50,7 +51,10 @@ class TargetPathResolver
             : $targetPath;
         $targetPath = $absoluteBaseUrl . $path;
 
-        if (($allowRefresh || rawurldecode($request->getUri()) !== rawurldecode($targetPath)) && Strings::startsWith($path, '/')) {
+        if (
+            Strings::startsWith($path, '/')
+            && ($allowRefresh || rawurldecode($request->getUri()) !== rawurldecode($targetPath))
+        ) {
             $path = parse_url($path, PHP_URL_PATH);
 
             if ($path !== false) {
