@@ -9,7 +9,7 @@
         <parameter key="vanio_web.form.js_form_validator_extension.class">Vanio\WebBundle\Form\JsFormValidatorExtension</parameter>
         <parameter key="vanio_web.model.uploaded_file_repository.class">Vanio\DomainBundle\Doctrine\EntityRepository</parameter>
         <parameter key="vanio_web.request.request_type_listener.class">Vanio\WebBundle\Request\RequestTypeListener</parameter>
-        <parameter key="vanio_web.request.referer_resolver.class">Vanio\WebBundle\Request\RefererResolver</parameter>
+        <parameter key="vanio_web.request.target_path_resolver.class">Vanio\WebBundle\Request\TargetPathResolver</parameter>
         <parameter key="vanio_web.request.route_hierarchy_resolver.class">Vanio\WebBundle\Request\RouteHierarchyResolver</parameter>
         <parameter key="vanio_web.request.multilingual_listener.class">Vanio\WebBundle\Request\MultilingualListener</parameter>
         <parameter key="vanio_web.serializer.serializer.class">Vanio\WebBundle\Serializer\Serializer</parameter>
@@ -69,7 +69,7 @@
 
         <service id="vanio_web.request.request_type_listener" class="%vanio_web.request.request_type_listener.class%" abstract="true"/>
 
-        <service id="vanio_web.request.referer_resolver" class="%vanio_web.request.referer_resolver.class%">
+        <service id="vanio_web.request.target_path_resolver" class="%vanio_web.request.target_path_resolver.class%">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router"/>
             <argument>%vanio_web%</argument>
@@ -105,7 +105,7 @@
             <argument type="service" id="router"/>
             <argument type="service" id="twig.form.engine"/>
             <argument type="service" id="request_stack"/>
-            <argument type="service" id="vanio_web.request.referer_resolver"/>
+            <argument type="service" id="vanio_web.request.target_path_resolver"/>
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
             <argument type="service" id="vanio_web.templating.response_context"/>
             <argument type="service" id="vanio_web.serializer.serializer"/>

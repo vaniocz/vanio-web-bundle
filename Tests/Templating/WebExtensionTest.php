@@ -11,8 +11,8 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
-use Vanio\WebBundle\Request\RefererResolver;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
+use Vanio\WebBundle\Request\TargetPathResolver;
 use Vanio\WebBundle\Templating\TwigFormRendererEngine;
 use Vanio\WebBundle\Templating\WebExtension;
 
@@ -38,7 +38,7 @@ class WebExtensionTest extends TestCase
             $this->createRouterMock(),
             new TwigFormRendererEngine,
             $this->requestStack,
-            $this->createRefererResolverMock(),
+            $this->createTargetPathResolverMock(),
             new RouteHierarchyResolver($this->createUrlMatcher()),
             null,
             sys_get_temp_dir()
@@ -211,16 +211,16 @@ class WebExtensionTest extends TestCase
     }
 
     /**
-     * @return RefererResolver|\PHPUnit_Framework_MockObject_MockObject
+     * @return TargetPathResolver|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createRefererResolverMock(): \PHPUnit_Framework_MockObject_MockObject
+    private function createTargetPathResolverMock(): \PHPUnit_Framework_MockObject_MockObject
     {
-        $refererResolverMock = $this->createMock(RefererResolver::class);
-        $refererResolverMock
+        $targetPathResolverMock = $this->createMock(TargetPathResolver::class);
+        $targetPathResolverMock
             ->expects($this->any())
             ->method('resolveReferer')
             ->willReturnArgument(1);
 
-        return $refererResolverMock;
+        return $targetPathResolverMock;
     }
 }

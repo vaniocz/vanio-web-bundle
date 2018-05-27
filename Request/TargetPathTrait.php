@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
-trait RefererHelperTrait
+trait TargetPathTrait
 {
     /** @var ContainerInterface|null */
     protected $container;
@@ -20,14 +20,14 @@ trait RefererHelperTrait
     /**
      * @throws \LogicException
      */
-    protected function redirectToReferer(
+    protected function redirectToTargetPath(
         string $fallbackPath = null,
         int $status = Response::HTTP_FOUND,
         array $headers = []
     ): RedirectResponse {
         if (!$this->container && (!$this->targetPathResolver || !$this->requestStack)) {
             throw new \LogicException(sprintf(
-                'Unable to redirect to referer. You must set both "targetPathResolver" and "requestStack" properties or make "%s" class container-aware.',
+                'Unable to redirect to target path. You must set both "targetPathResolver" and "requestStack" properties or make "%s" class container-aware.',
                 __CLASS__
             ));
         }
@@ -40,7 +40,7 @@ trait RefererHelperTrait
             $this->requestStack = $this->container->get('request_stack');
         }
 
-        $referer = $this->targetPathResolver->resolveReferer($this->requestStack->getCurrentRequest(), $fallbackPath);
+        $referer = $this->targetPathResolver->resolveTargetPath($this->requestStack->getCurrentRequest(), $fallbackPath);
 
         return new RedirectResponse($referer, $status, $headers);
     }

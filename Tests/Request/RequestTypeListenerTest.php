@@ -13,7 +13,7 @@ class RequestTypeListenerTest extends TestCase
     {
         $requestTypeListener = new RequestTypeListener;
         $event = $this->createGetResponseEvent(HttpKernelInterface::MASTER_REQUEST);
-        $requestTypeListener->onKernelRequest($event);
+        $requestTypeListener->onRequest($event);
         $this->assertSame(HttpKernelInterface::MASTER_REQUEST, $event->getRequest()->attributes->get('_request_type'));
     }
 
@@ -21,7 +21,7 @@ class RequestTypeListenerTest extends TestCase
     {
         $requestTypeListener = new RequestTypeListener;
         $event = $this->createGetResponseEvent(HttpKernelInterface::SUB_REQUEST);
-        $requestTypeListener->onKernelRequest($event);
+        $requestTypeListener->onRequest($event);
         $this->assertSame(HttpKernelInterface::SUB_REQUEST, $event->getRequest()->attributes->get('_request_type'));
     }
 

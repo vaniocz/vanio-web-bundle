@@ -15,6 +15,8 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('detect_request_type')->defaultFalse()->end()
                 ->scalarNode('referer_parameter')->defaultValue('_referer')->end()
                 ->scalarNode('referer_fallback_path')->defaultValue('/')->end()
+                ->scalarNode('target_path_parameter')->defaultValue('_target_path')->end()
+                ->scalarNode('target_path_fallback')->defaultValue('/')->end()
                 ->booleanNode('render_snippets')->defaultFalse()->end()
                 ->booleanNode('recursive_form_label')->defaultFalse()->end()
                 ->booleanNode('collection_widget')->defaultFalse()->end()
