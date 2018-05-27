@@ -44,7 +44,7 @@ class RefererHelperTraitTest extends TestCase
         $refererHelper = new ContainerAwareRefererHelper;
         $container = new Container;
         $container->set('request_stack', $this->requestStack);
-        $container->set('vanio_web.request.referer_resolver', $this->targetPathResolverMock);
+        $container->set('vanio_web.request.target_path_resolver', $this->targetPathResolverMock);
         $refererHelper->setContainer($container);
         $response = $refererHelper->redirectToReferer('referer');
 
