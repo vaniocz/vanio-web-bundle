@@ -16,6 +16,7 @@ declare class FpJsFormElement
     children: {[name: string]: FpJsFormElement};
 
     get(path: string): FpJsFormElement;
+    getData(): any;
     getValue(): any;
     onValidate(this: HTMLElement, errors: Object, event: Event): void
 }
