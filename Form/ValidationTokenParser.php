@@ -1,8 +1,10 @@
 <?php
 namespace Vanio\WebBundle\Form;
 
+use Assert\LazyAssertion;
 use Doctrine\Common\Annotations\TokenParser;
 use Symfony\Bundle\FrameworkBundle\Translation\PhpStringTokenParser;
+use Vanio\DomainBundle\Assert\Validate;
 use Vanio\DomainBundle\Assert\Validation;
 use Vanio\Stdlib\Strings;
 use Vanio\TypeParser\UseStatementsParser;
@@ -33,18 +35,39 @@ class ValidationTokenParser implements ValidationParser
             return $validationRules;
         }
 
-        $validationAliases = $this->parseValidationAliases($class);
+        $useStatements = $this->useStatementsParser->parseClass($class);
         $this->tokenParser = new TokenParser($this->getClassContents(new \ReflectionClass($class)));
         $this->validationRules[$class] = [];
-        $lastTokens = [null, null];
+        $token = $this->tokenParser->next();
 
-        while ($token = $this->tokenParser->next()) {
-            $lastTokens = [end($lastTokens), $token];
+        while ($token) {
+            $validationClass = strtolower($token[1] ?? null);
+            $validationClass = $useStatements[$validationClass] ?? $validationClass;
+            $token = $this->tokenParser->next();
 
-            if (!$validationClass = $validationAliases[strtolower($lastTokens[0][1] ?? null)] ?? null) {
+            if (($token[0] ?? null) !== T_DOUBLE_COLON) {
                 continue;
-            } elseif ($lastTokens[1][0] === T_DOUBLE_COLON) {
-                if ($validationRule = $this->parseValidationRule($validationClass)) {
+            }
+
+            $token = $this->tokenParser->next();
+
+            if (($token[0] ?? null) !== T_STRING) {
+                continue;
+            }
+
+            $method = $token[1];
+
+            if (is_a($validationClass, Validate::class, true)) {
+                $this->validationRules[$class] = array_merge(
+                    $this->validationRules[$class],
+                    $this->parseValidateRules($validationClass, $method)
+                );
+            } elseif (is_a($validationClass, Validation::class, true)) {
+                if (Strings::startsWith($method, 'nullOr')) {
+                    $method = substr($method, 6);
+                }
+
+                if ($validationRule = $this->parseValidationRule($validationClass, $method)) {
                     $this->validationRules[$class][] = $validationRule;
                 }
             }
@@ -53,68 +76,108 @@ class ValidationTokenParser implements ValidationParser
         return $this->validationRules[$class];
     }
 
-    /**
-     * @param string $class
-     * @return array|null
-     */
-    private function parseValidationRule(string $class)
+    private function parseValidateRules(string $class, string $method): array
     {
-        $method = $this->parseToken(T_STRING);
-
-        if (!$method || !$this->parseToken('(')) {
-            return null;
+        if ($method === 'lazy') {
+            return $this->parseTokens(['(', ')', T_OBJECT_OPERATOR, 'that']) ? $this->parseLazyRules($class) : [];
+        } elseif ($method === 'that') {
+            return $this->parseChainedRules($class);
         }
 
-        $reflectionMethod = new \ReflectionMethod(
-            $class,
-            Strings::startsWith($method, 'nullOr') ? substr($method, 6) : $method
-        );
-        $arguments = $this->parseFunctionArguments();
-        $validationRule = [
-            'class' => $class,
-            'method' => $method,
+        return [];
+    }
+
+    private function parseValidationRule(
+        string $class,
+        string $method,
+        array $defaultOptions = [],
+        bool $shouldSkipFirstArgument = false
+    ): array {
+        $options = $this->parseMethodArguments($class, $method, $shouldSkipFirstArgument) + $defaultOptions + [
+            '_class' => $class,
+            '_method' => $method,
         ];
 
-        foreach ($reflectionMethod->getParameters() as $parameter) {
-            if (!$argument = $arguments[$parameter->getPosition()] ?? null) {
-                continue;
+        return isset($options['message']) ? $options : [];
+    }
+
+    private function parseLazyRules(string $class): array
+    {
+        $rules = [];
+        $defaultOptions = $this->parseMethodArguments(LazyAssertion::class, 'that');
+        $validationClass = $class::assertionClass();
+
+        while ($this->parseToken(T_OBJECT_OPERATOR)) {
+            $method = $this->parseToken(T_STRING);
+
+            if ($method === 'that') {
+                return array_merge($rules, $this->parseLazyRules($class));
+            } elseif ($method === 'verifyNow') {
+                return $rules;
+            } elseif ($rule = $this->parseChainedRule($validationClass, $method, $defaultOptions)) {
+                $rules[] = $rule;
+            }
+        }
+
+        return $rules;
+    }
+
+    private function parseChainedRules(string $class): array
+    {
+        $rules = [];
+        $defaultOptions = $this->parseMethodArguments($class, 'that');
+        $validationClass = $class::assertionClass();
+
+        while ($this->parseToken(T_OBJECT_OPERATOR)) {
+            $method = $this->parseToken(T_STRING);
+
+            if ($rule = $this->parseChainedRule($validationClass, $method, $defaultOptions)) {
+                $rules[] = $rule;
+            }
+        }
+
+        return $rules;
+    }
+
+    private function parseChainedRule(string $class, string $method, array $defaultOptions = []): array
+    {
+        return $this->parseValidationRule($class, $method, $defaultOptions, true);
+    }
+
+    private function parseMethodArguments(string $class, string $method, bool $shouldSkipFirstArgument = false): array
+    {
+        if (!$this->parseToken('(')) {
+            return [];
+        }
+
+        $arguments = $this->parseFunctionArguments();
+        $parameters = (new \ReflectionMethod($class, $method))->getParameters();
+        array_shift($parameters);
+        $options = [];
+
+        foreach ($parameters as $parameter) {
+            $name = null;
+
+            if (!$argument = $arguments[$parameter->getPosition() - $shouldSkipFirstArgument] ?? null) {
+                return $options;
+            } elseif ($parameter->name === 'propertyPath' || $parameter->name === 'defaultPropertyPath') {
+                $name = '_propertyPath';
+            } elseif ($parameter->name === 'message' || $parameter->name === 'defaultMessage') {
+                $name = 'message';
             }
 
             try {
-                switch ($parameter->name) {
-                    case 'message':
-                        $validationRule['message'] = $this->resolveScalarToken($argument);
-                        break;
-                    case 'propertyPath':
-                        $validationRule['property_path'] = $this->resolveScalarToken($argument);
-                        break;
-                    case 'value':
-                    case 'value1':
-                        $validationRule['property_path'] = $this->resolveVariableNameToken($argument);
-                        break;
-                    default:
-                        $validationRule[$parameter->name] = $this->resolveScalarToken($argument);
-                }
+                $value = $this->resolveScalarToken($argument);
             } catch (\UnexpectedValueException $e) {
-                return null;
+                return [];
+            }
+
+            if ($value !== null || $name === null) {
+                $options[$name ?? $parameter->name] = $value;
             }
         }
 
-        return $validationRule;
-    }
-
-    private function parseValidationAliases(string $class): array
-    {
-        $useStatements = $this->useStatementsParser->parseClass($class);
-        $validationAliases = [];
-
-        foreach ($useStatements as $alias => $useStatement) {
-            if (is_a($useStatement, Validation::class, true)) {
-                $validationAliases[$alias] = $useStatement;
-            }
-        }
-
-        return $validationAliases;
+        return $options;
     }
 
     private function parseFunctionArguments(): array
@@ -141,6 +204,35 @@ class ValidationTokenParser implements ValidationParser
         }
 
         return $arguments;
+    }
+
+    private function parseTokens(array $expectedTokens): array
+    {
+        $tokens = [];
+
+        foreach ($expectedTokens as $expectedToken) {
+            if (!$token = $this->parseToken($expectedToken)) {
+                return [];
+            }
+
+            $tokens[] = $token;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @param int|string|null $expectedToken
+     * @return string|null
+     */
+    private function parseToken($expectedToken = null)
+    {
+        $token = $this->tokenParser->next();
+        $value = $token[1] ?? $token;
+
+        return $expectedToken === null || $value === $expectedToken || ($token[0] ?? null) === $expectedToken
+            ? $value
+            : null;
     }
 
     /**
@@ -178,42 +270,6 @@ class ValidationTokenParser implements ValidationParser
         }
 
         return $value === null ? null : PhpStringTokenParser::parse($value);
-    }
-
-    /**
-     * @param array $tokens
-     * @return string|null
-     */
-    private function resolveVariableNameToken(array $tokens)
-    {
-        if (($tokens[0][0] ?? null) !== T_VARIABLE || count($tokens) > 1 && ($tokens[0][1] ?? null) !== '$this') {
-            return null;
-        }
-
-        $variableName = '';
-
-        foreach ($tokens as $token) {
-            if (!isset($token[1])) {
-                return null;
-            }
-
-            $variableName .= $token[1];
-        }
-
-        return substr($variableName, Strings::startsWith($variableName, '$this->') ? 7 : 1);
-    }
-
-    /**
-     * @param int|string|null $expectedToken
-     * @return string|null
-     */
-    private function parseToken($expectedToken = null)
-    {
-        $token = $this->tokenParser->next();
-
-        return $expectedToken !== null && ($token[0] ?? $token) !== $expectedToken
-            ? null
-            : $token[1] ?? $token;
     }
 
     private function getClassContents(\ReflectionClass $class): string

@@ -35,28 +35,45 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
 
         if (!$parent = $form->getParent()) {
             return $validationData;
-        } elseif (!$parent->getConfig()->getOption('guess_constraints')) {
+        }
+
+        $parentConfig = $parent->getConfig();
+
+        if (!$parentConfig->getOption('guess_constraints')) {
             return $validationData;
-        } elseif (!$class = $parent->getConfig()->getOption('class', $parent->getConfig()->getDataClass())) {
+        } elseif (!$class = $parentConfig->getOption('class', $parentConfig->getDataClass())) {
             return $validationData;
         } elseif (!$constraints = $this->validationConstraintsGuesser->guessValidationConstraints($class)) {
             return $validationData;
         }
 
-        $constraints = array_merge(...array_values($constraints));
+        $propertyPath = $parentConfig->getType()->getBlockPrefix() === 'scalar_object'
+            ? null
+            : $form->getPropertyPath();
+
+        if (!$constraints = $constraints[(string) $propertyPath] ?? []) {
+            return $validationData;
+        }
 
         if (!$parent->isRequired()) {
-            $constraints = array_filter($constraints, [$this, 'isNotNotBlankConstraint']);
+            if (!$constraints = array_filter($constraints, [$this, 'isNotNotBlankConstraint'])) {
+                return $validationData;
+            }
         }
 
-        if ($constraints) {
-            $this->composeValidationData($validationData['form'], $constraints, []);
-            $validationData['form']['groups'] = $this->getValidationGroups($form);
-        }
+        $validationData['form']['constraints'] = $this->mergeValidationConstraints(
+            $validationData['form']['constraints'] ?? [],
+            $this->parseConstraints($constraints)
+        );
+        $validationData['form']['groups'] = $this->getValidationGroups($form);
 
         return $validationData;
     }
 
+    /**
+     * @param Constraint[] $constraints
+     * @return mixed[]
+     */
     protected function parseConstraints(array $constraints): array
     {
         if ($this->translatedConstraints === null) {
@@ -82,6 +99,32 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
         }
 
         return $data;
+    }
+
+    /**
+     * @param mixed[] $oldConstraints
+     * @param mixed[] $newConstraints
+     * @return mixed[]
+     */
+    private function mergeValidationConstraints(array $oldConstraints, array $newConstraints): array
+    {
+        foreach ($newConstraints as $class => $constraints) {
+            $mergedConstraints = [];
+
+            foreach ($constraints as $newConstraint) {
+                foreach ($oldConstraints[$class] ?? [] as $oldConstraint) {
+                    if ($oldConstraint->groups !== $newConstraint->groups) {
+                        $mergedConstraints[] = $oldConstraint;
+                    }
+                }
+
+                $mergedConstraints[] = $newConstraint;
+            }
+
+            $oldConstraints[$class] = $mergedConstraints;
+        }
+
+        return $oldConstraints;
     }
 
     private function replaceConstraintMessageParameters(Constraint $constraint, string $message): string

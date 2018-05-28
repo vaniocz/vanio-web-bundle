@@ -32,7 +32,6 @@ class ValidationConstraintsGuesser
         'min' => [GreaterThanOrEqual::class, ['minValue' => 'value'], ['min' => 'compared_value']],
         'max' => [LessThanOrEqual::class, ['maxValue' => 'value'], ['max' => 'compared_value']],
         'greaterThan' => [GreaterThan::class, ['limit' => 'value']],
-        'nullOrGreaterThan' => [GreaterThan::class, ['limit' => 'value']],
         'lessThan' => [LessThan::class, ['limit' => 'value']],
         'email' => [Email::class],
         'url' => [Url::class],
@@ -64,9 +63,9 @@ class ValidationConstraintsGuesser
         $constraints = [];
 
         foreach ($validationRules as $validationRule) {
-            if ($constraintMapping = $this->constraintMappings[$validationRule['method']] ?? null) {
+            if ($constraintMapping = $this->constraintMappings[$validationRule['_method']] ?? null) {
                 $constraint = $this->createValidationConstraint($validationRule, (array) $constraintMapping);
-                $constraints[$validationRule['property_path'] ?? null][] = $constraint;
+                $constraints[$validationRule['_propertyPath'] ?? null][] = $constraint;
             }
         }
 
