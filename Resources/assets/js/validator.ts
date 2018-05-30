@@ -1,5 +1,4 @@
 import '@fp_js_form_validator';
-import '@vanio_web/js/validators/UserPassword';
 
 function resolveTabLinkTarget(link: JQuery|HTMLAnchorElement): string
 {
