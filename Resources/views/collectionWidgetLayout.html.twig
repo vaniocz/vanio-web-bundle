@@ -28,16 +28,14 @@
 
             <div
                 class="collection__body"
-                data-prototype="<div class='collection__entry'>{{ collection_entry(prototype)|e('html_attr') }}</div>"
+                data-prototype="{{ collection_entry(prototype)|e('html_attr') }}"
                 data-prototype-name="{{ prototype.vars.name }}"
                 data-allow-add="{{ allow_add }}"
                 data-allow-remove="{{ allow_delete }}"
                 data-name-prefix="{{ full_name }}"
             >
                 {% for child in form %}
-                    <div class="collection__entry">
-                        {{ collection_entry(child) }}
-                    </div>
+                    {{ collection_entry(child) }}
                 {% endfor %}
             </div>
         {% endif %}
@@ -47,13 +45,15 @@
 {% endblock %}
 
 {% macro collection_entry(form) %}
-    {% if form.vars.compound %}
-        {% for child in form %}
-            {{ form_row(child) }}
-        {% endfor %}
-    {% else %}
-        {{ form_row(form) }}
-    {% endif %}
+    <div {% if form.vars.compound %}{{ form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) }}{% else %}class="collection__entry"{% endif %}>
+        {% if form.vars.compound %}
+            {% for child in form %}
+                {{ form_row(child) }}
+            {% endfor %}
+        {% else %}
+            {{ form_row(form) }}
+        {% endif %}
 
-    <div class="collection-actions"><a href="#" class="collection-move"></a></div>
+        <div class="collection-actions"><a href="#" class="collection-move"></a></div>
+    </div>
 {% endmacro %}
