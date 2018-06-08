@@ -45,7 +45,7 @@
 {% endblock %}
 
 {% macro collection_entry(form) %}
-    <div {% if form.vars.compound %}{{ form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) }}{% else %}class="collection__entry"{% endif %}>
+    <div {{ form.vars.compound ? form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) : 'class="collection__entry"' }}>
         {% if form.vars.compound %}
             {% for child in form %}
                 {{ form_row(child) }}
