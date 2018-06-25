@@ -1,5 +1,6 @@
 {% block scalar_object_label -%}
     {% set label_attr = label_attr + {for: form.value.vars.id} -%}
+    {% set required = form.value.vars.required %}
     {{ block('form_label') -}}
 {% endblock %}
 
