@@ -1,0 +1,7 @@
+.form-optional-fields {
+    display: none;
+
+    .form-optional-toggle:checked + &, .form-optional-toggle:checked + :not(.form-optional) + & {
+        display: block;
+    }
+}
