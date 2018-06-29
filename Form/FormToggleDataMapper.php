@@ -4,7 +4,7 @@ namespace Vanio\WebBundle\Form;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\FormInterface;
 
-class OptionalDataMapper implements DataMapperInterface
+class FormToggleDataMapper implements DataMapperInterface
 {
     public function __construct(DataMapperInterface $dataMapper)
     {
@@ -24,9 +24,6 @@ class OptionalDataMapper implements DataMapperInterface
         } else {
             $this->dataMapper->mapDataToForms($data, $forms);
         }
-
-        $forms = iterator_to_array($forms);
-        $forms['_optional_toggle']->setData($data !== null);
     }
 
     /**
@@ -35,7 +32,13 @@ class OptionalDataMapper implements DataMapperInterface
      */
     public function mapFormsToData($forms, &$data)
     {
-        if (iterator_to_array($forms)['_optional_toggle']->getData()) {
+        $children = iterator_to_array($forms);
+        /** @var FormInterface $form */
+        $child = reset($children);
+        $parent = $child->getParent()->getParent();
+        $toggleForm = $parent->get($parent->getConfig()->getOption('toggle_name'));
+
+        if ($toggleForm->getData()) {
             $this->dataMapper->mapFormsToData($forms, $data);
         } else {
             $data = null;

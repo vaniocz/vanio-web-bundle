@@ -100,12 +100,26 @@
             {{ form_errors(form) }}
         {% endif %}
 
-        {{ form_row(form.address, {attr: {class: 'location__address'}} + (icon is defined ? {icon: icon} : [])) }}
-        {{ form_row(form.latitude, {attr: {class: 'location__latitude'}}) }}
-        {{ form_row(form.longitude, {attr: {class: 'location__longitude'}}) }}
+        {{ form_row(form.address, {attr: {class: "#{class_name(form.address.vars.attr.class ?? '')} location__address"}} + (icon is defined ? {icon: icon} : [])) }}
+        {{ form_row(form.latitude, {attr: {class: "#{class_name(form.latitude.vars.attr.class ?? '')} location__latitude"}}) }}
+        {{ form_row(form.longitude, {attr: {class: "#{class_name(form.longitude.vars.attr.class ?? '')} location__longitude"}}) }}
         {{ form_rest(form) }}
         <div class="form-errors location__not-found">{{ 'location.notFound'|trans({}, translation_domain) }}</div>
     </div>
 
     {{ require_js_once("//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleMapsApiKey}") }}
+{% endblock %}
+
+{% block form_toggle_widget %}
+    {% set attr = {class: "#{class_name(attr.class ?? '')} form-toggle"} + attr %}
+
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+
+        {{ form_widget(form[toggleName], {prepend: true, attr: {class: "#{class_name(form[toggleName].vars.attr.class ?? '')} form-toggle__toggle"}}) }}
+        {{ form_widget(form[formName], {attr: {class: "#{class_name(form[formName].vars.attr.class ?? '')} form-toggle__form"}}) }}
+        {{ form_rest(form) }}
+    </div>
 {% endblock %}
