@@ -30,7 +30,7 @@
 {% macro label(page = null, context = null, translationDomain = 'pages') -%}
     {% if page is null -%}
         {% set page = app.request.attributes.get('_route') -%}
-        {% set context = context ?? app.request.attributes.get('_route_params') -%}
+        {% set context = context ?? app.request.attributes.all -%}
     {% endif -%}
 
     {{ is_translated(page, translationDomain) ? page|trans({}, translationDomain)|evaluate(context ?? {}) : page -}}
