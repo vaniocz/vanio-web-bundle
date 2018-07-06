@@ -12,7 +12,10 @@
 
     <a
         {{ attributes({
-            class: attributes.class ?? {} + {active: is_current(route)},
+            class: attributes.class ?? {} + {
+                active: is_current(route),
+                'is-active': is_current(route),
+            },
             href: attributes.href ?? path(route, parameters ?? {}),
             label: false,
             labelContext: false,
@@ -42,6 +45,7 @@
     {% if route is null %}
         {% set route = app.request.attributes.get('_route') %}
         {% set parameters = parameters ?? app.request.attributes.get('_route_params') %}
+        {% set linkAttributes = linkAttributes + {labelContext: app.request.attributes.all} %}
     {% endif %}
 
     {% if itemAttributes.class is defined and itemAttributes.class is not null and itemAttributes.class is not iterable %}
@@ -51,7 +55,11 @@
     {% if itemAttributes.roles is not defined or itemAttributes.roles is empty or is_granted(itemAttributes.roles) %}
         <li
             {{ attributes({
-                class: itemAttributes.class ?? {} + {("menu--#{route}"|replace({'_': '-'})): true, active: is_current(route)},
+                class: itemAttributes.class ?? {} + {
+                    ("menu--#{route}"|replace({'_': '-'})): true,
+                    active: is_current(route),
+                    'is-active': is_current(route),
+                },
                 roles: false,
             } + itemAttributes) }}
         >

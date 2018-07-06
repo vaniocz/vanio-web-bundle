@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Twig\Extension\EscaperExtension;
 use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RefererResolver;
@@ -500,9 +501,18 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     public function evaluate(\Twig_Environment $environment, string $template, array $context = []): string
     {
-        return Strings::contains($template, ['{{', '{%', '{#'])
-            ? $environment->createTemplate($template)->render($context)
-            : $template;
+        if (!Strings::contains($template, ['{{', '{%', '{#'])) {
+            return $template;
+        }
+
+        /** @var \Twig_Extension_Escaper $escaper */
+        $escaper = $environment->getExtension(\Twig_Extension_Escaper::class);
+        $defaultStrategy = $escaper->getDefaultStrategy($template);
+        $escaper->setDefaultStrategy(false);
+        $content = $environment->createTemplate($template)->render($context);
+        $escaper->setDefaultStrategy($defaultStrategy);
+
+        return $content;
     }
 
     public function basename(string $path): string
