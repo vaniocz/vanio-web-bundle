@@ -55,6 +55,8 @@ export default class PaginatedList
             this.$bottomPagination.html($data.find('.paginated-list-bottom-pagination').html());
         }
 
+        this.$content.find('.paginated-list-placeholder')
+            .appendTo(this.$content);
         this.updatePaginatorCount();
         register($content);
     }
