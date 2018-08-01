@@ -58,11 +58,12 @@ class RouteHierarchyResolver
 
     private function match(string $path, ParameterBag $attributes): array
     {
-        $parameters = $this->matchPath("$path/") ?: $this->matchPath($path);
-
-        if (
-            $parameters
-            && (!isset($parameters['_locale']) || $parameters['_locale'] === $attributes->get('_locale'))
+        if (!$parameters = $this->matchPath("$path/") ?: $this->matchPath($path)) {
+            return [];
+        } elseif (
+            !isset($parameters['_locale'])
+            || !$attributes->has('_locale')
+            || $parameters['_locale'] === $attributes->get('_locale')
         ) {
             $attributes = $parameters + $attributes->all();
             unset($parameters['_route'], $parameters['_controller']);

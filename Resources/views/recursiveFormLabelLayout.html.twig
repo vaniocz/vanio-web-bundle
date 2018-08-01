@@ -3,7 +3,7 @@
 
     {% if label is not same as(false) %}
         {% if not compound %}
-            {% set label_attr = {for: id} + label_attr %}
+            {% set label_attr = label_attr + {for: id} %}
         {% endif %}
 
         {% if label_attr.class is defined and label_attr.class is not null %}
@@ -47,16 +47,16 @@
             {{- widget|raw -}}
 
             {% if label is not same as(false) -%}
-                {% if label is empty %}
-                    {% if label_format is empty %}
-                        {{ translate_form_label(form, label, translation_domain) }}
-                    {% else %}
-                        {{ label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) }}
-                    {% endif %}
+                {% if label is empty -%}
+                    {% if label_format is empty -%}
+                        {{ translate_form_label(form, label, translation_domain) -}}
+                    {% else -%}
+                        {{ label_format|replace({'%name%': name, '%id%': id})|trans({}, translation_domain) -}}
+                    {% endif -%}
                 {% else -%}
-                    {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}
-                {% endif %}
+                    {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+                {% endif -%}
             {% endif -%}
         </label>
-    {% endif %}
+    {%- endif -%}
 {% endblock %}

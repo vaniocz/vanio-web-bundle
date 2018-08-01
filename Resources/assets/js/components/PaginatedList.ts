@@ -38,7 +38,7 @@ export default class PaginatedList
     {
         const $paginator = $('.sibling-paginator', isPrevious ? this.$topPagination : this.$bottomPagination);
         const url = $paginator.find(isPrevious ? '.paginator-previous' : '.paginator-next').attr('href') as string;
-        $paginator.addClass('loading');
+        $paginator.addClass('is-loading');
         $.get(this.updateQueryStringParameter(url, '_snippet', this.snippet), this.onPageLoaded.bind(this, isPrevious));
     }
 
