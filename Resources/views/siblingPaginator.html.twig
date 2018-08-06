@@ -1,6 +1,6 @@
 {% import '@VanioWeb/menu.html.twig' as menu %}
 
-{% if filter is defined %}
+{% if page is not defined and filter is defined %}
     {% set page = filter.page %}
 {% endif %}
 

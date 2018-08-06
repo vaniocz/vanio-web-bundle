@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
 use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Uri;
 
@@ -133,8 +134,7 @@ class CanonizationExtension extends AbstractTypeExtension
                 $uri .= '?' . $queryString;
             }
 
-            (new RedirectResponse($uri))->send();
-            exit;
+            throw new UnexpectedResponseException(new RedirectResponse($uri));
         }
     }
 
