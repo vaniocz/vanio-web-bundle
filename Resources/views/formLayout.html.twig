@@ -119,7 +119,9 @@
         {% endif %}
 
         {{ form_widget(form[toggleName], {prepend: true, attr: {class: "#{class_name(form[toggleName].vars.attr.class ?? '')} form-toggle__toggle"}}) }}
+        {{ form_errors(form[toggleName]) }}
         {{ form_widget(form[formName], {attr: {class: "#{class_name(form[formName].vars.attr.class ?? '')} form-toggle__form"}}) }}
+        {{ form_errors(form[formName]) }}
         {{ form_rest(form) }}
     </div>
 {% endblock %}
