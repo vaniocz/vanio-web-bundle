@@ -10,6 +10,9 @@ interface ToggleOptions
 @component('Toggle')
 export default class Toggle
 {
+    private $element: JQuery;
+    private $source: JQuery;
+    private $target: JQuery;
     private options: ToggleOptions;
 
     public constructor(element: JQuery|HTMLElement|string, options: ToggleOptions|string)
@@ -18,21 +21,32 @@ export default class Toggle
             {className: 'toggle--active', source: element},
             typeof options === 'string' ? {target: options} : options
         );
-        const $source = $(this.options.source);
-        const $target = $(this.options.target);
-        
-        if ($source.is(':checkbox') || $source.is(':radio')) {
-            const $eventTarget = $source.is(':radio') && $source.attr('name')
-                ? $(`input[name="${$source.attr('name')}"]`)
-                : $source;
-            const toggleClass = () => $target.toggleClass(this.options.className, $source.is(':checked'));
-            $eventTarget.on('change', toggleClass);
-            toggleClass();
+        this.$source = $(this.options.source);
+        this.$target = $(this.options.target);
+
+        if (this.$source.is(':checkbox') || this.$source.is(':radio') || this.$source.is('option')) {
+            let $eventTarget;
+
+            if (this.$source.is('option')) {
+                $eventTarget = this.$source.closest('select');
+            } else if (this.$source.is(':radio') && this.$source.attr('name')) {
+                $eventTarget = $(`input[name="${this.$source.attr('name')}"]`);
+            } else {
+                $eventTarget = this.$source;
+            }
+
+            $eventTarget.on('change', this.toggleClass.bind(this));
+            this.toggleClass();
         } else {
-            $source.on('click', (event: JQuery.Event) => {
+            this.$source.on('click', (event: JQuery.Event) => {
                 event.preventDefault();
-                $target.toggleClass(this.options.className);
+                this.$target.toggleClass(this.options.className);
             });
         }
+    }
+    
+    private toggleClass(): void
+    {
+        this.$target.toggleClass(this.options.className, this.$source.is(':checked'))
     }
 }
