@@ -27,6 +27,10 @@ export default class DependentChoice
         const $placeholder = this.$element.find('option:first').filter('[value=""], :not([value])');
         this.$dependentOptions.remove();
         const $dependentOptions = this.findPossibleDependentOptions();
+        this.$element
+            .removeAttr('disabled')
+            .removeAttr('readonly');
+        this.$label.removeClass('is-disabled is-readonly');
 
         if ($dependentOptions.length) {
             if ($placeholder.length) {
@@ -35,8 +39,11 @@ export default class DependentChoice
                 this.$dependentOptionsParent.append($dependentOptions);
             }
 
-            this.$element.removeAttr('disabled');
-            this.$label.removeClass('is-disabled');
+            if ($dependentOptions.length === 1) {
+                this.$element.attr('readonly', 'readonly');
+                $dependentOptions.prop('selected', true);
+                this.$label.addClass('is-readonly');
+            }
         } else {
             this.$element.attr('disabled', 'disabled');
             this.$label.addClass('is-disabled');

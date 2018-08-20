@@ -10,6 +10,7 @@ import '@vanio_web/js/components/Collection';
 import '@vanio_web/js/components/Confirm';
 import '@vanio_web/js/components/DatePicker';
 import '@vanio_web/js/components/DependentChoice';
+import '@vanio_web/js/components/DescriptiveChoice';
 import '@vanio_web/js/components/FileInput';
 import '@vanio_web/js/components/FormChoice';
 import '@vanio_web/js/components/Gallery';
