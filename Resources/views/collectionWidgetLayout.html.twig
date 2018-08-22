@@ -11,7 +11,9 @@
             {% if prototype.vars.compound %}
                 <div class="collection__header">
                     {% for child in prototype %}
-                        {% if child.vars.block_prefixes[child.vars.block_prefixes|length - 2] != 'hidden' %}
+                        {% set type = child.vars.block_prefixes[child.vars.block_prefixes|length - 2] %}
+
+                        {% if type != 'hidden' and (type != 'scalar_object' or child.value.vars.block_prefixes[child.value.vars.block_prefixes|length - 2] != 'hidden') %}
                             {% set label = form_label(child) %}
 
                             {% if label matches '~\\sclass\\s*=\\s*["\'](?:[^"\']*\\s+)?form-group(?:\\s+[^"\']*)?["\']~' %}

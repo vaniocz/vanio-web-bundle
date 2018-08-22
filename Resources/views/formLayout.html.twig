@@ -12,6 +12,14 @@
     {{ form_widget(form.value, {attr: attr}) -}}
 {% endblock %}
 
+{% block scalar_object_row %}
+    {% if form.value.vars.block_prefixes[form.value.vars.block_prefixes|length - 2]  == 'hidden' %}
+        {{ form_widget(form) }}
+    {% else %}
+        {{ form_row(form) }}
+    {% endif %}
+{% endblock %}
+
 {% block vanio_date_widget %}
     <div class="input-group datepicker date" data-component-date-picker data-min-view="2">
         {% set type = 'text' %}
