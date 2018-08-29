@@ -17,7 +17,7 @@ export default class DependentChoice
         this.$label.addClass('dependent-select-label');
         this.$dependentOptions = this.$element.find('[data-parent-value], [data-parent-values]');
         this.$dependentOptionsParent = this.$dependentOptions.parent();
-        this.$parent.on('change dependentSelect.change', this.render.bind(this));
+        this.$parent.on('change dependent_choice.change', this.render.bind(this));
         this.render();
     }
 
@@ -50,7 +50,7 @@ export default class DependentChoice
         }
 
         if (value !== this.$element.val()) {
-            this.$element.trigger('dependentSelect.changed');
+            this.$element.trigger('dependent_choice.change');
         }
     }
 

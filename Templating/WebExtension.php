@@ -395,7 +395,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $errorMessages = [];
 
         /** @var FormError $error */
-        foreach ($form->vars['errors'] as $error) {
+        foreach ($form->vars['errors'] ?? [] as $error) {
             $errorMessages[] = $error->getMessage();
         }
 

@@ -15,7 +15,7 @@ export default class DescriptiveChoice
             this.$target = $('<div class="descriptive-choice__description"/>').insertAfter(this.$element);
         }
 
-        this.$element.change(this.render.bind(this));
+        this.$element.on('change dependent_choice.change', this.render.bind(this));
         this.render();
     }
 
