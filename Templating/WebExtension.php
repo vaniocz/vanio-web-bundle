@@ -2,6 +2,7 @@
 namespace Vanio\WebBundle\Templating;
 
 use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Form\FormError;
@@ -47,6 +48,9 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var Serializer */
     private $serializer;
 
+    /** @var ManagerRegistry */
+    private $doctrine;
+
     /** @var CacheManager|null */
     private $cacheManager;
 
@@ -86,6 +90,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         RouteHierarchyResolver $routeHierarchyResolver,
         ResponseContext $responseContext,
         Serializer $serializer,
+        ManagerRegistry $doctrine,
         CacheManager $cacheManager = null,
         string $webRoot,
         string $imageDimensionsCacheDirectory,
@@ -100,6 +105,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->routeHierarchyResolver = $routeHierarchyResolver;
         $this->responseContext = $responseContext;
         $this->serializer = $serializer;
+        $this->doctrine = $doctrine;
         $this->cacheManager = $cacheManager;
         $this->webRoot = $webRoot;
         $this->imageDimensionsCache = new FilesystemCache($imageDimensionsCacheDirectory);
@@ -136,6 +142,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
             new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrorMessages']),
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
+            new \Twig_SimpleFunction('entity', [$this, 'entity']),
         ];
     }
 
@@ -411,6 +418,16 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function responseStatus(int $statusCode, string $statusText = null)
     {
         $this->responseContext->setStatus($statusCode, $statusText);
+    }
+
+    /**
+     * @param string $class
+     * @param mixed $id
+     * @return object|null
+     */
+    public function entity(string $class, $id)
+    {
+        return $this->doctrine->getManagerForClass($class)->find($class, $id);
     }
 
     /**

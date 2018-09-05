@@ -110,6 +110,7 @@
             <argument type="service" id="vanio_web.request.route_hierarchy_resolver"/>
             <argument type="service" id="vanio_web.templating.response_context"/>
             <argument type="service" id="vanio_web.serializer.serializer"/>
+            <argument type="service" id="doctrine"/>
             <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
             <argument>%web_root%</argument>
             <argument>%kernel.cache_dir%/vanio_web</argument>
