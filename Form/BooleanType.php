@@ -7,6 +7,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Distinguishes between false, true and null.
+ */
 class BooleanType extends AbstractType
 {
     /**
@@ -34,7 +37,7 @@ class BooleanType extends AbstractType
                 'value' => '1',
                 'compound' => false,
                 'expanded' => false,
-                'false_values' => [null, '', '0'],
+                'false_values' => ['', '0'],
                 'empty_data' => function (FormInterface $form, $data) {
                     return $data;
                 },

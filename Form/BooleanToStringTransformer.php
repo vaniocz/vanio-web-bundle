@@ -12,7 +12,7 @@ class BooleanToStringTransformer implements DataTransformerInterface
     /** @var mixed[] */
     private $falseValues;
 
-    public function __construct(string $trueValue, array $falseValues = [null, '', '0'])
+    public function __construct(string $trueValue, array $falseValues = ['', '0'])
     {
         $this->trueValue = $trueValue;
         $this->falseValues = $falseValues;
@@ -37,8 +37,12 @@ class BooleanToStringTransformer implements DataTransformerInterface
         return $value ? $this->trueValue : null;
     }
 
-    public function reverseTransform($value): bool
+    /**
+     * @param mixed $value
+     * @return bool|null
+     */
+    public function reverseTransform($value)
     {
-        return !in_array($value, $this->falseValues, true);
+        return $value === null ? null : !in_array($value, $this->falseValues, true);
     }
 }

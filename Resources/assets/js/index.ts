@@ -21,4 +21,5 @@ import '@vanio_web/js/components/Toggle';
 import '@vanio_web/js/components/Tooltip';
 import '@vanio_web/js/components/UploadedFile';
 import '@vanio_web/js/validator';
+import '@vanio_web/js/validators/BooleanToStringTransformer';
 import '@vanio_web/js/boot';
