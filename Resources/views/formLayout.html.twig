@@ -16,7 +16,7 @@
     {% if form.value.vars.block_prefixes[form.value.vars.block_prefixes|length - 2]  == 'hidden' %}
         {{ form_widget(form) }}
     {% else %}
-        {{ form_row(form) }}
+        {{ form_row(form, {compound: false}) }}
     {% endif %}
 {% endblock %}
 
@@ -136,5 +136,29 @@
         </div>
 
         {{ form_rest(form) }}
+    </div>
+{% endblock %}
+
+{% block auto_complete_entity_widget %}
+    {% set attr = {class: "#{class_name(attr.class ?? '')} auto-complete"} + attr %}
+
+    <div {{ block('widget_container_attributes') }}>
+        <div class="form-group auto-complete__search-row {% if not form.search.vars.valid or not form.entity.vars.valid  %}has-error{% endif %}">
+            {{ form_label(form.search) }}
+            {{ form_widget(form.search, {attr: {class: "#{class_name(form.search.vars.attr.class ?? '')} auto-complete__search"}}) }}
+            {{ form_errors(form.search) }}
+            {{ form_errors(form.entity) }}
+        </div>
+
+        <div class="form-group auto-complete__entity-row">
+            {{ form_label(form.entity) }}
+            <input type="hidden" {% if form.entity.vars.value is not empty %}value="{{ form.entity.vars.value }}" {% endif %} {% with form.entity.vars + {attr: {class: "#{class_name(form.entity.vars.attr.class ?? '')} auto-complete__entity"} + form.entity.vars.attr} only %}{{ block('widget_attributes') }}{% endwith %}>
+        </div>
+
+        <div class="form-group auto-complete__ajax-row">
+            {{ form_label(form.ajax) }}
+            {{ form_widget(form.ajax, {attr: {class: "#{class_name(form.ajax.vars.attr.class ?? '')} auto-complete__ajax"}}) }}
+            {{ form_errors(form.ajax) }}
+        </div>
     </div>
 {% endblock %}

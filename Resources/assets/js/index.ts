@@ -1,10 +1,12 @@
 import 'bootstrap-datepicker';
 import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.cs';
+import 'devbridge-autocomplete';
 import 'dropzone';
 import 'photoswipe';
 import 'photoswipe/dist/photoswipe-ui-default';
 import 'jquery-photoswipe/jquery.photoswipe';
 import 'symfony-collection/jquery.collection';
+import '@vanio_web/js/components/AutoComplete';
 import '@vanio_web/js/components/AutoSize';
 import '@vanio_web/js/components/Collection';
 import '@vanio_web/js/components/Confirm';

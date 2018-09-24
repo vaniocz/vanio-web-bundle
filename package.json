@@ -14,6 +14,7 @@
   "files": ["Resources/assets/styles"],
   "main": "Resources/assets/styles/index.less",
   "dependencies": {
+    "@types/bazinga-translator": "0.0.4",
     "@types/autosize": "^3.0.4",
     "@types/bootstrap-datepicker": "0.0.8",
     "@types/dropzone": "^4.3.34",
@@ -21,7 +22,9 @@
     "@types/jquery": "^3.2.16",
     "@types/photoswipe": "^4.0.28",
     "autosize": "^3.0.20",
+    "bazinga-translator": "^2.6.6",
     "bootstrap-datepicker": "^1.7.0",
+    "devbridge-autocomplete": "^1.4.9",
     "dropzone": "^5.0.1",
     "jquery": "^3.2.1",
     "jquery-photoswipe": "^1.0.3",
