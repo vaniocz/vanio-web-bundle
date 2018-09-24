@@ -21,7 +21,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyPath;
-use Vanio\DomainBundle\Form\EntityToIdTransformer;
 use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
 
 class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
@@ -221,11 +220,11 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             if ($entityManager instanceof EntityManager) {
                 return $entityManager;
             } elseif ($entityManager !== null) {
-                return $this->registry->getManager($entityManager);
+                return $this->doctrine->getManager($entityManager);
             }
 
             if (!$entityManager = $this->doctrine->getManagerForClass($options['class'])) {
-                throw new RuntimeException(sprintf(
+                throw new \RuntimeException(sprintf(
                     'Class "%s" seems not to be a managed Doctrine entity. Did you forget to map it?',
                     $options['class']
                 ));
