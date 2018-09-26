@@ -182,10 +182,11 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 
         foreach ($query->getResult() as $entity) {
             try {
-                $html = $this->formRenderer->searchAndRenderBlock($searchFormView, 'item', $searchFormView->vars + [
+                $vars = $searchFormView->vars + [
                     'form' => $searchFormView,
                     'entity' => $entity,
-                ]);
+                ];
+                $html = $this->formRenderer->searchAndRenderBlock($searchFormView, 'suggestion', $vars);
             } catch (LogicException $e) {}
 
             $data = call_user_func($options['suggestion_data'], $entity);

@@ -208,13 +208,62 @@ export default class AutoComplete
 
     private formatResult(suggestion: AutoCompleteSuggestion, search: string): string
     {
-        return suggestion.html == null
-            ? $.Autocomplete.defaults.formatResult!(suggestion, search)
-            : suggestion.html;
+        if (suggestion.html != null) {
+            const $html = $(`<span>${suggestion.html}</span>`);
+            $html.find('.suggestion-value').each((index: number, valueElement: HTMLElement) => {
+                const valueSuggestion = {
+                    value: valueElement.innerHTML,
+                    viewValue: suggestion.viewValue,
+                    data: suggestion.data,
+                };
+                valueElement.innerHTML = this.formatResult(valueSuggestion, search);
+            })
+
+            return $html.html();
+        } else if (search === '') {
+            return suggestion.value;
+        }
+
+        const patterns = this.unaccent(search)
+            .split(/[\s,]+/)
+            .map((term) => `${term.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')}`);
+        let i = 0;
+        let length = 0;
+        let html = '';
+
+        for (const token of this.unaccent(suggestion.value).split(new RegExp(`(${patterns.join('|')})`, 'gi'))) {
+            const value = suggestion.value.substr(length, token.length);
+            length += token.length;
+            html += (i++ % 2) ? `<strong>${value}</strong>` : value;
+        }
+
+        return html
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     }
 
     private onInvalidateSelection(): void
     {
         this.invalid = true;
+    }
+
+    private unaccent(text: string): string
+    {
+        let from = 'ąàáäâãåæăćčĉęèéëêĝĥìíïîĵłľńňòóöőôõðøśșşšŝťțţŭùúüűûñÿýçżźž';
+        let to: string|string[] = 'aaaaaaaaaccceeeeeghiiiijllnnoooooooossssstttuuuuuunyyczzz';
+        from += from.toUpperCase();
+        from += 'ß';
+        to += to.toUpperCase();
+        to = to.split('');
+        to.push('ss');
+
+        return text.replace(/.{1}/g, (character) => {
+            const index = from.indexOf(character);
+
+            return index === -1 ? character : to[index];
+        });
     }
 }
