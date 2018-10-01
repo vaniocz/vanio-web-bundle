@@ -131,16 +131,20 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
             new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
+            new \Twig_SimpleFunction('form_block', null, [
+                'node_class' => SearchAndRenderBlockNode::class,
+                'is_safe' => ['html'],
+            ]),
             new \Twig_SimpleFunction('form_widget_attributes', [$this, 'formWidgetAttributes'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
+            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrorMessages']),
             new \Twig_SimpleFunction('referer', [$this, 'referer']),
             new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
             new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
             new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
-            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrorMessages']),
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
             new \Twig_SimpleFunction('entity', [$this, 'entity']),
         ];

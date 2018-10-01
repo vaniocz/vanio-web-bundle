@@ -13,7 +13,7 @@
                     {% for child in prototype %}
                         {% set type = child.vars.block_prefixes[child.vars.block_prefixes|length - 2] %}
 
-                        {% if type != 'hidden' and (type != 'scalar_object' or child.value.vars.block_prefixes[child.value.vars.block_prefixes|length - 2] != 'hidden') %}
+                        {% if 'hidden' not in child.vars.block_prefixes and (type != 'scalar_object' or 'hidden' not in child.value.vars.block_prefixes) %}
                             {% set label = form_label(child, null, {widget: ''}) %}
 
                             {% if label matches '~\\sclass\\s*=\\s*["\'](?:[^"\']*\\s+)?form-group(?:\\s+[^"\']*)?["\']~' %}
@@ -57,9 +57,13 @@
         {% endif %}
 
         <div class="collection-actions">
-            <a href="#" class="collection-remove"></a>
-            <a href="#" class="collection-move"></a>
-            <a href="#" class="collection-add"></a>
+            {{ form_block('actions', form) }}
         </div>
     </div>
 {% endmacro %}
+
+{% block form_actions %}
+    <a href="#" class="collection-remove"></a>
+    <a href="#" class="collection-move"></a>
+    <a href="#" class="collection-add"></a>
+{% endblock %}

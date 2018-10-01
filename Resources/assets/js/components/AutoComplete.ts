@@ -162,7 +162,7 @@ export default class AutoComplete
     {
         if (!this.options.allowUnsuggested && this.$entity.val() !== '' && this.$search.val() === '') {
             this.$entity.val('');
-            this.$element.trigger('auto-complete', [null]);
+            this.$element.trigger('autoComplete', [null]);
             this.currentSearch = '';
         }
     }
@@ -181,7 +181,7 @@ export default class AutoComplete
             if (this.invalid || this.autocomplete.currentRequest || this.$search.val() === '') {
                 if (this.$search.val() === '') {
                     this.$entity.val('');
-                    this.$element.trigger('auto-complete', [null]);
+                    this.$element.trigger('autoComplete', [null]);
                     this.currentSearch = '';
                 } else if (this.$search.val() !== this.currentSearch) {
                     this.$search.val(this.currentSearch);
@@ -202,8 +202,11 @@ export default class AutoComplete
     {
         this.invalid = false;
         this.$entity.val(suggestion.viewValue);
-        this.$element.trigger('auto-complete', suggestion);
-        this.currentSearch = suggestion.value;
+
+        if (suggestion.value !== this.currentSearch) {
+            this.$element.trigger('autoComplete', suggestion);
+            this.currentSearch = suggestion.value;
+        }
     }
 
     private formatResult(suggestion: AutoCompleteSuggestion, search: string): string
