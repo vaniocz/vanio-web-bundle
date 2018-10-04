@@ -50,7 +50,6 @@ export default class AutoComplete
     private $loading: JQuery;
     private $remainingCount: JQuery;
     private autocomplete: AutocompleteInstance;
-    private attr: string[];
     private invalid = false;
     private currentSearch: string;
 
@@ -86,7 +85,6 @@ export default class AutoComplete
         this.$loading = $('<div class="autocomplete-loading"/>')
             .text(Translator.trans('autoComplete.loading', {}, 'components'));
         this.$remainingCount = $('<div class="autocomplete-remaining-count"/>');
-        this.attr = this.$element.prop('attributes');
         this.currentSearch = String(this.$search.val());
         this.$search
             .off('focus.autocomplete')
@@ -100,7 +98,7 @@ export default class AutoComplete
         $(this.autocomplete.suggestionsContainer)
             .append(this.$loading)
             .addClass('is-loading')
-            .show()
+            .show();
         this.autocomplete.visible = true;
         this.autocomplete.fixPosition();
         this.$element.addClass('is-loading');
@@ -135,7 +133,7 @@ export default class AutoComplete
 
     private onBeforeSend(xhr: JQueryXHR, settings: JQueryAjaxSettings): void
     {
-        const data = this.$form.serializeArray()
+        const data = this.$form.serializeArray();
         data.push({
             name: this.options.ajaxField,
             value: '1',
@@ -201,11 +199,17 @@ export default class AutoComplete
     private onSelect(suggestion: AutoCompleteSuggestion): void
     {
         this.invalid = false;
-        this.$entity.val(suggestion.viewValue);
 
         if (suggestion.value !== this.currentSearch) {
-            this.$element.trigger('autoComplete', suggestion);
-            this.currentSearch = suggestion.value;
+            const event = $.Event('autoComplete');
+            this.$element.trigger(event, suggestion);
+
+            if (event.isDefaultPrevented()) {
+                this.$search.val(this.currentSearch);
+            } else {
+                this.$entity.val(suggestion.viewValue);
+                this.currentSearch = suggestion.value;
+            }
         }
     }
 
@@ -220,7 +224,7 @@ export default class AutoComplete
                     data: suggestion.data,
                 };
                 valueElement.innerHTML = this.formatResult(valueSuggestion, search);
-            })
+            });
 
             return $html.html();
         } else if (search === '') {

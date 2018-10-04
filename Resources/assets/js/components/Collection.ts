@@ -14,8 +14,10 @@ export default class Collection
             fade_in: false,
             fade_out: false,
             after_init: this.updateEntriesCount.bind(this),
-            after_add: this.onAdd.bind(this),
-            after_remove: this.updateEntriesCount.bind(this),
+            before_add: this.onBeforeAdd.bind(this),
+            after_add: this.onAfterAdd.bind(this),
+            before_remove: this.onBeforeRemove.bind(this),
+            after_remove: this.onAfterRemove.bind(this),
             drag_drop_options: {
                 handle: '.collection-move',
                 cursor: 's-resize',
@@ -38,9 +40,36 @@ export default class Collection
         return this.$body.find(this.settings.elements_selector!);
     }
 
-    private onAdd($collection: JQuery, $entry: JQuery): void
+    private onBeforeAdd($collection: JQuery): boolean|undefined
     {
+        const event = $.Event('beforeAdd');
+        this.$element.trigger(event);
+
+        if (event.isDefaultPrevented()) {
+            return false;
+        }
+    }
+
+    private onAfterAdd($collection: JQuery, $entry: JQuery): void
+    {
+        $entry.trigger('afterAdd');
         register($entry);
+        this.updateEntriesCount();
+    }
+
+    private onBeforeRemove($collection: JQuery, $entry: JQuery): boolean|undefined
+    {
+        const event = $.Event('beforeRemove');
+        $entry.trigger(event);
+
+        if (event.isDefaultPrevented()) {
+            return false;
+        }
+    }
+
+    private onAfterRemove($collection: JQuery, $entry: JQuery): void
+    {
+        $entry.trigger('afterRemove');
         this.updateEntriesCount();
     }
 
