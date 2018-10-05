@@ -17,7 +17,7 @@ interface AutoCompleteOptions
     allowUnsuggested?: boolean;
 }
 
-interface AutoCompleteSuggestionList extends Array<AutoCompleteSuggestion>
+interface AutoCompleteSuggestions extends Array<AutoCompleteSuggestion>
 {
     totalCount?: number;
 }
@@ -28,7 +28,7 @@ interface AutocompleteInstance
     suggestionsContainer: HTMLElement;
     noSuggestionsContainer: HTMLElement;
     selectedIndex: number;
-    suggestions: AutoCompleteSuggestionList;
+    suggestions: AutoCompleteSuggestions;
     visible?: boolean;
     currentRequest?: JQueryXHR;
     currentValue: string;
@@ -39,7 +39,7 @@ interface AutocompleteInstance
 }
 
 @component('AutoComplete')
-export default class AutoComplete
+export class AutoComplete
 {
     private $element: JQuery;
     private options: AutoCompleteOptions;
@@ -93,6 +93,17 @@ export default class AutoComplete
         $(this.autocomplete.suggestionsContainer).on('mousedown', this.onSuggestionsMouseDown.bind(this));
     }
 
+    public change(search: string, entityId?: string): void
+    {
+        this.$search.val(search);
+        this.currentSearch = search;
+        this.autocomplete.currentValue = search;
+
+        if (entityId != null) {
+            this.$entity.val(entityId);
+        }
+    }
+
     private onSearchStart(): void
     {
         $(this.autocomplete.suggestionsContainer)
@@ -104,7 +115,7 @@ export default class AutoComplete
         this.$element.addClass('is-loading');
     }
 
-    private onSearchComplete(search: string, suggestions: AutoCompleteSuggestionList): void
+    private onSearchComplete(search: string, suggestions: AutoCompleteSuggestions): void
     {
         this.invalid = true;
         const remainingCount = (suggestions.totalCount || 0) - suggestions.length;
@@ -159,9 +170,16 @@ export default class AutoComplete
     private onChange(): void
     {
         if (!this.options.allowUnsuggested && this.$entity.val() !== '' && this.$search.val() === '') {
-            this.$entity.val('');
-            this.$element.trigger('autoComplete', [null]);
-            this.currentSearch = '';
+            const event = $.Event('autoComplete');
+            this.$element.trigger(event, [null, this.currentSearch]);
+
+            if (event.isDefaultPrevented()) {
+                this.$search.val(this.currentSearch);
+                // change currentValue?
+            } else {
+                this.$entity.val('');
+                this.currentSearch = '';
+            }
         }
     }
 
@@ -179,7 +197,7 @@ export default class AutoComplete
             if (this.invalid || this.autocomplete.currentRequest || this.$search.val() === '') {
                 if (this.$search.val() === '') {
                     this.$entity.val('');
-                    this.$element.trigger('autoComplete', [null]);
+                    this.$element.trigger('autoComplete', [null, this.currentSearch]);
                     this.currentSearch = '';
                 } else if (this.$search.val() !== this.currentSearch) {
                     this.$search.val(this.currentSearch);
@@ -202,10 +220,11 @@ export default class AutoComplete
 
         if (suggestion.value !== this.currentSearch) {
             const event = $.Event('autoComplete');
-            this.$element.trigger(event, suggestion);
+            this.$element.trigger(event, [suggestion, this.currentSearch]);
 
             if (event.isDefaultPrevented()) {
                 this.$search.val(this.currentSearch);
+                // change currentValue?
             } else {
                 this.$entity.val(suggestion.viewValue);
                 this.currentSearch = suggestion.value;
