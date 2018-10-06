@@ -69,6 +69,7 @@ export class AutoComplete
             showNoSuggestionNotice: true,
             noSuggestionNotice: Translator.trans('autoComplete.noSuggestions', {}, 'components'),
             orientation: 'auto',
+            triggerSelectOnValidInput: false,
             onSearchStart: this.onSearchStart.bind(this),
             onSearchComplete: this.onSearchComplete.bind(this),
             onHide: this.onHide.bind(this),
@@ -169,17 +170,19 @@ export class AutoComplete
 
     private onChange(): void
     {
-        if (!this.options.allowUnsuggested && this.$entity.val() !== '' && this.$search.val() === '') {
-            const event = $.Event('autoComplete');
-            this.$element.trigger(event, [null, this.currentSearch]);
+        if (this.options.allowUnsuggested || this.$entity.val() === '' || this.$search.val() !== '') {
+            return;
+        }
 
-            if (event.isDefaultPrevented()) {
-                this.$search.val(this.currentSearch);
-                // change currentValue?
-            } else {
-                this.$entity.val('');
-                this.currentSearch = '';
-            }
+        const event = $.Event('autoComplete');
+        this.$element.trigger(event, [null, this.currentSearch]);
+
+        if (event.isDefaultPrevented()) {
+            this.$search.val(this.currentSearch);
+            // change currentValue?
+        } else {
+            this.$entity.val('');
+            this.currentSearch = '';
         }
     }
 
@@ -217,18 +220,15 @@ export class AutoComplete
     private onSelect(suggestion: AutoCompleteSuggestion): void
     {
         this.invalid = false;
+        const event = $.Event('autoComplete');
+        this.$element.trigger(event, [suggestion, this.currentSearch]);
 
-        if (suggestion.value !== this.currentSearch) {
-            const event = $.Event('autoComplete');
-            this.$element.trigger(event, [suggestion, this.currentSearch]);
-
-            if (event.isDefaultPrevented()) {
-                this.$search.val(this.currentSearch);
-                // change currentValue?
-            } else {
-                this.$entity.val(suggestion.viewValue);
-                this.currentSearch = suggestion.value;
-            }
+        if (event.isDefaultPrevented()) {
+            this.$search.val(this.currentSearch);
+            // change currentValue?
+        } else {
+            this.$entity.val(suggestion.viewValue);
+            this.currentSearch = suggestion.value;
         }
     }
 
@@ -278,8 +278,8 @@ export class AutoComplete
 
     private unaccent(text: string): string
     {
-        let from = 'ąàáäâãåæăćčĉęèéëêĝĥìíïîĵłľńňòóöőôõðøśșşšŝťțţŭùúüűûñÿýçżźž';
-        let to: string|string[] = 'aaaaaaaaaccceeeeeghiiiijllnnoooooooossssstttuuuuuunyyczzz';
+        let from = 'ąàáäâãåæăćčĉďęèéëêěĝĥìíïîĵłľńňòóöőôõðøřśșşšŝťțţŭùúüűûůñÿýçżźž';
+        let to: string|string[] = 'aaaaaaaaacccdeeeeeeghiiiijllnnoooooooorssssstttuuuuuuunyyczzz';
         from += from.toUpperCase();
         from += 'ß';
         to += to.toUpperCase();
