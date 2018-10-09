@@ -66,13 +66,10 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['attr'] += [
-            'data-component-auto-complete' => [
-                'entitySelector' => "#{$view['entity']->vars['id']}",
-                'searchSelector' => "#{$view['search']->vars['id']}",
-                'ajaxField' => $view['ajax']->vars['full_name'],
-            ],
-            'data-value' => $view->vars['value'],
+        $view->vars['attr']['data-component-auto-complete'] = [
+            'entitySelector' => "#{$view['entity']->vars['id']}",
+            'searchSelector' => "#{$view['search']->vars['id']}",
+            'ajaxField' => $view['ajax']->vars['full_name'],
         ];
     }
 
