@@ -50,6 +50,9 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         $builder
             ->add('entity', $options['entity_type'], $options['entity_options'] + [
                 'label' => false,
+                'required' => true,
+                'required_message' => $options['required_message'],
+                'error_bubbling' => false,
             ])
             ->add('search', $options['search_type'], $options['search_options'] + [
                 'label' => false,
