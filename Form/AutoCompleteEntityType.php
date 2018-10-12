@@ -52,11 +52,12 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                 'label' => false,
                 'required' => true,
                 'required_message' => $options['required_message'],
-                'error_bubbling' => false,
+                'error_bubbling' => true,
             ])
             ->add('search', $options['search_type'], $options['search_options'] + [
                 'label' => false,
                 'required' => false,
+                'error_bubbling' => true,
             ])
             ->add('ajax', CheckboxType::class, [
                 'label' => false,
@@ -69,6 +70,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
+        $view->vars['collection_compound'] = false;
         $view->vars['attr']['data-component-auto-complete'] = [
             'entitySelector' => "#{$view['entity']->vars['id']}",
             'searchSelector' => "#{$view['search']->vars['id']}",
@@ -80,6 +82,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     {
         $resolver
             ->setDefaults([
+                'error_bubbling' => false,
                 'entity_type' => HiddenType::class,
                 'entity_options' => [],
                 'search_type' => null,
@@ -192,7 +195,9 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                 $html = $this->formRenderer->searchAndRenderBlock($searchFormView, 'suggestion', $vars);
             } catch (LogicException $e) {}
 
-            $data = call_user_func($options['suggestion_data'], $entity);
+            $data = $options['suggestion_data']
+                ? call_user_func($options['suggestion_data'], $entity)
+                : [];
 
             if ($options['group_by']) {
                 $data['_group'] = (string) call_user_func($options['group_by'], $entity);

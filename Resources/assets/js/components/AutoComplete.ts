@@ -38,6 +38,28 @@ interface AutocompleteInstance
     onValueChange(): void;
 }
 
+const Autocomplete = $.Autocomplete as any;
+const parentFixPosition = Autocomplete.prototype.fixPosition;
+
+Autocomplete.prototype.fixPosition = function () {
+    const $container = $(this.suggestionsContainer);
+    let orientation = this.options.orientation;
+
+    if (this.options.orientation === 'auto') {
+        const containerHeight = $container.outerHeight()!;
+        const offset = this.el.offset();
+        const scrollTop = $(window).scrollTop()!;
+        const topOverflow = offset.top - containerHeight - scrollTop;
+        const bottomOverflow = $(window).height()! + scrollTop - offset.top - this.el.outerHeight() - containerHeight;
+        orientation = topOverflow > bottomOverflow ? 'top' : 'bottom';
+    }
+
+    $container
+        .toggleClass('autocomplete-suggestions--top-orientation', orientation === 'top')
+        .toggleClass('autocomplete-suggestions--bottom-orientation', orientation === 'bottom');
+    parentFixPosition.apply(this);
+};
+
 @component('AutoComplete')
 export class AutoComplete
 {
