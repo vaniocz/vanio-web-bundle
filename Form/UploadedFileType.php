@@ -53,9 +53,12 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['multiple'] = $options['multiple'];
-        $view->vars['accept'] = $options['accept'];
-        $view->vars['thumbnailFilter'] = $options['thumbnail_filter'];
+        $view->vars += [
+            'multiple' => $options['multiple'],
+            'accept' => $options['accept'],
+            'thumbnailFilter' => $options['thumbnail_filter'],
+            'nonCompoundWrapper' => true,
+        ];
     }
 
     public function configureOptions(OptionsResolver $resolver)
