@@ -146,6 +146,5 @@
         {{ form_label(form.search) }}
         {{ form_widget(form.search, {attr: {class: "#{class_name(form.search.vars.attr.class ?? '')} auto-complete__search"}}) }}
         <input type="hidden" {% if form.entity.vars.value is not empty %}value="{{ form.entity.vars.value }}" {% endif %} {% with form.entity.vars + {attr: {class: "#{class_name(form.entity.vars.attr.class ?? '')} auto-complete__entity"} + form.entity.vars.attr} only %}{{ block('widget_attributes') }}{% endwith %}>
-        {% do form.ajax.setRendered(true) %}
     </div>
 {% endblock %}

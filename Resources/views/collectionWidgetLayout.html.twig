@@ -8,7 +8,7 @@
 
     <div {{ block('widget_container_attributes') }}>
         {% if prototype is defined %}
-            {% if prototype.vars.collection_compound ?? prototype.vars.compound %}
+            {% if prototype.vars.compound and not (prototype.vars.nonCompoundWrapper ?? false) %}
                 <div class="collection__header">
                     {% for child in prototype %}
                         {% set type = child.vars.block_prefixes[child.vars.block_prefixes|length - 2] %}
@@ -47,10 +47,10 @@
 {% endblock %}
 
 {% macro collection_entry(form) %}
-    {% set is_compound = form.vars.collection_compound ?? form.vars.compound %}
+    {% set isCompound = form.vars.compound and not (form.vars.nonCompoundWrapper ?? false) %}
 
-    <div {{ is_compound ? form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) : 'class="collection__entry"' }}>
-        {% if is_compound %}
+    <div {{ isCompound ? form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) : 'class="collection__entry"' }}>
+        {% if isCompound %}
             {% for child in form %}
                 {{ form_row(child) }}
             {% endfor %}

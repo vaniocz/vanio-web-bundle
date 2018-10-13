@@ -70,12 +70,13 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['collection_compound'] = false;
         $view->vars['attr']['data-component-auto-complete'] = [
             'entitySelector' => "#{$view['entity']->vars['id']}",
             'searchSelector' => "#{$view['search']->vars['id']}",
             'ajaxField' => $view['ajax']->vars['full_name'],
         ];
+        $view->vars['nonCompoundWrapper'] = true;
+        $view['ajax']->setRendered(true);
     }
 
     public function configureOptions(OptionsResolver $resolver)

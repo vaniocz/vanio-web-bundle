@@ -10,7 +10,7 @@
             {% set label_attr = {class: {(label_attr.class): true}} + label_attr %}
         {% endif %}
 
-        <label {{ attributes({class: label_attr.class ?? {} + {required: required, 'control-label': true}} + label_attr) }}>
+        <label {{ attributes({class: label_attr.class ?? {} + {required: required and (nonCompoundWrapper ?? false or not compound), 'control-label': true}} + label_attr) }}>
             {{- translate_form_label(form, label, translation_domain) -}}
         </label>
     {%- endif %}
