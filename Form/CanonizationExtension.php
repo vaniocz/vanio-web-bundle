@@ -39,7 +39,7 @@ class CanonizationExtension extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'], PHP_INT_MAX);
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'], 512);
 
         if ($options['canonize']) {
             $builder->setMethod($this->requestStack->getCurrentRequest()->getRealMethod());
