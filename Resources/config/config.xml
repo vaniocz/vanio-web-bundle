@@ -87,7 +87,7 @@
             <argument>%vanio_web.multilingual_locale_prefixes%</argument>
         </service>
 
-        <service id="vanio_web.serializer.serializer" class="%vanio_web.serializer.serializer.class%">
+        <service id="vanio_web.serializer.serializer" class="%vanio_web.serializer.serializer.class%" public="true">
             <argument type="service" id="serializer" on-invalid="null"/>
             <argument type="service" id="jms_serializer.serializer" on-invalid="null"/>
         </service>
@@ -100,7 +100,7 @@
             <argument type="service" id="service_container"/>
         </service>
 
-        <service id="vanio_web.templating.response_context" class="%vanio_web.templating.response_context.class%"/>
+        <service id="vanio_web.templating.response_context" class="%vanio_web.templating.response_context.class%" public="true"/>
 
         <service id="vanio_web.templating.web_extension" class="%vanio_web.templating.web_extension.class%" public="false">
             <argument type="service" id="translator"/>

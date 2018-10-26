@@ -2,22 +2,123 @@
 namespace Vanio\WebBundle\Translation;
 
 use Symfony\Bundle\FrameworkBundle\Command\TranslationUpdateCommand;
-use Symfony\Bundle\FrameworkBundle\Translation\PhpExtractor as BasePhpExtractor;
+use Symfony\Component\Translation\Extractor\PhpExtractor as BasePhpExtractor;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class PhpExtractor extends BasePhpExtractor
 {
-    /** @var array */
-    protected $sequences = [
-        ['->', 'trans', '(', self::MESSAGE_TOKEN],
-        ['->', 'transChoice', '(', self::MESSAGE_TOKEN],
-        ['new', 'FlashMessage', '(', self::MESSAGE_TOKEN],
-        ['new', 'Translation', '\\', 'FlashMessage', '(', self::MESSAGE_TOKEN],
-        ['new', 'WebBundle', '\\', 'Translation', '\\', 'FlashMessage', '(', self::MESSAGE_TOKEN],
-        ['new', 'Vanio', '\\', 'WebBundle', '\\', 'Translation', '\\', 'FlashMessage', '(', self::MESSAGE_TOKEN],
-        ['new', '\\', 'Vanio', '\\', 'WebBundle', '\\', 'Translation', '\\', 'FlashMessage', '(', self::MESSAGE_TOKEN],
+    const SEQUENCES = [
+        [
+            'new',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ], [
+            'new',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+        ], [
+            'new',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ], [
+            'new',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+        ], [
+            'new',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ], [
+            'new',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+        ], [
+            'new',
+            'Vanio',
+            '\\',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ], [
+            'new',
+            'Vanio',
+            '\\',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+        ], [
+            'new',
+            '\\',
+            'Vanio',
+            '\\',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+            self::METHOD_ARGUMENTS_TOKEN,
+            ',',
+            self::DOMAIN_TOKEN,
+        ], [
+            'new',
+            '\\',
+            'Vanio',
+            '\\',
+            'WebBundle',
+            '\\',
+            'Translation',
+            '\\',
+            'FlashMessage',
+            '(',
+            self::MESSAGE_TOKEN,
+        ],
     ];
+
+    public function __construct()
+    {
+        $this->sequences = array_merge($this->sequences, self::SEQUENCES);
+    }
 
     /**
      * @param string|array $directory
