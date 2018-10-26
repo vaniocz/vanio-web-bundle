@@ -33,13 +33,16 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
         return !$constraint instanceof NotBlank;
     }
 
+    /**
+     * @return mixed[]
+     */
     protected function getValidationData(Form $form): array
     {
         $validationData = parent::getValidationData($form);
         $constraints = $this->guessConstraints($form);
         $groups = $this->resolveValidationGroups($form);
 
-        if ($this->shouldValidateRequired($form, $groups)) {
+        if ($this->shouldValidateRequired($form, $constraints, $groups)) {
             $constraints[] = new NotBlank([
                 'message' => $form->getConfig()->getOption('required_message'),
                 'groups' => $groups,
@@ -60,7 +63,6 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
     }
 
     /**
-     * @param FormInterface $form
      * @return Constraint[]
      */
     private function guessConstraints(FormInterface $form): array
@@ -175,7 +177,13 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
         return $resolveValidationGroups();
     }
 
-    private function shouldValidateRequired(FormInterface $form, array $groups): bool
+    /**
+     * @param FormInterface $form
+     * @param Constraint[] $constraints
+     * @param string[] $groups
+     * @return bool
+     */
+    private function shouldValidateRequired(FormInterface $form, array $constraints, array $groups): bool
     {
         if (!$form->isRequired() || !$this->resolveValidateRequired($form)) {
             return false;
@@ -189,7 +197,7 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
             return false;
         } elseif ($parent && in_array($parent->getConfig()->getType()->getBlockPrefix(), $skippedParentTypes)) {
             return false;
-        } elseif ($this->hasNotBlankConstraint($config->getOption('constraints'), $groups)) {
+        } elseif ($this->hasNotBlankConstraint(array_merge($config->getOption('constraints'), $constraints), $groups)) {
             return false;
         }
 
@@ -213,6 +221,11 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
         return false;
     }
 
+    /**
+     * @param Constraint[] $constraints
+     * @param string[] $groups
+     * @return bool
+     */
     private function hasNotBlankConstraint(array $constraints, array $groups): bool
     {
         foreach ($constraints as $constraint) {
