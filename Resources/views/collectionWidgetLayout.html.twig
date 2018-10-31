@@ -7,10 +7,12 @@
     {% endif %}
 
     <div {{ block('widget_container_attributes') }}>
-        {% if prototype is defined %}
-            {% if prototype.vars.compound and not (prototype.vars.nonCompoundWrapper ?? false) %}
+        {% set entry = prototype ?? form|first %}
+
+        {% if entry %}
+            {% if entry.vars.compound and not (entry.vars.nonCompoundWrapper ?? false) %}
                 <div class="collection__header">
-                    {% for child in prototype %}
+                    {% for child in entry %}
                         {% set type = child.vars.block_prefixes[child.vars.block_prefixes|length - 2] %}
 
                         {% if 'hidden' not in child.vars.block_prefixes and (type != 'scalar_object' or 'hidden' not in child.value.vars.block_prefixes) %}
@@ -27,20 +29,20 @@
                     <span class="collection-actions"></span>
                 </div>
             {% endif %}
-
-            <div
-                class="collection__body"
-                data-prototype="{{ collection_entry(prototype)|e('html_attr') }}"
-                data-prototype-name="{{ prototype.vars.name }}"
-                data-allow-add="{{ allow_add }}"
-                data-allow-remove="{{ allow_delete }}"
-                data-name-prefix="{{ full_name }}"
-            >
-                {% for child in form %}
-                    {{ collection_entry(child) }}
-                {% endfor %}
-            </div>
         {% endif %}
+
+        <div
+            class="collection__body"
+            {% if prototype is defined %}data-prototype="{{ collection_entry(prototype)|e('html_attr') }}"{% endif %}
+            {% if prototype is defined %}data-prototype-name="{{ prototype.vars.name }}"{% endif %}
+            data-allow-add="{{ allow_add }}"
+            data-allow-remove="{{ allow_delete }}"
+            data-name-prefix="{{ full_name }}"
+        >
+            {% for child in form %}
+                {{ collection_entry(child) }}
+            {% endfor %}
+        </div>
 
         {{ form_rest(form) }}
     </div>
