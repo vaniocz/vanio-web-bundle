@@ -1,6 +1,7 @@
 <?php
 namespace Vanio\WebBundle\Request;
 
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -9,7 +10,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 trait RefreshHelperTrait
 {
-    /** @var ContainerInterface|null */
+    /** @var ContainerInterface|PsrContainerInterface|null */
     protected $container;
 
     /** @var RequestStack|null */
@@ -19,15 +20,14 @@ trait RefreshHelperTrait
     protected $urlGenerator;
 
     /**
-     * @throws \LogicException
+     * @param int $status
+     * @param mixed[] $headers
+     * @return RedirectResponse
      */
     protected function refresh(int $status = Response::HTTP_FOUND, array $headers = []): RedirectResponse
     {
         if (!$this->container && (!$this->requestStack || !$this->urlGenerator)) {
-            throw new \LogicException(sprintf(
-                'Unable to refresh. You must set both "requestStack" and "urlGenerator" properties or make "%s" class container-aware.',
-                __CLASS__
-            ));
+            throw new \LogicException('Unable to refresh. You must set both "requestStack" and "urlGenerator", subscribe for "request_stack" and "router" services or make your class container-aware.');
         }
 
         if (!$this->requestStack) {
