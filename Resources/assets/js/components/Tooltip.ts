@@ -12,7 +12,7 @@ export default class Tooltip
             animation: false,
             selector: '[title]',
             container: 'body',
-            placement: 'auto bottom',
+            placement: 'auto bottom' as any,
             trigger: 'manual',
         });
         const tooltip = this.$element.data('bs.tooltip');

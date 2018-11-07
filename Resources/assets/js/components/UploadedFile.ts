@@ -22,7 +22,7 @@ interface FileInfo extends DropzoneFile, FileMetadata
 @component('UploadedFile')
 export default class UploadedFile
 {
-    private dropzone: Dropzone;
+    private dropzone!: Dropzone;
     private options: UploadedFileOptions;
     private $element: JQuery;
     private $target: JQuery;

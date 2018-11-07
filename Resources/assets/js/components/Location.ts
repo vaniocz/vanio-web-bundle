@@ -6,18 +6,18 @@ const KEY_CODE_ARROW_DOWN = 40;
 @component('Location')
 export default class Location
 {
-    private element: HTMLElement;
-    private $element: JQuery;
-    private address: HTMLInputElement;
-    private $address: JQuery;
-    private $latitude: JQuery;
-    private $longitude: JQuery;
-    private $form: JQuery;
-    private $submit: JQuery;
-    private autocomplete: google.maps.places.Autocomplete;
+    private element!: HTMLElement;
+    private $element!: JQuery;
+    private address!: HTMLInputElement;
+    private $address!: JQuery;
+    private $latitude!: JQuery;
+    private $longitude!: JQuery;
+    private $form!: JQuery;
+    private $submit!: JQuery;
+    private autocomplete!: google.maps.places.Autocomplete;
     private submitted = false;
-    private supportsValidationApi: boolean;
-    private usesValidationApi: boolean;
+    private supportsValidationApi!: boolean;
+    private usesValidationApi!: boolean;
 
     public constructor(element: JQuery|HTMLElement|string)
     {
@@ -31,7 +31,7 @@ export default class Location
         this.address = this.$address[0] as HTMLInputElement;
         this.$latitude = this.$element.find('.location__latitude').attr('type', 'hidden');
         this.$longitude = this.$element.find('.location__longitude').attr('type', 'hidden');
-        this.$form = $(this.address.form);
+        this.$form = $(this.address.form!);
         this.$submit = this.$form.find(':submit');
         this.autocomplete = new google.maps.places.Autocomplete(this.address);
         this.autocomplete.addListener('place_changed', this.onPlaceChange.bind(this));
