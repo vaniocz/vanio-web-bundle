@@ -71,7 +71,7 @@
 
         <service id="vanio_web.request.request_type_listener" class="%vanio_web.request.request_type_listener.class%" abstract="true"/>
 
-        <service id="vanio_web.request.target_path_resolver" class="%vanio_web.request.target_path_resolver.class%">
+        <service id="vanio_web.request.target_path_resolver" class="%vanio_web.request.target_path_resolver.class%" public="true">
             <argument type="service" id="security.http_utils"/>
             <argument type="service" id="router"/>
             <argument>%vanio_web%</argument>
