@@ -5,7 +5,7 @@ export default class NativeValidation
 {
     private $element: JQuery;
     private $form: JQuery;
-    private $submit: JQuery;
+    private $submit?: JQuery;
     private form: HTMLFormElement;
 
     public constructor(element: JQuery|HTMLFormElement|string)

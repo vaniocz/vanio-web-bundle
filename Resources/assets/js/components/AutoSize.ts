@@ -6,7 +6,7 @@ export default class AutoSize
 {
     private $element: JQuery;
 
-    public constructor(element: JQuery|HTMLFormElement|string)
+    public constructor(element: JQuery|HTMLElement|string)
     {
         this.$element = $(element);
         autosize(this.$element[0]);
