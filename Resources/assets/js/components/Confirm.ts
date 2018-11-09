@@ -101,14 +101,14 @@ export default class Confirm
 
     private actionConfirmed(confirmed: boolean): void
     {
+        if (this.$element.is('[type="submit"]')) {
+            this.$element.closest('form').submit();
+        }
+
         const link = this.$element.attr('href');
 
         if (link) {
             location.href = link;
-        }
-
-        if (this.$element.is('[type="submit"]')) {
-            this.$element.closest('form').submit();
         }
     }
 }
