@@ -91,7 +91,7 @@ export default class Confirm
         $modal.find('.btn-confirm')
             .addClass(this.options.submitButtonClass!)
             .text(this.options.submitButtonText!)
-            .on('click', this.redirectConfirmed.bind(this));
+            .on('click', this.actionConfirmed.bind(this));
         $modal.find('.btn-cancel').text(this.options.cancelButtonText!);
         $modal.find('.modal-body').append(this.options.content);
         $modal.modal(this.options);
@@ -99,12 +99,16 @@ export default class Confirm
         return $modal;
     }
 
-    private redirectConfirmed(confirmed: boolean): void
+    private actionConfirmed(confirmed: boolean): void
     {
         const link = this.$element.attr('href');
 
         if (link) {
             location.href = link;
+        }
+
+        if (this.$element.is('[type="submit"]')) {
+            this.$element.closest('form.blaabla').submit();
         }
     }
 }
