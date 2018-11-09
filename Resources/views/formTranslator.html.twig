@@ -1,7 +1,6 @@
 {% macro translate_form_label(form, label, translationDomain = null) -%}
     {% import _self as self -%}
 
-
     {% if label is not empty or form.vars.label_format is not empty -%}
         {% set label = form.vars.label_format|replace({'%name%': form.vars.name, '%id%': form.vars.id})|default(label) -%}
 
@@ -41,15 +40,13 @@
 {% macro form_path(form, currentPath = null) -%}
     {% import _self as self -%}
 
-    {% for i in range(1,50) %}
+    {% for i in range(1,50) if form is not same as(null) -%}
         {% if 'collection' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translations' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translationsForms' not in form.parent.vars.block_prefixes ?? [] -%}
             {% set currentPath = currentPath is same as(null) ? form.vars.name : "#{form.vars.name}.#{currentPath}" -%}
         {% endif -%}
 
-        {% if form.parent -%}
-            {% set form = form.parent %}
-        {% else -%}
-            {{ currentPath -}}
-        {% endif -%}
-    {% endfor %}
+        {%- set form = form.parent ?? null -%}
+    {% endfor -%}
+
+    {{ currentPath -}}
 {% endmacro %}
