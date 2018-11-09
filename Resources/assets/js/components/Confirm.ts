@@ -101,7 +101,7 @@ export default class Confirm
 
     private actionConfirmed(confirmed: boolean): void
     {
-        if (this.$element.is('[type="submit"]')) {
+        if (this.$element.is(':submit')) {
             this.$element.closest('form').submit();
         }
 
