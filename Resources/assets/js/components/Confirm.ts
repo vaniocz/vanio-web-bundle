@@ -108,7 +108,7 @@ export default class Confirm
         }
 
         if (this.$element.is('[type="submit"]')) {
-            this.$element.closest('form.blaabla').submit();
+            this.$element.closest('form').submit();
         }
     }
 }
