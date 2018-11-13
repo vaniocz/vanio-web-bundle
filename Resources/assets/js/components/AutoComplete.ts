@@ -15,6 +15,7 @@ interface AutoCompleteOptions
     ajaxField: string;
     ajax: string;
     allowUnsuggested?: boolean;
+    htmlSuggestionSelector?: string;
 }
 
 interface AutoCompleteSuggestions extends Array<AutoCompleteSuggestion>
@@ -258,7 +259,8 @@ export class AutoComplete
     {
         if (suggestion.html != null) {
             const $html = $(`<span>${suggestion.html}</span>`);
-            $html.find('.suggestion-value').each((index: number, valueElement: HTMLElement) => {
+            const htmlSuggestionSelector = this.options.htmlSuggestionSelector || '.suggestion-value';
+            $html.find(htmlSuggestionSelector).each((index: number, valueElement: HTMLElement) => {
                 const valueSuggestion = {
                     value: valueElement.innerHTML,
                     viewValue: suggestion.viewValue,
