@@ -13,6 +13,11 @@ class DateType extends AbstractType
             ->setDefaults([
                 'widget' => 'single_text',
                 'format' => \IntlDateFormatter::MEDIUM,
+                'documentation' => [
+                    'type' => 'string',
+                    'format' => 'date',
+                    'example' => date('Y-m-d'),
+                ],
             ])
             ->setAllowedValues('widget', 'single_text');
     }
