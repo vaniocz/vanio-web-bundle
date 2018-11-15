@@ -53,7 +53,7 @@ class PreserveMissingDataExtension extends AbstractTypeExtension
             }
 
             foreach ($form->all() as $name => $child) {
-                if (!isset($data[$name]) && !$child->getConfig()->getType()->getInnerType() instanceof CheckboxType) {
+                if (!array_key_exists($name, $data) && !$child->getConfig()->getType()->getInnerType() instanceof CheckboxType) {
                     $data[$name] = $this->resolveSubmittedData($child);
                 }
             }
