@@ -18,22 +18,22 @@
     {% import _self as self -%}
 
     {% set path = path ?? id|split('.') -%}
-    {% set shouldStop = false %}
+    {% set shouldStop = false -%}
 
-    {% for pathLength in 0..(path|length) if not shouldStop %}
+    {% for pathLength in 0..(path|length) if not shouldStop -%}
         {% set currentPath = path|slice(pathLength) -%}
         {% set currentId = currentPath|join('.') -%}
 
         {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
             {{ currentId|trans({}, translationDomain) -}}
-            {% set shouldStop = true %}
+            {% set shouldStop = true -%}
         {% elseif pathLength + 1 == path|length %}
             {% if preferFallback %}
                 {{ currentId -}}
             {% else %}
                 {{ self.translate_recursive(id, translationDomain, null, true) -}}
             {% endif %}
-        {% endif %}
+        {% endif -%}
     {% endfor %}
 {% endmacro %}
 
