@@ -38,7 +38,9 @@ class PreserveMissingDataExtension extends AbstractTypeExtension
      */
     public function onPreSubmit(FormEvent $event)
     {
-        $event->setData($this->resolveSubmittedData($event->getForm(), $event->getData()));
+        if ($event->getData() !== null) {
+            $event->setData($this->resolveSubmittedData($event->getForm(), $event->getData()));
+        }
     }
 
     /**
