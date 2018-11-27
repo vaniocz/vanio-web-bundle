@@ -428,7 +428,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
      */
     public function entity(string $class, $id)
     {
-        return $this->doctrine->getManagerForClass($class)->find($class, $id);
+        return $this->doctrine->getManagerForClass($class)->getRepository($class)->find($id);
     }
 
     /**

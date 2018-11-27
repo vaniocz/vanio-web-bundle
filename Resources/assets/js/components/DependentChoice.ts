@@ -39,7 +39,7 @@ export default class DependentChoice
                 this.$dependentOptionsParent.append($dependentOptions);
             }
 
-            if ($dependentOptions.length === 1) {
+            if ($dependentOptions.length === 1 && (!$placeholder.length || this.$element.is(':required'))) {
                 this.$element.attr('readonly', 'readonly');
                 $dependentOptions.prop('selected', true);
                 this.$label.addClass('is-readonly');
