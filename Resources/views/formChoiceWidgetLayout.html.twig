@@ -65,3 +65,25 @@
         {% endif %}
     {% endfor %}
 {% endblock %}
+
+{% block radio_widget -%}
+    {% if prepend ?? false %}
+        {% set attr = {class: "#{attr.class ?? ''} am-radio-prepended"} + attr %}
+        <input type="checkbox" {{ block('widget_attributes') }} {% if value is defined %}value="{{ value }}"{% endif %} {% if checked %}checked="checked"{% endif %}>
+    {% endif %}
+
+    <div class="am-radio input-group">
+        {% if not prepend ?? false %}
+            <input
+                    type="radio" {{ block('widget_attributes') }}
+                    {% if value is defined %}value="{{ value }}"{% endif %}
+                    {% if checked %}checked="checked"{% endif %}
+                    {% if form.parent.vars.forms[value] is defined %}
+                        data-form="{{ form_row(form.parent.vars.forms[value])|escape('html_attr') }}"
+                    {% endif %}
+            >
+        {% endif %}
+
+        {{- form_label(form, null, {widget: '', label_attr: {for: id}}) -}}
+    </div>
+{%- endblock %}
