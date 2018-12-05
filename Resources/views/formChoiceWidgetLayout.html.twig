@@ -1,7 +1,7 @@
 {% block form_choice_widget %}
     {% set attr = {
-    class: attr.class ?? '' ~ ' form-choice',
-    'data-component-form-choice': '{}',
+        class: attr.class ?? '' ~ ' form-choice',
+        'data-component-form-choice': '{}',
     } + attr %}
 
     <div {{ block('widget_container_attributes') }}>
@@ -10,11 +10,17 @@
         {% endif %}
 
         {% for child in form %}
+            {% set choiceForms = [] %}
+
             {% if loop.index == 2 %}
                 <div class="form-choice__form">
+            {% elseif loop.index == 1 %}
+                {% for value, choiceForm in child.vars.forms %}
+                    {% set choiceForms = choiceForms + {(value): form_row(choiceForm)} %}
+                {% endfor %}
             {% endif %}
 
-            {{ form_row(child, loop.first ? {attr: {class: 'form-choice__choice'}} : {}) }}
+            {{ form_row(child, loop.first ? {attr: {class: 'form-choice__choice', 'data-forms': choiceForms|json_encode}} : {}) }}
 
             {% if loop.index == 2 %}
                 </div>
@@ -26,64 +32,3 @@
         {% endif %}
     </div>
 {% endblock %}
-
-{% block choice_widget_options %}
-    {% set option_label_block = null %}
-
-    {% for block_prefix in block_prefixes|reverse %}
-        {% if option_label_block is null and block("#{block_prefix}_option_label") is defined %}
-            {% set option_label_block = "#{block_prefix}_option_label" %}
-        {% endif %}
-    {% endfor %}
-
-    {% for groupLabel, choice in options %}
-        {% if choice is iterable %}
-            <optgroup label="{{ choice_translation_domain is same as(false) ? groupLabel : groupLabel|trans({}, choice_translation_domain) }}">
-                {% set options = choice %}
-                {{ block('choice_widget_options') }}
-            </optgroup>
-        {% else %}
-            <option
-                value="{{ choice.value }}"
-
-                {% if choice.attr %}
-                    {% with { attr: choice.attr } %}{{ block('attributes') }}{% endwith %}
-                {% endif %}
-
-                {% if choice is selectedchoice(value) %} selected="selected"{% endif %}
-
-                {% if forms[choice.value] is defined %}
-                    data-form="{{ form_row(forms[choice.value])|escape('html_attr') }}"
-                {% endif %}
-            >
-                {% if option_label_block is not null %}
-                    {{ block(option_label_block) }}
-                {% else %}
-                    {{ choice_translation_domain is same as(false) ? choice.label : choice.label|trans({}, choice_translation_domain) }}
-                {% endif %}
-            </option>
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
-{% block radio_widget -%}
-    {% if prepend ?? false %}
-        {% set attr = {class: "#{attr.class ?? ''} am-radio-prepended"} + attr %}
-        <input type="checkbox" {{ block('widget_attributes') }} {% if value is defined %}value="{{ value }}"{% endif %} {% if checked %}checked="checked"{% endif %}>
-    {% endif %}
-
-    <div class="am-radio input-group">
-        {% if not prepend ?? false %}
-            <input
-                    type="radio" {{ block('widget_attributes') }}
-                    {% if value is defined %}value="{{ value }}"{% endif %}
-                    {% if checked %}checked="checked"{% endif %}
-                    {% if form.parent.vars.forms[value] is defined %}
-                        data-form="{{ form_row(form.parent.vars.forms[value])|escape('html_attr') }}"
-                    {% endif %}
-            >
-        {% endif %}
-
-        {{- form_label(form, null, {widget: '', label_attr: {for: id}}) -}}
-    </div>
-{%- endblock %}

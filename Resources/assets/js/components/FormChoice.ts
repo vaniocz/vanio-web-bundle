@@ -47,6 +47,6 @@ export default class FormChoice
 
     private getSelectedChoiceForm(): JQuery
     {
-        return $(this.$choice.find(this.isChoiceSelect ? 'option:selected' : 'input:checked').data('form'));
+        return $('<div />').html(this.$choice.data('forms')[this.getChoiceValue()]);
     }
 }
