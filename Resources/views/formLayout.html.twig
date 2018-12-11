@@ -92,6 +92,43 @@
     }) }}
 {% endblock %}
 
+{% block vanio_range_widget %}
+    {% set class = widget == 'slider' ? 'range-slider' : 'range' %}
+    {% set attr = {class: "#{class_name(attr.class ?? '')} #{class}"} + attr %}
+
+    {% if widget == 'slider' %}
+        {% set attr = {
+            'data-component-range-slider': {
+                start: [form.minimum.vars.value, form.maximum.vars.value],
+                range: {
+                    min: form.vars.minimum,
+                    max: form.vars.maximum,
+                },
+                step: 1,
+                connect: true,
+            }|json_encode
+        } + attr %}
+    {% endif %}
+
+    <div {{ block('widget_container_attributes') }}>
+        {% if not form.parent %}
+            {{ form_errors(form) }}
+        {% endif %}
+
+        <div class="form-group {{ class }}__group {{ class }}__group--minimum">
+            {{ form_label(form.minimum, null, {label_attr: {class: "#{class_name(form.minimum.label_attr.class ?? '')} #{class}__label #{class}__label--minimum"}}) }}
+            {{ form_widget(form.minimum, {attr: {class: "#{class_name(form.minimum.attr.class ?? '')} #{class}__value #{class}__value--minimum"}}) }}
+            {{ form_errors(form.minimum) }}
+        </div>
+
+        <div class="form-group {{ class }}__group {{ class }}__group--maximum">
+            {{ form_label(form.maximum, null, {label_attr: {class: "#{class_name(form.maximum.label_attr.class ?? '')} #{class}__label #{class}__label--maximum"}}) }}
+            {{ form_widget(form.maximum, {attr: {class: "#{class_name(form.maximum.attr.class ?? '')} #{class}__value #{class}__value--maximum"}}) }}
+            {{ form_errors(form.maximum) }}
+        </div>
+    </div>
+{% endblock %}
+
 {% block location_label %}
     {% set label_attr = label_attr + {for: form.address.vars.id} %}
     {{ block('form_label') }}
@@ -104,7 +141,7 @@
     } + attr %}
 
     <div {{ block('widget_container_attributes') }}>
-        {% if form.parent is empty %}
+        {% if not form.parent %}
             {{ form_errors(form) }}
         {% endif %}
 
@@ -122,7 +159,7 @@
     {% set attr = {class: "#{class_name(attr.class ?? '')} form-toggle"} + attr %}
 
     <div {{ block('widget_container_attributes') }}>
-        {% if form.parent is empty %}
+        {% if not form.parent %}
             {{ form_errors(form) }}
         {% endif %}
 
