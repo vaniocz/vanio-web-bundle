@@ -3,7 +3,7 @@ namespace Vanio\WebBundle\Form;
 
 use Assert\LazyAssertion;
 use Doctrine\Common\Annotations\TokenParser;
-use Symfony\Bundle\FrameworkBundle\Translation\PhpStringTokenParser;
+use Symfony\Component\Translation\Extractor\PhpStringTokenParser;
 use Vanio\DomainBundle\Assert\Validate;
 use Vanio\DomainBundle\Assert\Validation;
 use Vanio\Stdlib\Strings;
