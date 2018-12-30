@@ -44,10 +44,13 @@ export default class DependentChoice
                 this.$element.attr('readonly', 'readonly');
                 $dependentOptions.prop('selected', true);
                 this.$label.addClass('is-readonly');
+            } else if (!$selectedOption.prop('selected')) {
+                $placeholder.prop('selected', true);
             }
         } else {
             this.$element.attr('disabled', 'disabled');
             this.$label.addClass('is-disabled');
+            $placeholder.prop('selected', true);
         }
 
         if (value !== this.$element.val()) {
