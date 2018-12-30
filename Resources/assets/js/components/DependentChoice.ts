@@ -25,8 +25,9 @@ export default class DependentChoice
     {
         const value = this.$element.is('select') ? this.$element.val() : this.$element.find('input:checked').val()
         const $placeholder = this.$element.find('option:first').filter('[value=""], :not([value])');
-        this.$dependentOptions.remove();
         const $dependentOptions = this.findPossibleDependentOptions();
+        const $selectedOption = $dependentOptions.filter(this.$element.is('select') ? ':selected' : 'input:checked');
+        this.$dependentOptions.not($selectedOption).remove();
         this.$element
             .removeAttr('disabled')
             .removeAttr('readonly');
