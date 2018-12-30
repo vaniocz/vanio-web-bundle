@@ -21,9 +21,14 @@ export default class DependentChoice
         this.render();
     }
 
+    public get value(): string|number|string[]|undefined
+    {
+        return this.$element.is('select') ? this.$element.val() : this.$element.find('input:checked').val();
+    }
+
     private render(): void
     {
-        const value = this.$element.is('select') ? this.$element.val() : this.$element.find('input:checked').val()
+        const value = this.value;
         const $placeholder = this.$element.find('option:first').filter('[value=""], :not([value])');
         const $dependentOptions = this.findPossibleDependentOptions();
         const $selectedOption = $dependentOptions.filter(this.$element.is('select') ? ':selected' : 'input:checked');
@@ -53,7 +58,7 @@ export default class DependentChoice
             $placeholder.prop('selected', true);
         }
 
-        if (value !== this.$element.val()) {
+        if (this.value !== value) {
             this.$element.trigger('dependent_choice.change');
         }
     }
