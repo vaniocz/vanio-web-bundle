@@ -44,6 +44,7 @@ class FormToggleType extends AbstractType implements DataMapperInterface
                 'form_type' => null,
                 'form_name' => 'form',
                 'form_options' => [],
+                'disabled_data' => null,
             ])
             ->setAllowedTypes('toggle_type', 'string')
             ->setAllowedTypes('toggle_name', 'string')
