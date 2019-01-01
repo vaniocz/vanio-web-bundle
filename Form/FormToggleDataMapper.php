@@ -37,11 +37,12 @@ class FormToggleDataMapper implements DataMapperInterface
         $child = reset($children);
         $parent = $child->getParent()->getParent();
         $toggleForm = $parent->get($parent->getConfig()->getOption('toggle_name'));
+        $disabledData = $parent->getConfig()->getOption('disabled_data');
 
         if ($toggleForm->getData()) {
             $this->dataMapper->mapFormsToData($forms, $data);
         } else {
-            $data = null;
+            $data = $disabledData instanceof \Closure ? $disabledData($parent) : $disabledData;
         }
     }
 }
