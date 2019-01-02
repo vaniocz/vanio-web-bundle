@@ -45,6 +45,7 @@
 
         <label {{ attributes(label_attr) }}>
             {{- widget|raw -}}
+            {{ (pre ?? '')|raw -}}
 
             {% if label is not same as(false) -%}
                 {% if label is empty -%}
@@ -57,6 +58,8 @@
                     {{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
                 {% endif -%}
             {% endif -%}
+
+            {{ (post ?? '')|raw -}}
         </label>
     {%- endif -%}
 {% endblock %}
