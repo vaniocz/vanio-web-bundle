@@ -19,11 +19,17 @@ class RangeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('minimum', NumberType::class, ['data' => $options['minimum']])
-            ->add('maximum', NumberType::class, ['data' => $options['maximum']]);
+            ->add('minimum', NumberType::class)
+            ->add('maximum', NumberType::class);
+        $emptyData = $builder->getEmptyData();
+
+        if ($emptyData instanceof Range) {
+            $builder->get('minimum')->setEmptyData($this->normToView($builder->get('minimum'), $emptyData->minimum()));
+            $builder->get('maximum')->setEmptyData($this->normToView($builder->get('maximum'), $emptyData->maximum()));
+        }
 
         if (is_a($options['data_class'], Range::class, true)) {
-            $builder->setDataMapper(new ConstructorPropertyPathMapper);
+            $builder->setDataMapper(ConstructorPropertyPathMapper::nullable());
         }
     }
 
@@ -32,12 +38,12 @@ class RangeType extends AbstractType
      * @param FormInterface $form
      * @param mixed[] $options
      */
-    public  function buildView(FormView $view, FormInterface $form, array $options): void
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars += [
             'widget' => $options['widget'],
-            'minimum' => $options['minimum'],
-            'maximum' => $options['maximum'],
+            'minimum' => $options['minimum'] ?? 0,
+            'maximum' => $options['maximum'] ?? 9999,
             'step' => $options['step'],
         ];
     }
@@ -47,13 +53,14 @@ class RangeType extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => Range::class,
-                'minimum' => 0,
-                'maximum' => 9999,
+                'empty_data' => null,
+                'minimum' => null,
+                'maximum' => null,
                 'step' => 1,
                 'widget' => 'default',
             ])
-            ->setAllowedTypes('minimum', ['int', 'float'])
-            ->setAllowedTypes('maximum', ['int', 'float'])
+            ->setAllowedTypes('minimum', ['int', 'float', 'null'])
+            ->setAllowedTypes('maximum', ['int', 'float', 'null'])
             ->setAllowedTypes('step', ['int', 'float'])
             ->setAllowedValues('widget', ['default', 'slider']);
     }
@@ -61,5 +68,14 @@ class RangeType extends AbstractType
     public function getBlockPrefix(): string
     {
         return 'vanio_range';
+    }
+
+    private function normToView(FormBuilderInterface $form, float $value): string
+    {
+        foreach ($form->getViewTransformers() as $transformer) {
+            $value = $transformer->transform($value);
+        }
+
+        return $value;
     }
 }

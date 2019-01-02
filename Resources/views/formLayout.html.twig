@@ -99,11 +99,8 @@
     {% if widget == 'slider' %}
         {% set attr = {
             'data-component-range-slider': {
-                start: [form.minimum.vars.value, form.maximum.vars.value],
-                range: {
-                    min: form.vars.minimum,
-                    max: form.vars.maximum,
-                },
+                start: [form.minimum.vars.data ?? form.vars.minimum, form.maximum.vars.data ?? form.vars.maximum],
+                range: {min: form.vars.minimum, max: form.vars.maximum},
                 step: 1,
                 connect: true,
             }|json_encode

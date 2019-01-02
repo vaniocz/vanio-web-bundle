@@ -19,6 +19,14 @@ export default class RangeSlider
     {
         this.$element = $(element);
         this.$values = this.$element.find('.range-slider__value');
+
+        if (options.range.min === options.range.max) {
+            (options.range.min as number)--;
+            (options.range.max as number)++;
+            this.$element.attr('disabled', 'disabled');
+            this.$values.attr('readonly', 'readonly');
+        }
+
         this.noUiSlider = noUiSlider.create(this.$element[0], options) as any;
         this.isIe = /Trident\/|MSIE /.test(window.navigator.userAgent);
         this.isEdge = /Edge\//.test(window.navigator.userAgent);
