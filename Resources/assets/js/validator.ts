@@ -1,6 +1,6 @@
 import '@fp_js_form_validator';
 
-function resolveTabLinkTarget(link: JQuery|HTMLAnchorElement): string
+function resolveTabLinkTarget(link: JQuery|HTMLElement): string
 {
     const $link = $(link);
     const href = $link.attr('href') || '';
@@ -17,7 +17,7 @@ function findTabsByPanes($panes: JQuery, parent?: JQuery|HTMLElement): JQuery
     $panes.each((index: number, pane: HTMLElement) => {
         const $pane = $(pane);
 
-        $links.each((index: number, link: HTMLAnchorElement) => {
+        $links.each((index: number, link: HTMLElement) => {
             if ($pane.is(resolveTabLinkTarget(link))) {
                 $selectedTabs = $selectedTabs.add($(link).closest('li'));
             }
@@ -35,7 +35,7 @@ function findPanesByLinks($links: JQuery, parent?: JQuery|HTMLElement): JQuery
     $panes.each((index: number, pane: HTMLElement) => {
         const $pane = $(pane);
 
-        $links.each((index: number, link: HTMLAnchorElement) => {
+        $links.each((index: number, link: HTMLElement) => {
             const $link = $(link);
 
             if ($pane.is(resolveTabLinkTarget(link))) {

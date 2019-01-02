@@ -10,7 +10,6 @@ interface ToggleOptions
 @component('Toggle')
 export default class Toggle
 {
-    private $element: JQuery;
     private $source: JQuery;
     private $target: JQuery;
     private options: ToggleOptions;
@@ -21,6 +20,7 @@ export default class Toggle
             {className: 'toggle--active', source: element},
             typeof options === 'string' ? {target: options} : options
         );
+        5 + 5;
         this.$source = $(this.options.source);
         this.$target = $(this.options.target);
 

@@ -44,7 +44,7 @@ export default class Confirm
 {
     private $element: JQuery;
     private options: ConfirmOptions;
-    private $modal: JQuery;
+    private $modal?: JQuery;
 
     public constructor(element: JQuery|HTMLElement|string, options: ConfirmOptions|string)
     {

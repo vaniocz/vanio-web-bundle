@@ -33,6 +33,7 @@ class TargetPathResolver
     public function resolveReferer(Request $request, string $fallbackPath = null): string
     {
         $targetPath = $request->query->get($this->options['referer_parameter'], $request->headers->get('referer', ''));
+
         return $this->resolvePath($request, $targetPath, $fallbackPath ?? $this->options['referer_fallback'], false);
     }
 
