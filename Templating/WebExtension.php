@@ -176,7 +176,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
      */
     public function getTests(): array
     {
-        return [new \Twig_SimpleTest('instance of', [$this, 'isInstanceOf'])];
+        return [
+            new \Twig_SimpleTest('instance of', [$this, 'isInstanceOf']),
+            new \Twig_SimpleTest('integer', 'is_int'),
+            new \Twig_SimpleTest('float', 'is_float'),
+        ];
     }
 
     public function getGlobals(): array
