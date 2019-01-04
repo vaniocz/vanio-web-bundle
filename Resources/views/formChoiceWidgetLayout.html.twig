@@ -1,7 +1,7 @@
 {% block form_choice_widget %}
     {% set attr = {
-    class: attr.class ?? '' ~ ' form-choice',
-    'data-component-form-choice': '{}',
+        class: attr.class ?? '' ~ ' form-choice',
+        'data-component-form-choice': '{}',
     } + attr %}
 
     <div {{ block('widget_container_attributes') }}>
