@@ -1,5 +1,18 @@
+{% macro add_hidden_for_parameter(parameterName, parameterValue) %}
+    {% import _self as self -%}
+
+    {% if parameterValue is iterable %}
+        {% for key, value in parameterValue %}
+            {{ self.add_hidden_for_parameter("#{parameterName}[#{key}]", value) }}
+        {% endfor %}
+    {% else %}
+        <input type="hidden" name="{{ parameterName }}" value="{{ parameterValue }}"/>
+    {% endif %}
+{% endmacro %}
+
+{% import _self as self -%}
 {% set preserveQuery = preserveQuery is iterable ? preserveQuery : [preserveQuery] %}
 
 {% for parameter in preserveQuery if app.request.query.has(parameter) %}
-    <input type="hidden" name="{{ parameter }}" value="{{ app.request.query.get(parameter) }}"/>
+    {{ self.add_hidden_for_parameter(parameter, app.request.query.get(parameter)) }}
 {% endfor %}
