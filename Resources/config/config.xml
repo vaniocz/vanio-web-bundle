@@ -12,6 +12,7 @@
         <parameter key="vanio_web.request.target_path_resolver.class">Vanio\WebBundle\Request\TargetPathResolver</parameter>
         <parameter key="vanio_web.request.route_hierarchy_resolver.class">Vanio\WebBundle\Request\RouteHierarchyResolver</parameter>
         <parameter key="vanio_web.request.multilingual_listener.class">Vanio\WebBundle\Request\MultilingualListener</parameter>
+        <parameter key="vanio_web.routing.router.class">Vanio\WebBundle\Routing\Router</parameter>
         <parameter key="vanio_web.serializer.serializer.class">Vanio\WebBundle\Serializer\Serializer</parameter>
         <parameter key="vanio_web.http_kernel.embedded_fragment_renderer.class">Vanio\WebBundle\HttpKernel\EmbeddedFragmentRenderer</parameter>
         <parameter key="vanio_web.templating.snippet_renderer.class">Vanio\WebBundle\Templating\SnippetRenderer</parameter>
@@ -85,6 +86,12 @@
             <argument>%vanio_web.multilingual_supported_locales%</argument>
             <argument>%vanio_web.multilingual_root_paths%</argument>
             <argument>%vanio_web.multilingual_locale_prefixes%</argument>
+        </service>
+
+        <service id="vanio_web.routing.router" class="%vanio_web.routing.router.class%" decorates="router" decoration-inner-name="router.inner">
+            <argument type="service" id="router.inner"/>
+            <argument type="service" id="request_stack"/>
+            <argument>%vanio_web.persistent_parameters%</argument>
         </service>
 
         <service id="vanio_web.serializer.serializer" class="%vanio_web.serializer.serializer.class%" public="true">

@@ -51,6 +51,13 @@ class Configuration implements ConfigurationInterface
                         })
                     ->end()
                 ->end()
+                ->arrayNode('persistent_parameters')
+                    ->treatNullLike([])
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->prototype('scalar')->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
