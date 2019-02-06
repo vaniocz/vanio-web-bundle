@@ -2,6 +2,7 @@
 namespace Vanio\WebBundle\Form;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -53,7 +54,11 @@ class PreserveMissingDataExtension extends AbstractTypeExtension
             }
 
             foreach ($form->all() as $name => $child) {
-                if (!isset($data[$name]) && !$child->getConfig()->getType()->getInnerType() instanceof CheckboxType) {
+                if (
+                    !isset($data[$name])
+                    && !$child->getConfig()->getType()->getInnerType() instanceof CheckboxType
+                    && !$child instanceof ClickableInterface
+                ) {
                     $data[$name] = $this->resolveSubmittedData($child);
                 }
             }
