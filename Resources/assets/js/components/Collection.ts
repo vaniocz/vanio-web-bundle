@@ -24,6 +24,7 @@ export default class Collection
                 forcePlaceholderSize: true,
                 helper: this.createDragDropHelper.bind(this),
             },
+            max: Infinity,
         }, options);
         this.$body.collection(options)
     }
