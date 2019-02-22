@@ -28,7 +28,7 @@ class MapTransformer implements DataTransformerInterface
      */
     public function transform($value): array
     {
-        return $value;
+        return $value ?? [];
     }
 
     /**
