@@ -12,7 +12,7 @@ class IntegerType extends AbstractType implements DataTransformerInterface
      * @param FormBuilderInterface $builder
      * @param mixed[] $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addViewTransformer($this);
     }
@@ -31,11 +31,7 @@ class IntegerType extends AbstractType implements DataTransformerInterface
 
         return $value;
     }
-    
-    /**
-     * @param string $value
-     * @return int|null
-     */
+
     public function reverseTransform(string $value): ?int
     {
         if ('' === $value) {
@@ -43,7 +39,7 @@ class IntegerType extends AbstractType implements DataTransformerInterface
         } elseif (!ctype_digit($value)) {
             throw new TransformationFailedException('Expected a string of numeric characters only.');
         }
- 
+
         return (int) $value;
     }
 }
