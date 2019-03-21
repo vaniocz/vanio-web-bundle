@@ -20,7 +20,6 @@ export default class Toggle
             {className: 'toggle--active', source: element},
             typeof options === 'string' ? {target: options} : options
         );
-        5 + 5;
         this.$source = $(this.options.source);
         this.$target = $(this.options.target);
 
