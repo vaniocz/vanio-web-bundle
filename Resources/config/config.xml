@@ -8,7 +8,7 @@
         <parameter key="vanio_web.form.validation_constraints_guesser.class">Vanio\WebBundle\Form\ValidationConstraintsGuesser</parameter>
         <parameter key="vanio_web.form.js_form_validator_extension.class">Vanio\WebBundle\Form\JsFormValidatorExtension</parameter>
         <parameter key="vanio_web.model.uploaded_file_repository.class">Vanio\DomainBundle\Doctrine\EntityRepository</parameter>
-        <parameter key="vanio_web.request.controller_result_listener.class">Vanio\WebBundle\Request\ControllerResultListener</parameter>
+        <parameter key="vanio_web.request.controller_yield_listener.class">Vanio\WebBundle\Request\ControllerYieldListener</parameter>
         <parameter key="vanio_web.request.request_type_listener.class">Vanio\WebBundle\Request\RequestTypeListener</parameter>
         <parameter key="vanio_web.request.target_path_resolver.class">Vanio\WebBundle\Request\TargetPathResolver</parameter>
         <parameter key="vanio_web.request.route_hierarchy_resolver.class">Vanio\WebBundle\Request\RouteHierarchyResolver</parameter>
@@ -71,7 +71,7 @@
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
-        <service id="vanio_web.request.controller_result_listener" class="%vanio_web.request.controller_result_listener.class%" public="false">
+        <service id="vanio_web.request.controller_yield_listener" class="%vanio_web.request.controller_yield_listener.class%" public="false">
             <argument type="service" id="translator"/>
             <argument type="service" id="session"/>
             <tag name="kernel.event_subscriber"/>

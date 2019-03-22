@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\WebBundle\Translation\FlashMessage;
 
-class ControllerResultListener implements EventSubscriberInterface
+class ControllerYieldListener implements EventSubscriberInterface
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -34,7 +34,7 @@ class ControllerResultListener implements EventSubscriberInterface
     /**
      * @internal
      */
-    public function onKernelView(GetResponseForControllerResultEvent $event)
+    public function onKernelView(GetResponseForControllerResultEvent $event): void
     {
         $controllerResult = $event->getControllerResult();
 
