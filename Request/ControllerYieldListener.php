@@ -24,7 +24,7 @@ class ControllerYieldListener implements EventSubscriberInterface
     }
 
     /**
-     * @return string[]
+     * @return mixed[]
      */
     public static function getSubscribedEvents(): array
     {
