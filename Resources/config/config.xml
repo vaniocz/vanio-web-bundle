@@ -72,6 +72,8 @@
         </service>
 
         <service id="vanio_web.request.controller_result_listener" class="%vanio_web.request.controller_result_listener.class%" public="false">
+            <argument type="service" id="translator"/>
+            <argument type="service" id="session"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
