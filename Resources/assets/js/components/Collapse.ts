@@ -48,29 +48,31 @@ export default class Collapse
 
     private collapse(state?: boolean): void
     {
-        if (!this.options.dimensions) {
+        let properties = this.options.dimensions;
+
+        if (!properties) {
             const dimensions = (this.$target.css('--collapse-dimensions') || '').toLowerCase().trim();
-            this.options.dimensions = ['', 'unset', 'initial'].indexOf(dimensions) === -1
+            properties = ['', 'unset', 'initial'].indexOf(dimensions) === -1
                 ? dimensions.split(/\s*,\s*/)
                 : [];
         }
 
-        if (this.options.inverseState === undefined) {
-            this.options.inverseState = (this.$target.css('--collapse-state') || '').trim() === 'inversed';
-        }
+        const isStateInversed = this.options.inverseState === undefined
+            ? (this.$target.css('--collapse-state') || '').trim() === 'inversed'
+            : this.options.inverseState;
 
         if (state === undefined) {
             state = !this.$target.hasClass(this.options.className);
         }
 
-        if (this.options.inverseState) {
+        if (isStateInversed) {
             state = !state;
         }
 
         const sourceStyle: {[property: string]: string} = {};
         const targetStyle: {[property: string]: string} = {};
 
-        for (const property of this.options.dimensions) {
+        for (const property of properties) {
             sourceStyle[property] = this.$target.css(property);
             this.$target.css(property, state ? 'auto' : sourceStyle[property]);
             // When changing from auto to fixed set it to fixed value
@@ -80,7 +82,7 @@ export default class Collapse
         this.$source.attr('aria-expanded', state ? 'true' : 'false');
         this.$target.toggleClass(this.options.className, arguments.length === 0 ? undefined : state);
 
-        for (const property of this.options.dimensions) {
+        for (const property of properties) {
             if (state) {
                 targetStyle[property] = this.$target.css(property);
 
