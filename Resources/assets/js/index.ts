@@ -8,6 +8,7 @@ import 'jquery-photoswipe/jquery.photoswipe';
 import 'symfony-collection/jquery.collection';
 import '@vanio_web/js/components/AutoComplete';
 import '@vanio_web/js/components/AutoSize';
+import '@vanio_web/js/components/Collapse';
 import '@vanio_web/js/components/Collection';
 import '@vanio_web/js/components/Confirm';
 import '@vanio_web/js/components/DatePicker';
