@@ -101,8 +101,7 @@ export default class Collapse
             }
         }
 
-        this.$target
-            .css(sourceStyle)
-            .css(targetStyle);
+        this.$target.css(sourceStyle);
+        setTimeout(() => this.$target.css(targetStyle), 20);
     }
 }
