@@ -160,6 +160,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFilter('intersect', 'array_intersect'),
             new \Twig_SimpleFilter('group_by', [$this, 'groupBy']),
             new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
+            new \Twig_SimpleFilter('regexp_split', [$this, 'regexpSplit']),
             new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
             new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
             new \Twig_SimpleFilter('basename', [$this, 'basename']),
@@ -514,6 +515,16 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         return preg_replace($pattern, $replacement, $string);
+    }
+
+    /**
+     * @param string $string
+     * @param string $pattern
+     * @return string[]
+     */
+    public function regexpSplit(string $string, string $pattern): array
+    {
+        return preg_split($pattern, $string);
     }
 
     public function htmlToText(string $html, array $options = []): string
