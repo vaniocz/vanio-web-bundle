@@ -37,7 +37,7 @@ export default class Collapse
             }
 
             $eventTarget.on('change', () => this.collapse(this.$source.is(':checked')));
-            this.collapse();
+            this.collapse(this.$source.is(':checked'));
         } else {
             this.$source.on('click', (event: JQuery.Event) => {
                 event.preventDefault();

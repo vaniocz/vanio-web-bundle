@@ -68,6 +68,11 @@ class CanonizationExtension extends AbstractTypeExtension
             $canonicalData = $this->canonicalData[$root] ?? [];
             Arrays::set($canonicalData, $path, $this->submittedData[$form]);
             $this->canonicalData[$root] = $canonicalData;
+            $formView = $view;
+
+            do {
+                $formView->vars['isSubmittedWithEmptyData'] = false;
+            } while ($formView = $formView->parent);
         }
 
         if ($form->isRoot()) {
