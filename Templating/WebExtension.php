@@ -66,7 +66,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var array  */
     private $javaScripts = [];
 
-    /** @var array  */
+    /** @var array */
     private $requiredJavaScripts = [];
 
     /** @var string[] */
@@ -144,6 +144,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
             new \Twig_SimpleFunction('entity', [$this, 'entity']),
+            new \Twig_SimpleFunction('entities', [$this, 'entities']),
         ];
     }
 
@@ -428,12 +429,24 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     /**
      * @param string $class
-     * @param mixed $id
+     * @param mixed $criteria
      * @return object|null
      */
-    public function entity(string $class, $id)
+    public function entity(string $class, $criteria)
     {
-        return $this->doctrine->getManagerForClass($class)->getRepository($class)->find($id);
+        $entityRepository = $this->doctrine->getManagerForClass($class)->getRepository($class);
+
+        return is_array($criteria) ? $entityRepository->findOneBy($criteria) : $entityRepository->find($criteria);
+    }
+
+    /**
+     * @param string $class
+     * @param array $criteria
+     * @return object[]
+     */
+    public function entities(string $class, array $criteria): array
+    {
+        return $this->doctrine->getManagerForClass($class)->getRepository($class)->findBy($id);
     }
 
     /**
