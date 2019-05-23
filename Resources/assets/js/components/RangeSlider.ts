@@ -31,6 +31,7 @@ export default class RangeSlider
         this.isIe = /Trident\/|MSIE /.test(window.navigator.userAgent);
         this.isEdge = /Edge\//.test(window.navigator.userAgent);
         this.noUiSlider.on('update', this.onSliderUpdate.bind(this));
+        this.noUiSlider.on('change', this.onSliderChange.bind(this));
         this.$values
             .on('keypress', this.onValueKeyPress.bind(this))
             .on('change', this.onValueChange.bind(this));
@@ -51,6 +52,11 @@ export default class RangeSlider
                 $value.text(value);
             }
         });
+    }
+
+    private onSliderChange(values: string[], index: number): void
+    {
+        this.$values.eq(index).trigger('range_slider.change');
     }
 
     private onValueKeyPress(event: JQuery.Event): void
