@@ -5,14 +5,21 @@ const FORMATS: {[language: string]: string|undefined} = {
     cs: 'd. m. yyyy',
 };
 
+interface DatePickerOptions
+{
+    format?: string;
+    minDate?: Date|number|string;
+    maxDate?: Date|number|string;
+}
+
 @component('DatePicker')
 export default class DatePicker
 {
-    public constructor(element: JQuery|HTMLElement|string)
+    public constructor(element: JQuery|HTMLElement|string, options: DatePickerOptions)
     {
         const $element = $(element);
         const language = $element.prop('ownerDocument').documentElement.lang;
-        $element.datepicker({
+        $element.datepicker($.extend({
             autoclose: true,
             format: FORMATS[language],
             todayHighlight: true,
@@ -21,6 +28,6 @@ export default class DatePicker
                 leftArrow: '<span class="s7-angle-left"></span>',
                 rightArrow: '<span class="s7-angle-right"></span>',
             },
-        });
+        }, options));
     }
 }
