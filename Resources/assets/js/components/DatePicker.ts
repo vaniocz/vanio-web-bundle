@@ -8,8 +8,8 @@ const FORMATS: {[language: string]: string|undefined} = {
 interface DatePickerOptions
 {
     format?: string;
-    minDate?: Date|number|string;
-    maxDate?: Date|number|string;
+    startDate?: Date|string;
+    endDate?: Date|string;
 }
 
 @component('DatePicker')
