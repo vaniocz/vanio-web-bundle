@@ -4,6 +4,8 @@ namespace Vanio\WebBundle\Request;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -17,6 +19,9 @@ class ControllerYieldListener implements EventSubscriberInterface
     /** @var SessionInterface */
     private $session;
 
+    /** @var mixed[] */
+    private $headers = [];
+
     public function __construct(TranslatorInterface $translator, SessionInterface $session)
     {
         $this->translator = $translator;
@@ -28,7 +33,11 @@ class ControllerYieldListener implements EventSubscriberInterface
      */
     public static function getSubscribedEvents(): array
     {
-        return [KernelEvents::VIEW => ['onKernelView', PHP_INT_MAX]];
+        return [
+            KernelEvents::VIEW => ['onKernelView', PHP_INT_MAX],
+            KernelEvents::REQUEST => 'onKernelRequest',
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
     }
 
     /**
@@ -40,7 +49,9 @@ class ControllerYieldListener implements EventSubscriberInterface
 
         if ($controllerResult instanceof \Generator) {
             foreach ($controllerResult as $result) {
-                if ($result instanceof FlashMessage) {
+                if ($result instanceof Header) {
+                    $this->headers[$result->name()] = $result->value();
+                } elseif ($result instanceof FlashMessage) {
                     $this->addFlash($result);
                 }
             }
@@ -53,6 +64,22 @@ class ControllerYieldListener implements EventSubscriberInterface
 
             $event->setControllerResult($return);
         }
+    }
+
+    /**
+     * @internal
+     */
+    public function onKernelRequest(GetResponseEvent $event): void
+    {
+        $this->headers = [];
+    }
+
+    /**
+     * @internal
+     */
+    public function onKernelResponse(FilterResponseEvent $event): void
+    {
+        $event->getResponse()->headers->add($this->headers);
     }
 
     private function addFlash(FlashMessage $flashMessage): void

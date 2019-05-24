@@ -32,7 +32,7 @@ class SnippetRenderer implements EventSubscriberInterface
         /** @var Template $template */
         if (!$template = $request->attributes->get('_template')) {
             return;
-        } elseif ($snippet = $request->query->get('_snippet')) {
+        } elseif ($snippets = (array) $request->query->get('_snippet')) {
             $request->query->remove('_snippet');
         } else {
             return;
@@ -51,8 +51,13 @@ class SnippetRenderer implements EventSubscriberInterface
 
         /** @var \Twig_Template $template */
         $template = $this->twig()->loadTemplate($template);
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $content = $template->renderBlock("{$snippet}_snippet", $this->twig()->mergeGlobals($parameters));
+        $content = '';
+
+        foreach ($snippets as $snippet) {
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $content .= $template->renderBlock("{$snippet}_snippet", $this->twig()->mergeGlobals($parameters));
+        }
+
         $event->setResponse(new Response($content));
     }
 
