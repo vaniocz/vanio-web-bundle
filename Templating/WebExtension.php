@@ -116,6 +116,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function getFunctions(): array
     {
         return [
+            new \Twig_SimpleFunction('sum', [$this, 'sum']),
             new \Twig_SimpleFunction('class_name', [$this, 'className']),
             new \Twig_SimpleFunction('attributes', [$this, 'attributes'], [
                 'needs_environment' => true,
@@ -196,6 +197,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     public function getName(): string
     {
         return 'vanio_web_extension';
+    }
+
+    public function sum(iterable $values): float
+    {
+        return array_sum(is_array($values) ? $values : iterator_to_array($values));
     }
 
     /**
