@@ -57,12 +57,12 @@ class RangeType extends AbstractType
                 'minimum' => null,
                 'maximum' => null,
                 'step' => 1,
-                'widget' => 'default',
+                'widget' => 'range',
             ])
             ->setAllowedTypes('minimum', ['int', 'float', 'null'])
             ->setAllowedTypes('maximum', ['int', 'float', 'null'])
             ->setAllowedTypes('step', ['int', 'float'])
-            ->setAllowedValues('widget', ['default', 'slider']);
+            ->setAllowedValues('widget', ['range', 'slider']);
     }
 
     public function getBlockPrefix(): string
