@@ -1,6 +1,7 @@
 <?php
 namespace Vanio\WebBundle\Form;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -9,17 +10,17 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
 use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Uri;
 
-class CanonizationExtension extends AbstractTypeExtension
+class CanonizationExtension extends AbstractTypeExtension implements EventSubscriberInterface
 {
-    /** @var RequestStack */
-    private $requestStack;
-
     /** @var \SplObjectStorage */
     private $query;
 
@@ -29,9 +30,14 @@ class CanonizationExtension extends AbstractTypeExtension
     /** @var \SplObjectStorage */
     private $canonicalData;
 
-    public function __construct(RequestStack $requestStack)
+    /** @var Request|null */
+    private $currentRequest;
+
+    /** @var mixed[] */
+    private $headers = [];
+
+    public function __construct()
     {
-        $this->requestStack = $requestStack;
         $this->query = new \SplObjectStorage;
         $this->submittedData = new \SplObjectStorage;
         $this->canonicalData = new \SplObjectStorage;
@@ -41,8 +47,8 @@ class CanonizationExtension extends AbstractTypeExtension
     {
         $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'], 512);
 
-        if ($options['canonize']) {
-            $builder->setMethod($this->requestStack->getCurrentRequest()->getRealMethod());
+        if ($this->currentRequest && $options['canonize']) {
+            $builder->setMethod($this->currentRequest->getRealMethod());
         }
     }
 
@@ -50,12 +56,11 @@ class CanonizationExtension extends AbstractTypeExtension
     {
         $root = $form->getRoot();
 
-        if (!$form->isSubmitted() || !$root->getConfig()->getOption('canonize')) {
+        if (!$this->currentRequest || !$form->isSubmitted() || !$root->getConfig()->getOption('canonize')) {
             return;
         }
 
-        $request = $this->requestStack->getCurrentRequest();
-        $query = $this->query[$root] ?? $request->query->all();
+        $query = $this->query[$root] ?? $this->currentRequest->query->all();
         $path = $this->resolvePath($view->vars['full_name']);
 
         try {
@@ -76,7 +81,23 @@ class CanonizationExtension extends AbstractTypeExtension
         }
 
         if ($form->isRoot()) {
-            $this->redirectToCanonicalUrl($form, $view);
+            $queryString = $this->resolveCanonicalQueryString($form, $view);
+            $canonicalUrl = $url = $this->currentRequest->getBaseUrl() . $this->currentRequest->getPathInfo();
+
+            if ($queryString) {
+                $canonicalUrl .= '?' . $queryString;
+            }
+
+            $this->headers['Canonical-Url'] = $canonicalUrl;
+
+            if (
+                !$this->currentRequest->isXmlHttpRequest() && (
+                    $this->currentRequest->getRealMethod() !== 'GET'
+                    || $this->currentRequest->server->get('QUERY_STRING') !== $queryString
+                )
+            ) {
+                throw new UnexpectedResponseException(new RedirectResponse($canonicalUrl, 302, $this->headers));
+            }
         }
     }
 
@@ -90,6 +111,17 @@ class CanonizationExtension extends AbstractTypeExtension
     public function getExtendedType(): string
     {
         return FormType::class;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::REQUEST => 'onKernelRequest',
+            KernelEvents::RESPONSE => 'onKernelResponse',
+        ];
     }
 
     /**
@@ -110,6 +142,23 @@ class CanonizationExtension extends AbstractTypeExtension
         }
     }
 
+    /**
+     * @internal
+     */
+    public function onKernelRequest(GetResponseEvent $event): void
+    {
+        $this->currentRequest = $event->getRequest();
+        $this->headers = [];
+    }
+
+    /**
+     * @internal
+     */
+    public function onKernelResponse(FilterResponseEvent $event): void
+    {
+        $event->getResponse()->headers->add($this->headers);
+    }
+
     private function resolvePath(string $formName): array
     {
         $path = str_replace('[]', '', $formName);
@@ -118,9 +167,8 @@ class CanonizationExtension extends AbstractTypeExtension
         return explode('[', $path);
     }
 
-    private function redirectToCanonicalUrl(FormInterface $form, FormView $formView)
+    private function resolveCanonicalQueryString(FormInterface $form, FormView $formView): string
     {
-        $request = $this->requestStack->getCurrentRequest();
         $query = $this->query[$form];
         $query += $this->canonicalData[$form] ?? [];
         $queryString = Uri::encodeQuery($query);
@@ -132,15 +180,7 @@ class CanonizationExtension extends AbstractTypeExtension
             $queryString .= ($query ? '&' : '') . $formView->vars['full_name'];
         }
 
-        if ($request->getRealMethod() !== 'GET' || $request->server->get('QUERY_STRING') !== $queryString) {
-            $uri = $request->getBaseUrl() . $request->getPathInfo();
-
-            if ($queryString) {
-                $uri .= '?' . $queryString;
-            }
-
-            throw new UnexpectedResponseException(new RedirectResponse($uri));
-        }
+        return $queryString;
     }
 
     private function isEmptyData(FormInterface $form): bool

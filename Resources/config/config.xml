@@ -137,6 +137,7 @@
         <service id="vanio_web.form.canonization_extension" class="%vanio_web.form.canonization_extension.class%">
             <argument type="service" id="request_stack"/>
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="vanio_web.form.restore_form_order_extension" class="%vanio_web.form.restore_form_order_extension.class%">
