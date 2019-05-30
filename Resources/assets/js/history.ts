@@ -1,13 +1,6 @@
-interface State
-{
-    [id: string]: {[version: number]: any};
-}
-
-const state: State = {};
-
 export function getState(id: string, version?: number): any
 {
-    const value = state[id] && state[id][version || getVersion(id)];
+    const value = window.history && history.state && history.state[id] && history.state[id][version || getVersion(id)];
 
     return value === undefined ? undefined : value;
 }
@@ -18,21 +11,21 @@ export function setState(id: string, data: any, url?: string, title: string = ''
         return 0;
     }
 
-    const versions = history.state || {};
-    versions.versions = versions.versions || {};
-    versions.versions[id] = versions.versions[id] || 1;
+    const state = history.state || {};
+    state.versions = state.versions || {};
+    state.versions[id] = state.versions[id] || 1;
     state[id] = state[id] || {};
 
     if (url) {
-        versions.versions[id]++;
-        window.history.pushState(versions, '', url);
+        state.versions[id]++;
+        state[id][state.versions[id]] = data;
+        window.history.pushState(state, '', url);
     } else {
-        window.history.replaceState(versions, '', location.href);
+        state[id][state.versions[id]] = data;
+        window.history.replaceState(state, '', location.href);
     }
 
-    state[id][versions.versions[id]] = data;
-
-    return versions.versions[id];
+    return state.versions[id];
 }
 
 export function getVersion(id: string): number

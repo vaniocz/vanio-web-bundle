@@ -135,8 +135,12 @@ export default class PaginatedList
 
         if (this.stateVersion !== version) {
             const state = getState(this.options.stateId!, version);
-            this.$element.html(state);
             this.stateVersion = version;
+            this.$element.html(state);
+            this.$content = this.findListContent(this.$element);
+            this.$topPagination = this.$element.find('.paginated-list-top-pagination');
+            this.$bottomPagination = this.$element.find('.paginated-list-bottom-pagination');
+            register(this.$element);
         }
     }
 }
