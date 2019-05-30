@@ -52,7 +52,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         }
     }
 
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         $root = $form->getRoot();
 
@@ -81,21 +81,33 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         }
 
         if ($form->isRoot()) {
-            $queryString = $this->resolveCanonicalQueryString($form, $view);
+            $canonicalQueryString = $this->resolveCanonicalQueryString($form, $view);
             $canonicalUrl = $url = $this->currentRequest->getBaseUrl() . $this->currentRequest->getPathInfo();
 
-            if ($queryString) {
-                $canonicalUrl .= '?' . $queryString;
+            if ($canonicalQueryString) {
+                $canonicalUrl .= '?' . $canonicalQueryString;
             }
 
             $this->headers['Canonical-Url'] = $canonicalUrl;
 
-            if (
-                !$this->currentRequest->isXmlHttpRequest() && (
-                    $this->currentRequest->getRealMethod() !== 'GET'
-                    || $this->currentRequest->server->get('QUERY_STRING') !== $queryString
-                )
-            ) {
+            if ($this->currentRequest->isXmlHttpRequest()) {
+                return;
+            } elseif ($currentQueryString = $this->currentRequest->server->get('QUERY_STRING')) {
+                $currentQueryString = Uri::encodeQuery(Uri::parseQuery($currentQueryString));
+
+                if ($form->getName() !== '') {
+                    $pattern = sprintf('/(%s)=(?=&|$)/', preg_quote($view->vars['full_name']));
+
+                    if (!preg_match($pattern, $this->currentRequest->server->get('QUERY_STRING'))) {
+                        $currentQueryString = $this->normalizeEncodedQueryStringEmptyParameter(
+                            $currentQueryString,
+                            $view->vars['full_name']
+                        );
+                    }
+                }
+            }
+
+            if ($this->currentRequest->getRealMethod() !== 'GET' || $currentQueryString !== $canonicalQueryString) {
                 throw new UnexpectedResponseException(new RedirectResponse($canonicalUrl, 302, $this->headers));
             }
         }
@@ -171,16 +183,30 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
     {
         $query = $this->query[$form];
         $query += $this->canonicalData[$form] ?? [];
-        $queryString = Uri::encodeQuery($query);
 
-        if (
-            $form->getName() !== ''
-            && Arrays::get($query, $this->resolvePath($formView->vars['full_name']), '') === ''
-        ) {
-            $queryString .= ($query ? '&' : '') . $formView->vars['full_name'];
+        if ($form->getName() !== '') {
+            $path = $this->resolvePath($formView->vars['full_name']);
+
+            if (Arrays::get($query, $path, '') === '') {
+                Arrays::set($query, $path, '');
+
+                return $this->normalizeEncodedQueryStringEmptyParameter(
+                    Uri::encodeQuery($query),
+                    $formView->vars['full_name']
+                );
+            }
         }
 
-        return $queryString;
+        return Uri::encodeQuery($query);
+    }
+
+    private function normalizeEncodedQueryStringEmptyParameter(string $queryString, string $parameter): string
+    {
+        $pattern = sprintf(
+            '/(%s)=(?=&|$)/',
+            substr(preg_quote(http_build_query([$parameter => ''])), 0, -2)
+        );
+        return preg_replace($pattern, '$1', $queryString);
     }
 
     private function isEmptyData(FormInterface $form): bool
