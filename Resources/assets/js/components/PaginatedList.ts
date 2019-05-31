@@ -1,11 +1,4 @@
 import {component, register} from 'jquery-ts-components';
-import {getState, setState} from '@vanio_web/js/history';
-
-interface PaginatedListOptions
-{
-    snippet: string;
-    stateId?: string;
-}
 
 @component('PaginatedList')
 export default class PaginatedList
@@ -14,24 +7,19 @@ export default class PaginatedList
     private $content: JQuery;
     private $topPagination: JQuery;
     private $bottomPagination: JQuery;
-    private options: PaginatedListOptions;
-    private stateVersion: number;
+    private snippet: string;
 
-    public constructor(element: JQuery|HTMLFormElement|string, options: PaginatedListOptions|string)
+    public constructor(element: JQuery|HTMLFormElement|string, snippet: string)
     {
         this.$element = $(element);
         this.$content = this.findListContent(this.$element);
         this.$topPagination = this.$element.find('.paginated-list-top-pagination');
         this.$bottomPagination = this.$element.find('.paginated-list-bottom-pagination');
         this.$element.on('click', '.paginator-previous, .paginator-next', this.onPageClick.bind(this));
-        this.options = $.extend(
-            {stateId: 'paginated_list'},
-            typeof options === 'string' ? {snippet: options} : options
-        );
+        this.snippet = snippet;
         this.updatePaginatorCount();
-        $(window).off(`popstate.${this.options.stateId}`);
-        $(window).on(`popstate.${this.options.stateId}`, this.onPopState.bind(this));
-        this.stateVersion = setState(this.options.stateId!, this.$element.html());
+        $(window).off('popstate.reload', this.onPopState.bind(this));
+        $(window).on('popstate.reload', this.onPopState.bind(this));
     }
 
     private onPageClick(event: JQueryEventObject): void
@@ -41,17 +29,22 @@ export default class PaginatedList
         event.preventDefault();
 
         if (window.history && history.pushState) {
-            const $paginator = $('.sibling-paginator', isPrevious ? this.$topPagination : this.$bottomPagination);
-            let ajaxUrl = $paginator.find(isPrevious ? '.paginator-previous' : '.paginator-next').attr('href') as string;
-            ajaxUrl = this.updateQueryStringParameter(ajaxUrl, '_snippet', this.options.snippet);
-            $paginator.addClass('is-loading');
-            $.get(ajaxUrl, this.onPageLoaded.bind(this, isPrevious, url));
+            this.loadPage(isPrevious);
+            history.pushState({}, '', url);
         } else {
             location.href = url;
         }
     }
 
-    private onPageLoaded(isPrevious: boolean, url: string, response: string): void
+    private loadPage(isPrevious: boolean): void
+    {
+        const $paginator = $('.sibling-paginator', isPrevious ? this.$topPagination : this.$bottomPagination);
+        const url = $paginator.find(isPrevious ? '.paginator-previous' : '.paginator-next').attr('href') as string;
+        $paginator.addClass('is-loading');
+        $.get(this.updateQueryStringParameter(url, '_snippet', this.snippet), this.onPageLoaded.bind(this, isPrevious));
+    }
+
+    private onPageLoaded(isPrevious: boolean, response: string): void
     {
         const $response = $(response);
         const $content = this.findListContent($response).find('> *');
@@ -67,7 +60,6 @@ export default class PaginatedList
         this.$content.find('.paginated-list-placeholder')
             .appendTo(this.$content);
         this.updatePaginatorCount();
-        this.stateVersion = setState(this.options.stateId!, this.$element.html(), url);
         register($content);
     }
 
@@ -128,19 +120,8 @@ export default class PaginatedList
         return updatedUrl;
     }
 
-    private onPopState(event: JQuery.Event): void
+    private onPopState(): void
     {
-        const state = (event.originalEvent as PopStateEvent).state;
-        const version = state && state.versions && state.versions[this.options.stateId!];
-
-        if (this.stateVersion !== version) {
-            const state = getState(this.options.stateId!, version);
-            this.stateVersion = version;
-            this.$element.html(state);
-            this.$content = this.findListContent(this.$element);
-            this.$topPagination = this.$element.find('.paginated-list-top-pagination');
-            this.$bottomPagination = this.$element.find('.paginated-list-bottom-pagination');
-            register(this.$element);
-        }
+        location.reload();
     }
 }
