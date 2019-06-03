@@ -201,7 +201,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
 
     public function sum(iterable $values): float
     {
-        return array_sum(is_array($values) ? $values : iterator_to_array($values));
+        return array_sum(is_array($values) ? $values : iterator_to_array($values, false));
     }
 
     /**
