@@ -118,7 +118,7 @@
             {{ form_errors(form.minimum) }}
         </div>
 
-        <div class="form-group {{ class }}__group {{ class }}__group--maximum">
+        <div class="form-group {{ class }}__group {{ class }}__group--maximum" {% if unit ?? null %}data-unit="{{ unit }}"{% endif %}>
             {{ form_label(form.maximum, null, {label_attr: {class: "#{class_name(form.maximum.label_attr.class ?? '')} #{class}__label #{class}__label--maximum"}}) }}
             {{ form_widget(form.maximum, {attr: {class: "#{class_name(form.maximum.attr.class ?? '')} #{class}__value #{class}__value--maximum"}}) }}
             {{ form_errors(form.maximum) }}
