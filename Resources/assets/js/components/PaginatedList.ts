@@ -60,7 +60,7 @@ export default class PaginatedList
         this.$content.find('.paginated-list-placeholder')
             .appendTo(this.$content);
         this.updatePaginatorCount();
-        register($content);
+        register(this.$content);
     }
 
     private findListContent($element: JQuery): JQuery
