@@ -27,7 +27,7 @@ class DeleteExpiredUploadedFilesCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('delete-expired-uploaded-files')
+            ->setName('vanio:delete-expired-uploaded-files')
             ->addOption(
                 'expiration',
                 'x',
