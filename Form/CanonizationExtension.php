@@ -48,7 +48,11 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         $builder->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'], 512);
 
         if ($this->currentRequest && $options['canonize']) {
-            $builder->setMethod($this->currentRequest->getRealMethod());
+            $method = $this->currentRequest->getRealMethod();
+
+            if (in_array($method, ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'])) {
+                $builder->setMethod($method);
+            }
         }
     }
 
