@@ -177,8 +177,8 @@
     {% set attr = {class: "#{class_name(attr.class ?? '')} #{valid ? '' : 'has-error'} auto-complete"} + attr %}
 
     <div {{ block('widget_container_attributes') }}>
-        {{ form_label(form.search) }}
-        {{ form_widget(form.search, {attr: {class: "#{class_name(form.search.vars.attr.class ?? '')} auto-complete__search"}}) }}
-        <input type="hidden" {% if form.entity.vars.value is not empty %}value="{{ form.entity.vars.value }}" {% endif %} {% with form.entity.vars + {attr: {class: "#{class_name(form.entity.vars.attr.class ?? '')} auto-complete__entity"} + form.entity.vars.attr} only %}{{ block('widget_attributes') }}{% endwith %}>
+        {{ form_label(form[searchName]) }}
+        {{ form_widget(form[searchName], {attr: (searchAttr ?? {}) + {class: "#{class_name(form[searchName].vars.attr.class ?? '')} #{class_name(searchAttr.class ?? '')} auto-complete__search"}}) }}
+        <input type="hidden" {% if form.entityId.vars.value is not empty %}value="{{ form.entityId.vars.value }}" {% endif %} {% with form.entityId.vars + {attr: {class: "#{class_name(form.entityId.vars.attr.class ?? '')} auto-complete__entity-id"} + form.entityId.vars.attr} only %}{{ block('widget_attributes') }}{% endwith %}>
     </div>
 {% endblock %}

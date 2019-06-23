@@ -152,6 +152,7 @@
         <service id="vanio_web.form.auto_complete_entity_type" class="%vanio_web.form.auto_complete_entity_type.class%">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="twig.form.renderer"/>
+            <argument type="service" id="translator"/>
             <tag name="form.type"/>
         </service>
 

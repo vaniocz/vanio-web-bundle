@@ -14,8 +14,10 @@ interface AutoCompleteOptions
     entitySelector: string;
     ajaxField: string;
     ajax: string;
+    method?: string;
     allowUnsuggested?: boolean;
     htmlSuggestionSelector?: string;
+    remainingCountLabel?: string;
 }
 
 interface AutoCompleteSuggestions extends Array<AutoCompleteSuggestion>
@@ -68,7 +70,6 @@ export class AutoComplete
     private options: AutoCompleteOptions;
     private $search: JQuery;
     private $entity: JQuery;
-    private $ajax: JQuery;
     private $form: JQuery;
     private $loading: JQuery;
     private $remainingCount: JQuery;
@@ -82,11 +83,10 @@ export class AutoComplete
         this.options = options;
         this.$search = $(options.searchSelector);
         this.$entity = $(options.entitySelector);
-        this.$ajax = $(options.ajaxField);
         this.$form = this.$element.closest('form');
         this.$search.devbridgeAutocomplete({
             serviceUrl: this.$form.attr('action'),
-            type: this.$form.attr('method'),
+            type: this.options.method || this.$form.attr('method'),
             groupBy: '_group',
             deferRequestBy: 50,
             showNoSuggestionNotice: true,
@@ -146,7 +146,7 @@ export class AutoComplete
 
         if (remainingCount > 0) {
             const remainingCountText = Translator.transChoice(
-                'autoComplete.remainingCount',
+                this.options.remainingCountLabel || 'autoComplete.remainingCount',
                 remainingCount,
                 {},
                 'components'
@@ -168,12 +168,18 @@ export class AutoComplete
 
     private onBeforeSend(xhr: JQueryXHR, settings: JQueryAjaxSettings): void
     {
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         const data = this.$form.serializeArray();
         data.push({
             name: this.options.ajaxField,
             value: '1',
         });
         settings.data = jQuery.param(data);
+
+        if (settings.type === 'GET') {
+            settings.url += settings.url!.indexOf('?') === -1 ? '?' : '&';
+            settings.url += settings.data;
+        }
     }
 
     private transformResult(data: any): AutocompleteResponse

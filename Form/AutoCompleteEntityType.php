@@ -3,10 +3,12 @@ namespace Vanio\WebBundle\Form;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
+use Symfony\Component\Form\Exception\InvalidConfigurationException;
 use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -21,7 +23,9 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
+use Vanio\Stdlib\Objects;
 
 class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 {
@@ -31,10 +35,17 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     /** @var FormRendererInterface */
     private $formRenderer;
 
-    public function __construct(ManagerRegistry $doctrine, FormRendererInterface $formRenderer)
-    {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(
+        ManagerRegistry $doctrine,
+        FormRendererInterface $formRenderer,
+        TranslatorInterface $translator
+    ) {
         $this->doctrine = $doctrine;
         $this->formRenderer = $formRenderer;
+        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -48,13 +59,13 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         }
 
         $builder
-            ->add('entity', $options['entity_type'], $options['entity_options'] + [
+            ->add('entityId', $options['entity_id_type'], $options['entity_id_options'] + [
                 'label' => false,
                 'required' => true,
                 'required_message' => $options['required_message'],
                 'error_bubbling' => true,
             ])
-            ->add('search', $options['search_type'], $options['search_options'] + [
+            ->add($options['search_name'], $options['search_type'], $options['search_options'] + [
                 'label' => false,
                 'required' => false,
                 'error_bubbling' => true,
@@ -63,18 +74,21 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                 'label' => false,
                 'required' => false,
             ])
-            ->addViewTransformer(new EntityToIdTransformer($options['query_builder']))
+            ->addViewTransformer(new AutoCompleteEntityTransformer($options['query_builder']))
             ->addEventListener(FormEvents::POST_SUBMIT, [$this, 'onPostSubmit'])
             ->setDataMapper($this);
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
+        $view->vars['searchName'] = $options['search_name'];
         $autoCompleteOptions = $view->vars['attr']['data-component-auto-complete'] ?? [];
         $autoCompleteOptions +=[
-            'entitySelector' => "#{$view['entity']->vars['id']}",
-            'searchSelector' => "#{$view['search']->vars['id']}",
+            'entitySelector' => "#{$view['entityId']->vars['id']}",
+            'searchSelector' => "#{$view[$options['search_name']]->vars['id']}",
             'ajaxField' => $view['ajax']->vars['full_name'],
+            'allowUnsuggested' => $options['allow_unsuggested'],
+            'remainingCountLabel' => $options['remaining_count_label'],
         ];
         $view->vars['attr']['data-component-auto-complete'] = $autoCompleteOptions;
         $view->vars['nonCompoundWrapper'] = true;
@@ -86,40 +100,56 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         $resolver
             ->setDefaults([
                 'error_bubbling' => false,
-                'entity_type' => HiddenType::class,
-                'entity_options' => [],
-                'search_type' => null,
-                'search_options' => [],
                 'class' => null,
-                'entity_manager' => null,
+                'entity_id_type' => HiddenType::class,
+                'entity_id_options' => [],
+                'search_type' => null,
+                'search_name' => 'search',
+                'search_options' => [],
                 'query_builder' => null,
                 'search_query_builder' => null,
-                'fetch_paginator_join_collection' => true,
                 'search_value' => null,
                 'suggestion_data' => null,
                 'suggestion_label' => null,
-                'group_by' => null,
-                'placeholder' => null,
                 'suggestion_form_theme' => null,
+                'allow_unsuggested' => false,
+                'group_by' => null,
+                'group_translation_domain' => false,
+                'placeholder' => null,
+                'remaining_count_label' => null,
+                'total_count' => function (array $queries) {
+                    $totalCount = 0;
+
+                    foreach ($queries as $query) {
+                        $paginator = new Paginator($query);
+                        $totalCount+= $paginator->count();
+                    }
+
+                    return $totalCount;
+                },
             ])
-            ->setNormalizer('entity_manager', $this->entityManagerNormalizer())
+            ->setNormalizer('class', $this->classNormalizer())
             ->setNormalizer('query_builder', $this->queryBuilderNormalizer())
             ->setNormalizer('suggestion_label', $this->choiceLabelNormalizer())
             ->setNormalizer('group_by', $this->groupByNormalizer())
-            ->setAllowedTypes('entity_type', 'string')
-            ->setAllowedTypes('entity_options', 'array')
+            ->setAllowedTypes('class', ['string', 'array'])
+            ->setAllowedTypes('entity_id_type', 'string')
+            ->setAllowedTypes('entity_id_options', 'array')
             ->setAllowedTypes('search_type', ['string', 'null'])
+            ->setAllowedTypes('search_name', 'string')
             ->setAllowedTypes('search_options', 'array')
-            ->setAllowedTypes('entity_manager', [EntityManager::class, 'string', 'null'])
             ->setAllowedTypes('query_builder', [QueryBuilder::class, 'callable', 'null'])
             ->setAllowedTypes('search_query_builder', 'callable')
-            ->setAllowedTypes('fetch_paginator_join_collection', 'bool')
+            ->setAllowedTypes('total_count', 'callable')
             ->setAllowedTypes('search_value', ['string', 'callable', 'null'])
-            ->setAllowedTypes('suggestion_form_theme', ['string', 'null'])
             ->setAllowedTypes('suggestion_data', ['callable', 'null'])
             ->setAllowedTypes('suggestion_label', ['callable', PropertyPath::class, 'string', 'null'])
+            ->setAllowedTypes('suggestion_form_theme', ['string', 'null'])
+            ->setAllowedTypes('allow_unsuggested', 'boolean')
             ->setAllowedTypes('group_by', ['callable', PropertyPath::class, 'string', 'null'])
+            ->setAllowedTypes('group_translation_domain', ['string', 'callable', 'bool', 'null'])
             ->setAllowedTypes('placeholder', ['string', 'null'])
+            ->setAllowedTypes('remaining_count_label', ['string', 'null'])
             ->setRequired(['class', 'query_builder']);
     }
 
@@ -130,7 +160,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     public function mapDataToForms($data, $forms)
     {
         $forms = iterator_to_array($forms);
-        $form = $forms['entity']->getParent();
+        $form = $forms['entityId']->getParent();
         $options = $form->getConfig()->getOptions();
 
         if (is_string($options['search_value'])) {
@@ -138,13 +168,13 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         } elseif ($options['search_value'] === null) {
             $search = $data === null
                 ? null
-                : call_user_func($options['suggestion_label'], $form->getNormData());
+                : $options['suggestion_label']($form->getNormData());
         } else {
-            $search = call_user_func($options['search_value'], $form->getNormData());
+            $search = $options['search_value']($form->getNormData());
         }
 
-        $forms['search']->setData($search);
-        $forms['entity']->setData($data);
+        $forms[$options['search_name']]->setData($search);
+        $forms['entityId']->setData($data);
     }
 
     /**
@@ -154,7 +184,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     public function mapFormsToData($forms, &$data)
     {
         $forms = iterator_to_array($forms);
-        $data = $forms['entity']->getData();
+        $data = $forms['entityId']->getData();
     }
 
     /**
@@ -169,45 +199,77 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         }
 
         $options = $form->getConfig()->getOptions();
-        $searchForm = $form->get('search');
-        $searchFormView = $searchForm->createView();
-        $entityOptions = $form->get('entity')->getConfig()->getOptions();
-
-        /** @var QueryBuilder $queryBuilder */
-        if (!$queryBuilder = $options['query_builder']) {
-            /** @var EntityManager $entityManager */
-            $entityManager = $entityOptions['em'];
-            $queryBuilder = $entityManager->getRepository($entityOptions['class'])->createQueryBuilder('entity');
-        }
+        $search = $form->get($options['search_name'])->getData();
+        $formView = $form->createView();
 
         if ($options['suggestion_form_theme'] !== null) {
-            $this->formRenderer->setTheme($searchFormView, $options['suggestion_form_theme']);
+            $this->formRenderer->setTheme($formView, $options['suggestion_form_theme']);
         }
 
-        $queryBuilder = call_user_func($options['search_query_builder'], $queryBuilder, $searchForm->getData(), $form);
-        $query = $queryBuilder->getQuery();
         $suggestions = [];
-        $paginator = new Paginator($query, $options['fetch_paginator_join_collection']);
+        $queries = [];
+
+        foreach ($options['query_builder'] as $class => $queryBuilder) {
+            $queryBuilder = $options['search_query_builder']($queryBuilder, $search, $class, $form);
+
+            if (!$queryBuilder instanceof QueryBuilder) {
+                throw new InvalidConfigurationException(sprintf(
+                    'The query_builder callable option must return an instance of "%s", "%s" returned.',
+                    QueryBuilder::class,
+                    Objects::getType($queryBuilder)
+                ));
+            }
+            $query = $queryBuilder->getQuery();
+            $queries[$class] = $query;
+            $suggestions = array_merge($suggestions, $this->resolveSuggestions(
+                $form,
+                $formView,
+                $query,
+                $class,
+                $search
+            ));
+        }
+
+        throw new UnexpectedResponseException(new JsonResponse([
+            'query' => $search,
+            'totalCount' => $options['total_count']($queries),
+            'suggestions' => $suggestions,
+        ]));
+    }
+
+    private function resolveSuggestions(
+        FormInterface $form,
+        FormView $formView,
+        Query $query,
+        string $class,
+        string $search
+    ): array {
+        $options = $form->getConfig()->getOptions();
+        $suggestions = [];
 
         foreach ($query->getResult() as $entity) {
             try {
-                $vars = $searchFormView->vars + [
-                    'form' => $searchFormView,
+                $vars = $formView->vars + [
+                    'form' => $formView,
                     'entity' => $entity,
                 ];
-                $html = $this->formRenderer->searchAndRenderBlock($searchFormView, 'suggestion', $vars);
+                $html = $this->formRenderer->searchAndRenderBlock($formView, 'suggestion', $vars);
             } catch (LogicException $e) {}
 
             $data = $options['suggestion_data']
-                ? call_user_func($options['suggestion_data'], $entity)
+                ? $options['suggestion_data']($entity)
                 : [];
 
             if ($options['group_by']) {
-                $data['_group'] = (string) call_user_func($options['group_by'], $entity);
+                $data['_group'] = (string) $options['group_by']($entity);
+
+                if ($translationDomain = $this->resolveGroupTranslationDomain($form, $class)) {
+                    $data['_group'] = $this->translator->trans($data['_group'], [], $translationDomain);
+                }
             }
 
             $suggestion = [
-                'value' => call_user_func($options['suggestion_label'], $entity),
+                'value' => $options['suggestion_label']($entity),
                 'viewValue' => $this->transformToViewValue($form, $entity),
                 'data' => $data,
             ];
@@ -219,30 +281,40 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             $suggestions[] = $suggestion;
         }
 
-        throw new UnexpectedResponseException(new JsonResponse([
-            'query' => $searchForm->getData(),
-            'totalCount' => $paginator->count(),
-            'suggestions' => $suggestions,
-        ]));
+        return $suggestions;
     }
 
-    private function entityManagerNormalizer(): \Closure
+
+    /**
+     * @param FormInterface $form
+     * @param string $class
+     * @return string|bool
+     */
+    private function resolveGroupTranslationDomain(FormInterface $form, string $class)
     {
-        return function (Options $options, $entityManager) {
-            if ($entityManager instanceof EntityManager) {
-                return $entityManager;
-            } elseif ($entityManager !== null) {
-                return $this->doctrine->getManager($entityManager);
-            }
+        $translationDomain = $form->getConfig()->getOption('group_translation_domain');
 
-            if (!$entityManager = $this->doctrine->getManagerForClass($options['class'])) {
-                throw new \RuntimeException(sprintf(
-                    'Class "%s" seems not to be a managed Doctrine entity. Did you forget to map it?',
-                    $options['class']
-                ));
-            }
+        if (!is_string($translationDomain) && is_callable($translationDomain)) {
+            $translationDomain = $translationDomain($class);
+        }
 
-            return $entityManager;
+        if ($translationDomain === null) {
+            do {
+                $translationDomain = $form->getConfig()->getOption('translation_domain');
+
+                if ($translationDomain !== null) {
+                    return $translationDomain;
+                }
+            } while ($form = $form->getParent());
+        }
+
+        return false;
+    }
+
+    private function classNormalizer(): \Closure
+    {
+        return function (Options $options, $class) {
+            return (array) $class;
         };
     }
 
@@ -250,19 +322,19 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     {
         return function (Options $options, $queryBuilder = null) {
             if ($queryBuilder instanceof QueryBuilder) {
-                return $queryBuilder;
+                return array_fill_keys($options['class'], $queryBuilder);
             }
 
-            /** @var EntityManager $entityManager */
-            $entityManager = $options['entity_manager'];
-            $entityRepository = $entityManager->getRepository($options['class']);
+            $queryBuilders = [];
 
-            if (is_callable($queryBuilder)) {
-                return call_user_func($queryBuilder, $entityRepository);
+            foreach ($options['class'] as $class) {
+                $entityRepository = $this->doctrine->getManagerForClass($class)->getRepository($class);
+                $queryBuilders[$class] = is_callable($queryBuilder)
+                    ? $queryBuilder($entityRepository)
+                    : $entityRepository->createQueryBuilder('e');
             }
 
-
-            return $entityRepository->createQueryBuilder('e');
+            return $queryBuilders;
         };
     }
 
