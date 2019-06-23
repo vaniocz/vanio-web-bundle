@@ -101,6 +101,7 @@ export class AutoComplete
             onInvalidateSelection: this.onInvalidateSelection.bind(this),
             transformResult: this.transformResult.bind(this),
             formatResult: this.formatResult.bind(this),
+            formatGroup: this.formatGroup.bind(this),
             ajaxSettings: {
                 beforeSend: this.onBeforeSend.bind(this),
             },
@@ -299,6 +300,11 @@ export class AutoComplete
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
+    }
+
+    private formatGroup(suggestion: AutoCompleteSuggestion, group: string): string
+    {
+        return `<div class="autocomplete-group"><span class="autocomplete-group-label">${group}</span></div>`;
     }
 
     private onInvalidateSelection(): void
