@@ -94,7 +94,7 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
         $forms = iterator_to_array($forms);
         /** @var FormInterface $form */
         $form = next($forms);
-        $data = $form->getData();
+        $data = $form ? $form->getData() : null;
     }
 
     /**
