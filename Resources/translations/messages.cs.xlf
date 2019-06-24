@@ -25,6 +25,11 @@
                 <source>Sk</source>
                 <target>Slovensky</target>
             </trans-unit>
+
+            <trans-unit id="8e4364411aa4681a205457a2d7f06d1c" resname="Pl">
+                <source>Pl</source>
+                <target>Polsky</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
