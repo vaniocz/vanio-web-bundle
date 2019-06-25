@@ -22,7 +22,7 @@ interface AutoCompleteOptions
 
 interface AutoCompleteSuggestions extends Array<AutoCompleteSuggestion>
 {
-    totalCount?: number;
+    remainingCount?: number;
 }
 
 interface AutocompleteInstance
@@ -142,13 +142,17 @@ export class AutoComplete
 
     private onSearchComplete(search: string, suggestions: AutoCompleteSuggestions): void
     {
-        this.invalid = true;
-        const remainingCount = (suggestions.totalCount || 0) - suggestions.length;
+        // In case the search was not aborted by a newer request - suggestions were probably loaded from cache
+        if (this.$search.val() !== search) {
+            return;
+        }
 
-        if (remainingCount > 0) {
+        this.invalid = true;
+
+        if (suggestions.remainingCount! > 0) {
             const remainingCountText = Translator.transChoice(
                 this.options.remainingCountLabel || 'autoComplete.remainingCount',
-                remainingCount,
+                suggestions.remainingCount!,
                 {},
                 'components'
             );
@@ -186,7 +190,7 @@ export class AutoComplete
     private transformResult(data: any): AutocompleteResponse
     {
         const response = typeof data === 'string' ? $.parseJSON(data) : data;
-        response.suggestions.totalCount = response.totalCount;
+        response.suggestions.remainingCount = response.remainingCount;
 
         return response;
     }

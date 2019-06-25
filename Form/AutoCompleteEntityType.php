@@ -117,15 +117,15 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                 'group_translation_domain' => false,
                 'placeholder' => null,
                 'remaining_count_label' => null,
-                'total_count' => function (array $queries) {
-                    $totalCount = 0;
+                'remaining_count' => function (array $entities, array $queries) {
+                    $remainingCount = 0;
 
-                    foreach ($queries as $query) {
+                    foreach ($queries as $class => $query) {
                         $paginator = new Paginator($query);
-                        $totalCount+= $paginator->count();
+                        $remainingCount += $paginator->count() - count($entities[$class]);
                     }
 
-                    return $totalCount;
+                    return $remainingCount;
                 },
             ])
             ->setNormalizer('class', $this->classNormalizer())
@@ -140,7 +140,8 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ->setAllowedTypes('search_options', 'array')
             ->setAllowedTypes('query_builder', [QueryBuilder::class, 'callable', 'null'])
             ->setAllowedTypes('search_query_builder', 'callable')
-            ->setAllowedTypes('total_count', 'callable')
+            ->setAllowedTypes('remaining_count', 'callable')
+            ->setAllowedTypes('remaining_count_label', ['string', 'null'])
             ->setAllowedTypes('search_value', ['string', 'callable', 'null'])
             ->setAllowedTypes('suggestion_data', ['callable', 'null'])
             ->setAllowedTypes('suggestion_label', ['callable', PropertyPath::class, 'string', 'null'])
@@ -149,7 +150,6 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ->setAllowedTypes('group_by', ['callable', PropertyPath::class, 'string', 'null'])
             ->setAllowedTypes('group_translation_domain', ['string', 'callable', 'bool', 'null'])
             ->setAllowedTypes('placeholder', ['string', 'null'])
-            ->setAllowedTypes('remaining_count_label', ['string', 'null'])
             ->setRequired(['class', 'query_builder']);
     }
 
@@ -219,12 +219,12 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                     Objects::getType($queryBuilder)
                 ));
             }
-            $query = $queryBuilder->getQuery();
-            $queries[$class] = $query;
+            $queries[$class] = $queryBuilder->getQuery();
+            $entities[$class] = $queries[$class]->getResult();
             $suggestions = array_merge($suggestions, $this->resolveSuggestions(
                 $form,
                 $formView,
-                $query,
+                $entities[$class],
                 $class,
                 $search
             ));
@@ -232,22 +232,30 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
 
         throw new UnexpectedResponseException(new JsonResponse([
             'query' => $search,
-            'totalCount' => $options['total_count']($queries),
+            'remainingCount' => $options['remaining_count']($entities, $queries),
             'suggestions' => $suggestions,
         ]));
     }
 
+    /**
+     * @param FormInterface $form
+     * @param FormView $formView
+     * @param object[] $entities
+     * @param string $class
+     * @param string $search
+     * @return mixed[]
+     */
     private function resolveSuggestions(
         FormInterface $form,
         FormView $formView,
-        Query $query,
+        array $entities,
         string $class,
         string $search
     ): array {
         $options = $form->getConfig()->getOptions();
         $suggestions = [];
 
-        foreach ($query->getResult() as $entity) {
+        foreach ($entities as $entity) {
             try {
                 $vars = $formView->vars + [
                     'form' => $formView,
