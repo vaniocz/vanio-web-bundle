@@ -256,6 +256,8 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
         $suggestions = [];
 
         foreach ($entities as $entity) {
+            $label = $options['suggestion_label']($entity);
+
             try {
                 $vars = $formView->vars + [
                     'form' => $formView,
@@ -277,7 +279,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             }
 
             $suggestion = [
-                'value' => $options['suggestion_label']($entity),
+                'value' => $label,
                 'viewValue' => $this->transformToViewValue($form, $entity),
                 'data' => $data,
             ];
