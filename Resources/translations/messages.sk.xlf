@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="sk" datatype="plaintext" original="file.ext">
+        <header>
+            <tool tool-id="symfony" tool-name="Symfony"/>
+        </header>
+
+        <body>
+            <trans-unit id="8b847cfae498e96e3fa08a56cb42b838" resname="Cs">
+                <source>Cs</source>
+                <target>Česky</target>
+            </trans-unit>
+
+            <trans-unit id="2084c04f7a380a68b653e5fc82d352f0" resname="De">
+                <source>De</source>
+                <target>Nemecky</target>
+            </trans-unit>
+
+            <trans-unit id="6d416f7786dbe588eaa6ab48666588d1" resname="En">
+                <source>En</source>
+                <target>Anglicky</target>
+            </trans-unit>
+
+            <trans-unit id="de06a156d85e5404406f3c9e7cac0919" resname="Sk">
+                <source>Sk</source>
+                <target>Slovensky</target>
+            </trans-unit>
+
+            <trans-unit id="8e4364411aa4681a205457a2d7f06d1c" resname="Pl">
+                <source>Pl</source>
+                <target>Poľsky</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
