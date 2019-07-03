@@ -8,12 +8,14 @@ use Vanio\DomainBundle\Model\Image;
 
 class UploadedImageType extends AbstractType
 {
+    const DEFAULT_SUPPORTED_IMAGE_TYPES = [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP];
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
             ->setDefaults([
                 'class' => Image::class,
-                'supported_image_types' => [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP],
+                'supported_image_types' => self::DEFAULT_SUPPORTED_IMAGE_TYPES,
                 'required_message' => 'Choose an image.',
             ])
             ->setNormalizer('accept', $this->acceptNormalizer())
@@ -41,7 +43,7 @@ class UploadedImageType extends AbstractType
         $mimeTypes = [];
 
         foreach ($imageTypes as $imageType) {
-            $mimeType = image_type_to_mime_type($imageType);
+            $mimeType = is_int($imageType) ? image_type_to_mime_type($imageType) : $imageType;
             $mimeTypes[$mimeType] = $mimeType;
 
             if ($mimeType === 'image/x-ms-bmp') {
