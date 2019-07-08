@@ -23,6 +23,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
 use Vanio\Stdlib\Objects;
@@ -38,14 +39,19 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
     /** @var TranslatorInterface */
     private $translator;
 
+    /** @var UrlGeneratorInterface */
+    private $urlGenerator;
+
     public function __construct(
         ManagerRegistry $doctrine,
         FormRendererInterface $formRenderer,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        UrlGeneratorInterface $urlGenerator
     ) {
         $this->doctrine = $doctrine;
         $this->formRenderer = $formRenderer;
         $this->translator = $translator;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -88,6 +94,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             'searchSelector' => "#{$view[$options['search_name']]->vars['id']}",
             'ajaxField' => $view['ajax']->vars['full_name'],
             'allowUnsuggested' => $options['allow_unsuggested'],
+            'remainingCountLink' => $options['remaining_count_link'],
             'remainingCountLabel' => $options['remaining_count_label'],
         ];
         $view->vars['attr']['data-component-auto-complete'] = $autoCompleteOptions;
@@ -116,6 +123,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                 'group_by' => null,
                 'group_translation_domain' => false,
                 'placeholder' => null,
+                'remaining_count_link' => null,
                 'remaining_count_label' => null,
                 'remaining_count' => function (array $entities, array $queries) {
                     $remainingCount = 0;
@@ -131,6 +139,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ->setNormalizer('class', $this->classNormalizer())
             ->setNormalizer('query_builder', $this->queryBuilderNormalizer())
             ->setNormalizer('suggestion_label', $this->choiceLabelNormalizer())
+            ->setNormalizer('remaining_count_link', $this->remainingCountLinkNormalizer())
             ->setNormalizer('group_by', $this->groupByNormalizer())
             ->setAllowedTypes('class', ['string', 'array'])
             ->setAllowedTypes('entity_id_type', 'string')
@@ -141,6 +150,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ->setAllowedTypes('query_builder', [QueryBuilder::class, 'callable', 'null'])
             ->setAllowedTypes('search_query_builder', 'callable')
             ->setAllowedTypes('remaining_count', 'callable')
+            ->setAllowedTypes('remaining_count_link', ['string', 'callable', 'null'])
             ->setAllowedTypes('remaining_count_label', ['string', 'null'])
             ->setAllowedTypes('search_value', ['string', 'callable', 'null'])
             ->setAllowedTypes('suggestion_data', ['callable', 'null'])
@@ -366,6 +376,15 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             }
 
             return $choiceLabel;
+        };
+    }
+
+    private function remainingCountLinkNormalizer(): \Closure
+    {
+        return function (Options $options, $remainingCountLink) {
+            return is_callable($remainingCountLink) && !is_string($remainingCountLink)
+                ? $remainingCountLink($this->urlGenerator)
+                : $remainingCountLink;
         };
     }
 

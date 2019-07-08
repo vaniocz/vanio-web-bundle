@@ -17,6 +17,7 @@ interface AutoCompleteOptions
     method?: string;
     allowUnsuggested?: boolean;
     htmlSuggestionSelector?: string;
+    remainingCountLink?: string;
     remainingCountLabel?: string;
 }
 
@@ -109,7 +110,9 @@ export class AutoComplete
         this.autocomplete = this.$search.data('autocomplete');
         this.$loading = $('<div class="autocomplete-loading"/>')
             .text(Translator.trans('autoComplete.loading', {}, 'components'));
-        this.$remainingCount = $('<div class="autocomplete-remaining-count"/>');
+        this.$remainingCount = this.options.remainingCountLink
+            ? $('<a/>', {class: 'autocomplete-remaining-count', href: this.options.remainingCountLink})
+            : $('<div class="autocomplete-remaining-count"/>');
         this.currentSearch = String(this.$search.val());
         this.$search
             .off('focus.autocomplete')
