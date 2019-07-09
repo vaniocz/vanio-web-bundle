@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-    <file source-language="en" target-language="sk" datatype="plaintext" original="file.ext">
+    <file source-language="en" target-language="pl" datatype="plaintext" original="file.ext">
         <header>
             <tool tool-id="symfony" tool-name="Symfony"/>
         </header>
@@ -8,17 +8,17 @@
         <body>
             <trans-unit id="a9dee5eacf3966428011a05a0b0705d5" resname="autoComplete.loading">
                 <source>autoComplete.loading</source>
-                <target>Načítávam…</target>
+                <target>Ładowanie…</target>
             </trans-unit>
 
             <trans-unit id="1bf076b440393b6f99c90226629c2aaa" resname="autoComplete.noSuggestions">
                 <source>autoComplete.noSuggestions</source>
-                <target>Nenajdené</target>
+                <target>Nie znaleziono</target>
             </trans-unit>
 
             <trans-unit id="0242136933b84d94b2fba043f9b0be62" resname="autoComplete.remainingCount">
                 <source>autoComplete.remainingCount</source>
-                <target>A ďalšia %count% položka|A další %count% položky|A ďalších %count% položiek</target>
+                <target>I kolejna %count% pozycja|I kolejna %count% pozycje|I kolejnych %count% pozycji</target>
             </trans-unit>
         </body>
     </file>
