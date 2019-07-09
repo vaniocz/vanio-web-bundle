@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="pl" datatype="plaintext" original="file.ext">
+        <header>
+            <tool tool-id="symfony" tool-name="Symfony"/>
+        </header>
+
+        <body>
+            <trans-unit id="4dbf900de52108c823d85199c9a1fca3" resname="file.singleInputPlaceholder">
+                <source>file.singleInputPlaceholder</source>
+                <target>Wybierz plik…</target>
+            </trans-unit>
+
+            <trans-unit id="af99498061a4a97fc65cfe92751bc216" resname="file.multipleInputPlaceholder">
+                <source>file.multipleInputPlaceholder</source>
+                <target>Wybierz pliki…</target>
+            </trans-unit>
+
+            <trans-unit id="39db8ee79f62ae33bdec400529163be8" resname="file.singleInputText">
+                <source>file.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="943fe2e8aa68b3a20e38fa5abf7dfe6d" resname="file.multipleInputText">
+                <source>file.multipleInputText</source>
+                <target>Wybrano {{ count }} plików.</target>
+            </trans-unit>
+
+            <trans-unit id="59b5858ffb2acef9ca16b27cf84591be" resname="file.singleButtonText">
+                <source>file.singleButtonText</source>
+                <target>Wybierz</target>
+            </trans-unit>
+
+            <trans-unit id="5b0364559a5ce0296bb9d039760486dc" resname="file.multipleButtonText">
+                <source>file.multipleButtonText</source>
+                <target>Wybierz</target>
+            </trans-unit>
+
+            <trans-unit id="cc227e7f6404891ae803708d2d09ede7" resname="image.singleInputPlaceholder">
+                <source>image.singleInputPlaceholder</source>
+                <target>Wybierz obrazek…</target>
+            </trans-unit>
+
+            <trans-unit id="3d069c50b193102d5036f60bce097df5" resname="image.multipleInputPlaceholder">
+                <source>image.multipleInputPlaceholder</source>
+                <target>Wybierz obrazki…</target>
+            </trans-unit>
+
+            <trans-unit id="f78a13d235d4c46a3126fa7ab258190d" resname="image.singleInputText">
+                <source>image.singleInputText</source>
+                <target>{{ filename }}</target>
+            </trans-unit>
+
+            <trans-unit id="1358a06378d6361148d308e81bafa217" resname="image.multipleInputText">
+                <source>image.multipleInputText</source>
+                <target>Wybrano {{ count }} obrazków.</target>
+            </trans-unit>
+
+            <trans-unit id="40bd38cc9a90fa906afbbefbfa99366e" resname="image.singleButtonText">
+                <source>image.singleButtonText</source>
+                <target>Wybierz</target>
+            </trans-unit>
+
+            <trans-unit id="94d1e9e16186ddf1b4ff886c40ba6d03" resname="image.multipleButtonText">
+                <source>image.multipleButtonText</source>
+                <target>Wybierz</target>
+            </trans-unit>
+
+            <trans-unit id="6789c0a998095d335f5e15f7c6e817b0" resname="uploadedFile.singleShortUploadText">
+                <source>uploadedFile.singleShortUploadText</source>
+                <target>Wybierz plik</target>
+            </trans-unit>
+
+            <trans-unit id="a65653dd9c09906c89040d82e6a03267" resname="uploadedFile.multipleShortUploadText">
+                <source>uploadedFile.multipleShortUploadText</source>
+                <target>Wybierz pliki</target>
+            </trans-unit>
+
+            <trans-unit id="cb364c15c6676927218a469c704d5b1e" resname="uploadedFile.singleLongUploadText">
+                <source>uploadedFile.singleLongUploadText</source>
+                <target>Aby wybrać plik, kliknij lub przeciągnij tutaj.</target>
+            </trans-unit>
+
+            <trans-unit id="2b242901c854bfe89374c2e203d23c05" resname="uploadedFile.multipleLongUploadText">
+                <source>uploadedFile.multipleLongUploadText</source>
+                <target>Aby wybrać pliki, kliknij lub przeciągnij tutaj.</target>
+            </trans-unit>
+
+            <trans-unit id="4770bc7a07ec96686b14465dcd1d2891" resname="uploadedFile.invalidMessage">
+                <source>uploadedFile.invalidMessage</source>
+                <target>Nieprawidłowy typ pliku.</target>
+            </trans-unit>
+
+            <trans-unit id="8cf1a70ee7a3c4b5617af508953f354e" resname="uploadedImage.singleShortUploadText">
+                <source>uploadedImage.singleShortUploadText</source>
+                <target>Wybierz obrazek</target>
+            </trans-unit>
+
+            <trans-unit id="cea61b3161cf7ae3ae01888fcde0cda6" resname="uploadedImage.multipleShortUploadText">
+                <source>uploadedImage.multipleShortUploadText</source>
+                <target>Wybierz obrazki</target>
+            </trans-unit>
+
+            <trans-unit id="11088620ae9e7dc9fccb7f9c7280b210" resname="uploadedImage.singleLongUploadText">
+                <source>uploadedImage.singleLongUploadText</source>
+                <target>Aby wybrać obrazek, kliknij lub przeciągnij tutaj.</target>
+            </trans-unit>
+
+            <trans-unit id="1160a23d47c16e8269614bf3db8891f2" resname="uploadedImage.multipleLongUploadText">
+                <source>uploadedImage.multipleLongUploadText</source>
+                <target>Aby wybrać obrazki, kliknij lub przeciągnij tutaj.</target>
+            </trans-unit>
+
+            <trans-unit id="524681ed7ce774d8b4d39a7a2dce7044" resname="uploadedImage.invalidMessage">
+                <source>uploadedImage.invalidMessage</source>
+                <target>Nieprawidłowy typ pliku. Wybierz obrazek.</target>
+            </trans-unit>
+
+            <trans-unit id="781e72f9d79686d1595044d10ff136bb" resname="location.address">
+                <source>location.address</source>
+                <target>Adres</target>
+            </trans-unit>
+
+            <trans-unit id="c806de0df4ef511c1da0ef2db8377b89" resname="location.latitude">
+                <source>location.latitude</source>
+                <target>Szerokość geograficzna</target>
+            </trans-unit>
+
+            <trans-unit id="3b412e11dab7afc4eab69be4363762ef" resname="location.longitude">
+                <source>location.longitude</source>
+                <target>Długość geograficzna</target>
+            </trans-unit>
+
+            <trans-unit id="d9b3906f1da0842afd4b3ccd510051fe" resname="location.notFound">
+                <source>location.notFound</source>
+                <target>Nie znaleziono adresu</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
