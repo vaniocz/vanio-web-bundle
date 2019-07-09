@@ -94,7 +94,6 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             'searchSelector' => "#{$view[$options['search_name']]->vars['id']}",
             'ajaxField' => $view['ajax']->vars['full_name'],
             'allowUnsuggested' => $options['allow_unsuggested'],
-            'remainingCountLink' => $options['remaining_count_link'],
             'remainingCountLabel' => $options['remaining_count_label'],
         ];
         $view->vars['attr']['data-component-auto-complete'] = $autoCompleteOptions;
@@ -139,7 +138,6 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ->setNormalizer('class', $this->classNormalizer())
             ->setNormalizer('query_builder', $this->queryBuilderNormalizer())
             ->setNormalizer('suggestion_label', $this->choiceLabelNormalizer())
-            ->setNormalizer('remaining_count_link', $this->remainingCountLinkNormalizer())
             ->setNormalizer('group_by', $this->groupByNormalizer())
             ->setAllowedTypes('class', ['string', 'array'])
             ->setAllowedTypes('entity_id_type', 'string')
@@ -229,6 +227,7 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
                     Objects::getType($queryBuilder)
                 ));
             }
+
             $queries[$class] = $queryBuilder->getQuery();
             $entities[$class] = $queries[$class]->getResult();
             $suggestions = array_merge($suggestions, $this->resolveSuggestions(
@@ -240,9 +239,19 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             ));
         }
 
+        $remainingCountLink = $options['remaining_count_link'];
+
+        if (is_callable($remainingCountLink) && !is_string($remainingCountLink)) {
+            $remainingCountLink = $remainingCountLink(
+                $this->urlGenerator,
+                $form->get($options['search_name'])->getData()
+            );
+        }
+
         throw new UnexpectedResponseException(new JsonResponse([
             'query' => $search,
             'remainingCount' => $options['remaining_count']($entities, $queries),
+            'remainingCountLink' => $remainingCountLink,
             'suggestions' => $suggestions,
         ]));
     }
@@ -378,15 +387,6 @@ class AutoCompleteEntityType extends AbstractType implements DataMapperInterface
             }
 
             return $choiceLabel;
-        };
-    }
-
-    private function remainingCountLinkNormalizer(): \Closure
-    {
-        return function (Options $options, $remainingCountLink) {
-            return is_callable($remainingCountLink) && !is_string($remainingCountLink)
-                ? $remainingCountLink($this->urlGenerator)
-                : $remainingCountLink;
         };
     }
 

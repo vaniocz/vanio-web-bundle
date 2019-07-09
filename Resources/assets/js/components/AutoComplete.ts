@@ -17,13 +17,13 @@ interface AutoCompleteOptions
     method?: string;
     allowUnsuggested?: boolean;
     htmlSuggestionSelector?: string;
-    remainingCountLink?: string;
     remainingCountLabel?: string;
 }
 
 interface AutoCompleteSuggestions extends Array<AutoCompleteSuggestion>
 {
     remainingCount?: number;
+    remainingCountLink?: string;
 }
 
 interface AutocompleteInstance
@@ -110,9 +110,7 @@ export class AutoComplete
         this.autocomplete = this.$search.data('autocomplete');
         this.$loading = $('<div class="autocomplete-loading"/>')
             .text(Translator.trans('autoComplete.loading', {}, 'components'));
-        this.$remainingCount = this.options.remainingCountLink
-            ? $('<a/>', {class: 'autocomplete-remaining-count', href: this.options.remainingCountLink})
-            : $('<div class="autocomplete-remaining-count"/>');
+        this.$remainingCount = $('<a class="autocomplete-remaining-count"/>');
         this.currentSearch = String(this.$search.val());
         this.$search
             .off('focus.autocomplete')
@@ -159,6 +157,13 @@ export class AutoComplete
                 {},
                 'components'
             );
+
+            if (suggestions.remainingCountLink) {
+                this.$remainingCount.attr('href', suggestions.remainingCountLink);
+            } else {
+                this.$remainingCount.removeAttr('href');
+            }
+
             $(this.autocomplete.suggestionsContainer).append(this.$remainingCount.text(remainingCountText));
         } else {
             this.$remainingCount.remove();
@@ -194,6 +199,7 @@ export class AutoComplete
     {
         const response = typeof data === 'string' ? $.parseJSON(data) : data;
         response.suggestions.remainingCount = response.remainingCount;
+        response.suggestions.remainingCountLink = response.remainingCountLink;
 
         return response;
     }
