@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="pl" datatype="plaintext" original="file.ext">
+        <header>
+            <tool tool-id="symfony" tool-name="Symfony"/>
+        </header>
+
+        <body>
+            <trans-unit id="c2caaa300624ce2b5d1c8562ab962a45" resname="Choose a file.">
+                <source>Choose a file.</source>
+                <target>Wybierz plik.</target>
+            </trans-unit>
+
+            <trans-unit id="a98ae8748f3590122ed2caa4efb2e066" resname="Choose an image.">
+                <source>Choose an image.</source>
+                <target>Wybierz obrazek.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
