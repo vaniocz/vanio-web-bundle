@@ -10,7 +10,9 @@
     overflow: auto;
 }
 
-.autocomplete-group, .autocomplete-no-suggestion, .autocomplete-loading, .autocomplete-remaining-count {
+.autocomplete-group,
+.autocomplete-no-suggestion,
+.autocomplete-loading {
     cursor: default;
     padding: 10px;
 }
@@ -34,7 +36,12 @@
 }
 
 .autocomplete-remaining-count {
-    text-align: right;
+    float: right;
+    padding: 10px;
+
+    &:not([href]) {
+        cursor: default;
+    }
 }
 
 .autocomplete-loading {
