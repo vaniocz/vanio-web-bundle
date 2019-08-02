@@ -44,6 +44,8 @@ export default class Collapse
                 this.collapse();
             });
         }
+
+        this.$target.toggleClass('collapse--overflown', this.isOverflown());
     }
 
     private collapse(state?: boolean): void
@@ -91,6 +93,7 @@ export default class Collapse
                         this.$target
                             .off('transitionend.toggle', onTransitionEnd)
                             .css(property, '');
+                        this.$target.toggleClass('collapse--overflown', this.isOverflown());
                     }
                 };
 
@@ -103,5 +106,11 @@ export default class Collapse
 
         this.$target.css(sourceStyle);
         setTimeout(() => this.$target.css(targetStyle), 20);
+    }
+
+    private isOverflown(): boolean
+    {
+        return this.$target.prop('scrollWidth') > this.$target.width()!
+            || this.$target.prop('scrollHeight') > this.$target.height()!;
     }
 }
