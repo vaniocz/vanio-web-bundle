@@ -110,7 +110,7 @@ export default class Collapse
 
     private isOverflown(): boolean
     {
-        return this.$target.prop('scrollWidth') > this.$target.width()!
-            || this.$target.prop('scrollHeight') > this.$target.height()!;
+        return this.$target.prop('scrollWidth') > this.$target.prop('offsetWidth')
+            || this.$target.prop('scrollHeight') > this.$target.prop('offsetHeight');
     }
 }
