@@ -45,7 +45,9 @@ export default class Collapse
             });
         }
 
-        this.$target.toggleClass('collapse--overflown', this.isOverflown());
+        const isOverflown = this.isOverflown();
+        this.$target.toggleClass('collapse--overflown', isOverflown);
+        this.$target.toggleClass('collapse--not-overflown', !isOverflown);
     }
 
     private collapse(state?: boolean): void
@@ -93,7 +95,9 @@ export default class Collapse
                         this.$target
                             .off('transitionend.toggle', onTransitionEnd)
                             .css(property, '');
-                        this.$target.toggleClass('collapse--overflown', this.isOverflown());
+                        const isOverflown = this.isOverflown();
+                        this.$target.toggleClass('collapse--overflown', isOverflown);
+                        this.$target.toggleClass('collapse--not-overflown', !isOverflown);
                     }
                 };
 
