@@ -97,7 +97,9 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         }
 
         foreach ($data as $key => $file) {
-            if ($url = $this->resolveFilePath($file)) {
+            $url = $this->resolveFilePath($file);
+
+            if ($url !== null) {
                 $formData[] = [
                     'key' => $key,
                     'url' => $url,
