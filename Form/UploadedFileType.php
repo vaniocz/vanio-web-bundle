@@ -145,12 +145,13 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
 
     private function resolveFilePath(File $file): ?string
     {
-        if (!$path = $file->file()->getRealPath()) {
+        $path = $file->file()->getRealPath();
+
+        if ($path === false) {
             return null;
         }
 
         $path = str_replace('\\', '/', $path);
-
         $message = sprintf('The file "%s" is placed outside of web root "%s".', $path, $this->webRoot);
         Assertion::startsWith($path, $this->webRoot, $message);
         $path = substr($path, strlen($this->webRoot));
