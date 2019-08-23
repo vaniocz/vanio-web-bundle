@@ -97,13 +97,15 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         }
 
         foreach ($data as $key => $file) {
-            $formData[] = [
-                'key' => $key,
-                'url' => $this->resolveFilePath($file),
-                'thumbnailUrl' => $this->resolveThumbnailUrl($file, $thumbnailFilter),
-                'name' => $file->metaData()['name'] ?? null,
-                'size' => $file->metaData()['size'] ?? null,
-            ];
+            if ($url = $this->resolveFilePath($file)) {
+                $formData[] = [
+                    'key' => $key,
+                    'url' => $url,
+                    'thumbnailUrl' => $this->resolveThumbnailUrl($file, $thumbnailFilter),
+                    'name' => $file->metaData()['name'] ?? null,
+                    'size' => $file->metaData()['size'] ?? null,
+                ];
+            }
         }
 
         $form->setData($formData === [] ? null : json_encode($formData));
@@ -139,9 +141,14 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $data = $multiple ? $files : (reset($files) ?: null);
     }
 
-    private function resolveFilePath(File $file): string
+    private function resolveFilePath(File $file): ?string
     {
-        $path = str_replace('\\', '/', $file->file()->getRealPath());
+        if (!$path = $file->file()->getRealPath()) {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', $path);
+
         $message = sprintf('The file "%s" is placed outside of web root "%s".', $path, $this->webRoot);
         Assertion::startsWith($path, $this->webRoot, $message);
         $path = substr($path, strlen($this->webRoot));
