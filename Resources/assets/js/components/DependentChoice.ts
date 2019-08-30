@@ -1,24 +1,43 @@
 import {component} from 'jquery-ts-components';
 
+interface DependentChoiceOptions
+{
+    parent: JQuery|HTMLElement|string;
+    listen?: JQuery|HTMLElement|string;
+}
+
 @component('DependentChoice')
 export default class DependentChoice
 {
     private $element: JQuery;
-    private $parent: JQuery;
+    private options: DependentChoiceOptions;
     private $label: JQuery;
     private $dependentOptions: JQuery;
     private $dependentOptionsParent: JQuery;
 
-    public constructor(element: JQuery|HTMLSelectElement|string, parent: JQuery|HTMLSelectElement|string)
-    {
+    public constructor(
+        element: JQuery|HTMLSelectElement|string,
+        options: DependentChoiceOptions|string
+    ) {
         this.$element = $(element);
-        this.$parent = $(parent);
+        this.options = typeof options === 'string' ? {parent: options} : options;
         this.$label = $(`label[for="${this.$element.attr('id')}"]`);
         this.$label.addClass('dependent-select-label');
         this.$dependentOptions = this.$element.find('[data-parent-value], [data-parent-values]');
         this.$dependentOptionsParent = this.$dependentOptions.parent();
-        this.$parent.on('change dependent_choice.change', this.render.bind(this));
+
+        if (typeof this.options.listen === 'string') {
+            $(document).on('change dependent_choice.change', this.options.listen, this.render.bind(this));
+        } else {
+            $(this.options.listen || this.options.parent).on('change dependent_choice.change', this.render.bind(this));
+        }
+
         this.render();
+    }
+
+    public get $parent(): JQuery
+    {
+        return $(this.options.parent);
     }
 
     public get value(): string|number|string[]|undefined

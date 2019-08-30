@@ -10,7 +10,6 @@ interface ToggleOptions
 @component('Toggle')
 export default class Toggle
 {
-    private $source: JQuery;
     private $target: JQuery;
     private options: ToggleOptions;
 
@@ -20,7 +19,6 @@ export default class Toggle
             {className: 'toggle--active', source: element},
             typeof options === 'string' ? {target: options} : options
         );
-        this.$source = $(this.options.source);
         this.$target = $(this.options.target);
 
         if (this.$source.is(':checkbox') || this.$source.is(':radio') || this.$source.is('option')) {
@@ -34,7 +32,7 @@ export default class Toggle
                 $eventTarget = this.$source;
             }
 
-            $eventTarget.on('change', this.toggleClass.bind(this));
+            $eventTarget.on('change dependent_choice.change', this.toggleClass.bind(this));
             this.toggleClass();
         } else {
             this.$source.on('click', (event: JQuery.Event) => {
@@ -47,5 +45,10 @@ export default class Toggle
     private toggleClass(): void
     {
         this.$target.toggleClass(this.options.className, this.$source.is(':checked'))
+    }
+
+    private get $source(): JQuery
+    {
+        return $(this.options.source);
     }
 }
