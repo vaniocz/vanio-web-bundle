@@ -4,7 +4,8 @@
         margin-top: 15px;
     }
 
-    &__toggle:checked ~ &__form {
+    &__toggle[type="checkbox"]:checked ~ &__form,
+    &__toggle[type="radio"][value="1"]:checked ~ &__form {
         display: block;
     }
 }
