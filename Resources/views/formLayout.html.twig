@@ -97,11 +97,13 @@
     {% set attr = {class: "#{class_name(attr.class ?? '')} #{class}"} + attr %}
 
     {% if widget == 'slider' %}
+        {% set start = [form.minimum.vars.data ?? form.vars.minimum, form.maximum.vars.data ?? form.vars.maximum] %}
+
         {% set attr = {
             'data-component-range-slider': {
-                start: [form.minimum.vars.data ?? form.vars.minimum, form.maximum.vars.data ?? form.vars.maximum],
+                start: start,
                 range: {min: form.vars.minimum, max: form.vars.maximum},
-                step: 1,
+                step: start.0 matches '/^\\d+$/' and start.1 matches '/^\\d+$/' ? step : null,
                 connect: true,
             }|json_encode
         } + attr %}
