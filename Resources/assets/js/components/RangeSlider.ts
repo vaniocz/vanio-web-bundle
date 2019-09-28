@@ -27,13 +27,6 @@ export default class RangeSlider
             this.$values.attr('readonly', 'readonly');
         }
 
-        if (!options.format) {
-            options.format = {
-                from: Number,
-                to: (value: number) => value.toLocaleString().replace(/ /g, ''),
-            };
-        }
-
         this.noUiSlider = noUiSlider.create(this.$element[0], options) as any;
         this.isIe = /Trident\/|MSIE /.test(window.navigator.userAgent);
         this.isEdge = /Edge\//.test(window.navigator.userAgent);
