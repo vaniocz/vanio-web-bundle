@@ -100,13 +100,17 @@ class MultilingualListener implements EventSubscriberInterface
 
     public function onException(GetResponseForExceptionEvent $event)
     {
-        $request = $event->getRequest();
-
-        if ($request->attributes->has('_locale')) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
-        $pathInfo = $request->getPathInfo();
+        $this->request = $event->getRequest();
+
+        if ($this->request->attributes->has('_locale')) {
+            return;
+        }
+
+        $pathInfo = $this->request->getPathInfo();
         $targetLocale = null;
 
         usort($this->multilingualRootPaths, function (string $rootPath1, string $rootPath2) {
@@ -126,8 +130,8 @@ class MultilingualListener implements EventSubscriberInterface
         }
 
         if ($targetLocale = $targetLocale ?? $this->preferredLocale()) {
-            $request->setLocale($targetLocale);
-            $request->attributes->set('_locale', $targetLocale);
+            $this->request->setLocale($targetLocale);
+            $this->request->attributes->set('_locale', $targetLocale);
         }
     }
 
