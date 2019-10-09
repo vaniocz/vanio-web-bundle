@@ -30,6 +30,11 @@
                 <source>Pl</source>
                 <target>Polnisch</target>
             </trans-unit>
+
+            <trans-unit id="9fabec19f0ee826f7822ccd41dd4f553" resname="Hu">
+                <source>Hu</source>
+                <target>Ungarisch</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
