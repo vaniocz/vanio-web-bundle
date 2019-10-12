@@ -15,6 +15,7 @@ interface AutoCompleteOptions
     ajaxField: string;
     ajax: string;
     method?: string;
+    minimumCharacters?: number;
     allowUnsuggested?: boolean;
     htmlSuggestionSelector?: string;
     remainingCountLabel?: string;
@@ -89,6 +90,7 @@ export class AutoComplete
             serviceUrl: this.$form.attr('action'),
             type: this.options.method || this.$form.attr('method'),
             groupBy: '_group',
+            minChars: this.options.minimumCharacters,
             deferRequestBy: 50,
             showNoSuggestionNotice: true,
             noSuggestionNotice: Translator.trans('autoComplete.noSuggestions', {}, 'components'),
