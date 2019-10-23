@@ -7,6 +7,8 @@
         <parameter key="vanio_web.form.caching_validation_parser.class">Vanio\WebBundle\Form\CachingValidationParser</parameter>
         <parameter key="vanio_web.form.validation_constraints_guesser.class">Vanio\WebBundle\Form\ValidationConstraintsGuesser</parameter>
         <parameter key="vanio_web.form.js_form_validator_extension.class">Vanio\WebBundle\Form\JsFormValidatorExtension</parameter>
+        <parameter key="vanio_web.form.name_mapping_extension.class">Vanio\WebBundle\Form\NameMappingExtension</parameter>
+        <parameter key="vanio_web.form.name_mapping_request_handler.class">Vanio\WebBundle\Form\NameMappingRequestHandler</parameter>
         <parameter key="vanio_web.model.uploaded_file_repository.class">Vanio\DomainBundle\Doctrine\EntityRepository</parameter>
         <parameter key="vanio_web.request.controller_yield_listener.class">Vanio\WebBundle\Request\ControllerYieldListener</parameter>
         <parameter key="vanio_web.request.request_type_listener.class">Vanio\WebBundle\Request\RequestTypeListener</parameter>
@@ -134,6 +136,12 @@
             <argument>%vanio_web.multilingual_supported_locales%</argument>
             <tag name="twig.extension"/>
         </service>
+
+        <service id="vanio_web.form.name_mapping_extension" class="%vanio_web.form.name_mapping_extension.class%">
+            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
+        </service>
+
+        <service id="vanio_web.form.name_mapping_request_handler" class="%vanio_web.form.name_mapping_request_handler.class%"/>
 
         <service id="vanio_web.form.canonization_extension" class="%vanio_web.form.canonization_extension.class%">
             <argument type="service" id="request_stack"/>

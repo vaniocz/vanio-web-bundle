@@ -22,13 +22,7 @@ use Vanio\Stdlib\Uri;
 class CanonizationExtension extends AbstractTypeExtension implements EventSubscriberInterface
 {
     /** @var \SplObjectStorage */
-    private $query;
-
-    /** @var \SplObjectStorage */
     private $submittedData;
-
-    /** @var \SplObjectStorage */
-    private $canonicalData;
 
     /** @var Request|null */
     private $currentRequest;
@@ -58,63 +52,77 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
 
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
-        $root = $form->getRoot();
-
-        if (!$this->currentRequest || !$form->isSubmitted() || !$root->getConfig()->getOption('canonize')) {
+        if (!$this->currentRequest || !$form->isRoot() || !$form->isSubmitted() || !$options['canonize']) {
             return;
         }
 
-        $query = $this->query[$root] ?? $this->currentRequest->query->all();
+        $query = $this->currentRequest->query->all();
+        $canonicalData = $this->canonizeForm($form, $view, $query);
+        $canonicalQueryString = $this->resolveCanonicalQueryString($form, $view, $query + $canonicalData);
+        $canonicalUrl = $url = $this->currentRequest->getBaseUrl() . $this->currentRequest->getPathInfo();
+
+        if ($canonicalQueryString) {
+            $canonicalUrl .= '?' . $canonicalQueryString;
+        }
+
+        $this->headers['Canonical-Url'] = $canonicalUrl;
+
+        if ($this->currentRequest->isXmlHttpRequest()) {
+            return;
+        } elseif ($currentQueryString = $this->currentRequest->server->get('QUERY_STRING')) {
+            $currentQueryString = Uri::encodeQuery(Uri::parseQuery($currentQueryString));
+
+            if ($form->getName() !== '') {
+                $pattern = sprintf('/(%s)=(?=&|$)/', preg_quote($view->vars['full_name']));
+
+                if (!preg_match($pattern, $this->currentRequest->server->get('QUERY_STRING'))) {
+                    $currentQueryString = $this->normalizeEncodedQueryStringEmptyParameter(
+                        $currentQueryString,
+                        $view->vars['full_name']
+                    );
+                }
+            }
+        }
+
+        if ($this->currentRequest->getRealMethod() !== 'GET' || $currentQueryString !== $canonicalQueryString) {
+            throw new UnexpectedResponseException(new RedirectResponse($canonicalUrl, 302, $this->headers));
+        }
+    }
+
+    public function canonizeForm(FormInterface $form, FormView $view, array &$query, array $canonicalData = []): array
+    {
         $path = $this->resolvePath($view->vars['full_name']);
 
         try {
             Arrays::unset($query, $path);
         } catch (\InvalidArgumentException $e) {}
 
-        $this->query[$root] = $query;
+        if (!$form->getConfig()->getCompound()) {
+            if ($this->isEmptyData($form)) {
+                return $canonicalData;
+            }
 
-        if (!$form->getConfig()->getCompound() && !$this->isEmptyData($form)) {
-            $canonicalData = $this->canonicalData[$root] ?? [];
-            Arrays::set($canonicalData, $path, $this->submittedData[$form]);
-            $this->canonicalData[$root] = $canonicalData;
+            $value = &Arrays::getReference($canonicalData, $path);
             $formView = $view;
+
+            if (substr($view->vars['full_name'], -2) === '[]') {
+                $value[] = $this->submittedData[$form];
+            } else {
+                $value = $this->submittedData[$form];
+            }
 
             do {
                 $formView->vars['isSubmittedWithEmptyData'] = false;
             } while ($formView = $formView->parent);
+
+            return $canonicalData;
         }
 
-        if ($form->isRoot()) {
-            $canonicalQueryString = $this->resolveCanonicalQueryString($form, $view);
-            $canonicalUrl = $url = $this->currentRequest->getBaseUrl() . $this->currentRequest->getPathInfo();
-
-            if ($canonicalQueryString) {
-                $canonicalUrl .= '?' . $canonicalQueryString;
-            }
-
-            $this->headers['Canonical-Url'] = $canonicalUrl;
-
-            if ($this->currentRequest->isXmlHttpRequest()) {
-                return;
-            } elseif ($currentQueryString = $this->currentRequest->server->get('QUERY_STRING')) {
-                $currentQueryString = Uri::encodeQuery(Uri::parseQuery($currentQueryString));
-
-                if ($form->getName() !== '') {
-                    $pattern = sprintf('/(%s)=(?=&|$)/', preg_quote($view->vars['full_name']));
-
-                    if (!preg_match($pattern, $this->currentRequest->server->get('QUERY_STRING'))) {
-                        $currentQueryString = $this->normalizeEncodedQueryStringEmptyParameter(
-                            $currentQueryString,
-                            $view->vars['full_name']
-                        );
-                    }
-                }
-            }
-
-            if ($this->currentRequest->getRealMethod() !== 'GET' || $currentQueryString !== $canonicalQueryString) {
-                throw new UnexpectedResponseException(new RedirectResponse($canonicalUrl, 302, $this->headers));
-            }
+        foreach ($form as $name => $child) {
+            $canonicalData = $this->canonizeForm($child, $view->children[$name], $query, $canonicalData);
         }
+
+        return $canonicalData;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -143,18 +151,18 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
     /**
      * @internal
      */
-    public function onPreSubmit(FormEvent $event)
+    public function onPreSubmit(FormEvent $event): void
     {
         $form = $event->getForm();
 
-        if ($form->getRoot()->getConfig()->getOption('canonize')) {
-            if ($form->getConfig()->getCompound()) {
-                if ($form->isRoot() && $event->getData() === '') {
-                    $event->setData([]);
-                }
-            } else {
-                $this->submittedData[$form] = (string) $event->getData();
+        if (!$form->getRoot()->getConfig()->getOption('canonize')) {
+            return;
+        } elseif ($form->getConfig()->getCompound()) {
+            if ($form->isRoot() && $event->getData() === '') {
+                $event->setData([]);
             }
+        } else {
+            $this->submittedData[$form] = (string) $event->getData();
         }
     }
 
@@ -183,20 +191,20 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         return explode('[', $path);
     }
 
-    private function resolveCanonicalQueryString(FormInterface $form, FormView $formView): string
+    private function resolveCanonicalQueryString(FormInterface $form, FormView $view, array $query): string
     {
-        $query = $this->query[$form];
-        $query += $this->canonicalData[$form] ?? [];
+        $nameMapping = NameMappingExtension::resolveNameMapping($form);
+        $transformedName = $nameMapping[''] ?? $form->getName();;
 
-        if ($form->getName() !== '') {
-            $path = $this->resolvePath($formView->vars['full_name']);
+        if ($transformedName !== '') {
+            $path = $this->resolvePath($view->vars['full_name']);
 
             if (Arrays::get($query, $path, '') === '') {
                 Arrays::set($query, $path, '');
 
                 return $this->normalizeEncodedQueryStringEmptyParameter(
                     Uri::encodeQuery($query),
-                    $formView->vars['full_name']
+                    $view->vars['full_name']
                 );
             }
         }
@@ -210,6 +218,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
             '/(%s)=(?=&|$)/',
             substr(preg_quote(http_build_query([$parameter => ''])), 0, -2)
         );
+
         return preg_replace($pattern, '$1', $queryString);
     }
 
