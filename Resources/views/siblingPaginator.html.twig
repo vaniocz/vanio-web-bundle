@@ -11,13 +11,25 @@
         </p>
 
         {% set parameters = app.request.attributes.get('_route_params') + app.request.query.all %}
+        {% set parameter = 'page' %}
+        {% set translationDomain = null %}
+
+        {% for converter in app.request.attributes.get('_converters') %}
+            {% if translationDomain is null and converter.name == parameter and converter.class is instance of ('Vanio\\DomainBundle\\Pagination\\PageSpecification') %}
+                {% set translationDomain = converter.options.translation_domain ?? null %}
+            {% endif %}
+        {% endfor %}
+
+        {% if translationDomain is not null %}
+            {% set parameter = 'page'|trans({}, translationDomain) %}
+        {% endif %}
 
         {% if page.fromPage > 1 %}
-            {{ menu.link(null, {page: page.fromPage - 1} + parameters, {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.toPage == 2 ? page.recordsOnFirstPage : page.recordsPerPage}, 'paginator')}) }}
+            {{ menu.link(null, parameters|merge({(parameter): page.fromPage - 1}), {class: 'btn btn-primary paginator-previous', label: 'siblingPaginator.previous'|trans({'%recordCount%': page.toPage == 2 ? page.recordsOnFirstPage : page.recordsPerPage}, 'paginator'), 'data-parameter': parameter}) }}
         {% endif %}
 
         {% if records|length > page.lastRecord %}
-            {{ menu.link(null, {page: page.toPage + 1} + parameters, {class: 'btn btn-primary paginator-next', label: 'siblingPaginator.next'|trans({'%recordCount%': min(page.recordsPerPage, records|length - page.lastRecord)}, 'paginator')}) }}
+            {{ menu.link(null, parameters|merge({(parameter): page.toPage + 1}), {class: 'btn btn-primary paginator-next', label: 'siblingPaginator.next'|trans({'%recordCount%': min(page.recordsPerPage, records|length - page.lastRecord)}, 'paginator'), 'data-parameter': parameter}) }}
         {% endif %}
     </div>
 {% endif %}

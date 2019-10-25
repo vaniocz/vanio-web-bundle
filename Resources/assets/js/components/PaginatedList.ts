@@ -24,8 +24,9 @@ export default class PaginatedList
 
     private onPageClick(event: JQueryEventObject): void
     {
-        const isPrevious = $(event.target).is('.paginator-previous');
-        const url = this.updatePageQueryStringParameter(isPrevious);
+        const $target = $(event.target);
+        const isPrevious = $target.is('.paginator-previous');
+        const url = this.updatePageQueryStringParameter(isPrevious, $target.data('parameter') || 'page');
         event.preventDefault();
 
         if (window.history && history.pushState) {
@@ -76,9 +77,9 @@ export default class PaginatedList
         this.$topPagination.add(this.$bottomPagination).find('.paginator-info-count').text(countValue);
     }
 
-    private updatePageQueryStringParameter(isPrevious: boolean): string
+    private updatePageQueryStringParameter(isPrevious: boolean, parameter: string): string
     {
-        return this.updateQueryStringParameter(window.location.href, 'page', (pageRange: string) => {
+        return this.updateQueryStringParameter(window.location.href, parameter, (pageRange: string) => {
             let [fromValue, toValue] = String(pageRange).split('-');
             let fromPage = Number(fromValue) || 1;
             let toPage = Number(toValue) || fromPage;

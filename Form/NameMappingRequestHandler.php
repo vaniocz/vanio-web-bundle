@@ -7,9 +7,19 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\RequestHandlerInterface;
 use Symfony\Component\HttpFoundation\File;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Translation\TranslatorBagInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class NameMappingRequestHandler implements RequestHandlerInterface
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param FormInterface $form
      * @param Request|null $request
@@ -31,8 +41,18 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         }
 
         $nameMapping = NameMappingExtension::resolveNameMapping($form);
-        $transformedData = $this->transformData($form, $data, $nameMapping);
-        $transformedName = $nameMapping[''] ?? $form->getName();
+        $translationDomain = $form->getConfig()->getOption('name_translation_domain');
+        $transformedData = $this->transformData($form, $data, $nameMapping, $translationDomain);
+        $transformedName = $nameMapping[''] ?? null;
+
+        if (is_string($translationDomain) && $transformedName !== '') {
+            $translationId = $transformedName ?? NameMappingExtension::resolveTranslationId($form);
+            $transformedName = $this->translate($translationId, $nameTranslationDomain);
+        }
+
+        if ($transformedName === null) {
+            $transformedName = $child->getName();
+        }
 
         if ($transformedName === '') {
             $form->submit($transformedData);
@@ -54,9 +74,10 @@ class NameMappingRequestHandler implements RequestHandlerInterface
      * @param FormInterface $form
      * @param mixed $data
      * @param string[] $nameMapping
+     * @param string|null|bool $translationDomain
      * @return mixed
      */
-    private function transformData(FormInterface $form, $data, array $nameMapping)
+    private function transformData(FormInterface $form, $data, array $nameMapping, $translationDomain = null)
     {
         if (!$form->count()) {
             return $data;
@@ -67,15 +88,54 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         foreach ($form as $name => $child) {
             $childNameMapping = NameMappingExtension::resolveNameMapping($child);
             $childNameMapping = array_replace_recursive($childNameMapping, $nameMapping[$name] ?? []);
-            $transformedName = $childNameMapping[''] ?? $child->getName();
+            $childTranslationDomain = $child->getConfig()->getOption('name_translation_domain') ?? $translationDomain;
+            $transformedName = $childNameMapping[''] ?? null;
+
+            if (is_string($childTranslationDomain) && $transformedName !== '') {
+                $translationId = $transformedName ?? NameMappingExtension::resolveTranslationId($child);
+                $translatedName = $this->translate($translationId, $childTranslationDomain);
+
+                if ($translatedName !== null) {
+                    $transformedName = $translatedName;
+                }
+            }
+
+            if ($transformedName === null) {
+                $transformedName = $child->getName();
+            }
 
             if ($transformedName === '') {
-                $transformedData[$name] = $this->transformData($child, $data, $childNameMapping);
+                $transformedData[$name] = $this->transformData(
+                    $child,
+                    $data,
+                    $childNameMapping,
+                    $childTranslationDomain
+                );
             } elseif (array_key_exists($transformedName, $data)) {
-                $transformedData[$name] = $this->transformData($child, $data[$transformedName], $childNameMapping);
+                $transformedData[$name] = $this->transformData(
+                    $child,
+                    $data[$transformedName],
+                    $childNameMapping,
+                    $childTranslationDomain
+                );
             }
         }
 
         return $transformedData;
+    }
+
+    private function translate(string $id, string $domain): ?string
+    {
+        $isTranslated = $this->translator instanceof TranslatorBagInterface
+            && $this->translator->getCatalogue(null)->has($id, $domain)
+            && $this->translator->getCatalogue(null)->get($id, $domain) !== false;
+
+        if (!$isTranslated) {
+            return null;
+        }
+
+        $path = explode('.', $this->translator->trans($id, [], $domain));
+
+        return end($path);
     }
 }

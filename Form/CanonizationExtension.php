@@ -3,6 +3,7 @@ namespace Vanio\WebBundle\Form;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -58,7 +59,12 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
 
         $query = $this->currentRequest->query->all();
         $canonicalData = $this->canonizeForm($form, $view, $query);
-        $canonicalQueryString = $this->resolveCanonicalQueryString($form, $view, $query + $canonicalData);
+
+        if ($form->getName() === '' && !$canonicalData) {
+            $canonicalData[explode('[', current($view->children)->vars['full_name'])[0]] = null;
+        }
+
+        $canonicalQueryString = $this->resolveCanonicalQueryString($form, $view, $canonicalData + $query);
         $canonicalUrl = $url = $this->currentRequest->getBaseUrl() . $this->currentRequest->getPathInfo();
 
         if ($canonicalQueryString) {
@@ -69,20 +75,9 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
 
         if ($this->currentRequest->isXmlHttpRequest()) {
             return;
-        } elseif ($currentQueryString = $this->currentRequest->server->get('QUERY_STRING')) {
-            $currentQueryString = Uri::encodeQuery(Uri::parseQuery($currentQueryString));
-
-            if ($form->getName() !== '') {
-                $pattern = sprintf('/(%s)=(?=&|$)/', preg_quote($view->vars['full_name']));
-
-                if (!preg_match($pattern, $this->currentRequest->server->get('QUERY_STRING'))) {
-                    $currentQueryString = $this->normalizeEncodedQueryStringEmptyParameter(
-                        $currentQueryString,
-                        $view->vars['full_name']
-                    );
-                }
-            }
         }
+
+        $currentQueryString = $this->currentRequest->server->get('QUERY_STRING');
 
         if ($this->currentRequest->getRealMethod() !== 'GET' || $currentQueryString !== $canonicalQueryString) {
             throw new UnexpectedResponseException(new RedirectResponse($canonicalUrl, 302, $this->headers));
@@ -106,9 +101,9 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
             $formView = $view;
 
             if (substr($view->vars['full_name'], -2) === '[]') {
-                $value[] = $this->submittedData[$form];
+                $value[] = (string) $this->submittedData[$form];
             } else {
-                $value = $this->submittedData[$form];
+                $value = (string) $this->submittedData[$form];
             }
 
             do {
@@ -162,7 +157,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
                 $event->setData([]);
             }
         } else {
-            $this->submittedData[$form] = (string) $event->getData();
+            $this->submittedData[$form] = $event->getData();
         }
     }
 
@@ -196,20 +191,22 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         $nameMapping = NameMappingExtension::resolveNameMapping($form);
         $transformedName = $nameMapping[''] ?? $form->getName();;
 
-        if ($transformedName !== '') {
-            $path = $this->resolvePath($view->vars['full_name']);
+        return $this->normalizeQueryStringEmptyParameters($view, Uri::encodeQuery($query), $query);
+    }
 
-            if (Arrays::get($query, $path, '') === '') {
-                Arrays::set($query, $path, '');
+    private function normalizeQueryStringEmptyParameters(FormView $view, string $queryString, array $query): string
+    {
+        $path = $this->resolvePath($view->vars['full_name']);
 
-                return $this->normalizeEncodedQueryStringEmptyParameter(
-                    Uri::encodeQuery($query),
-                    $view->vars['full_name']
-                );
-            }
+        if (Arrays::get($query, $path, '') === '') {
+            $queryString = $this->normalizeEncodedQueryStringEmptyParameter($queryString, $view->vars['full_name']);
         }
 
-        return Uri::encodeQuery($query);
+        foreach ($view->children as $childView) {
+            $queryString = $this->normalizeQueryStringEmptyParameters($childView, $queryString, $query);
+        }
+
+        return $queryString;
     }
 
     private function normalizeEncodedQueryStringEmptyParameter(string $queryString, string $parameter): string
@@ -224,8 +221,12 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
 
     private function isEmptyData(FormInterface $form): bool
     {
-        return $this->submittedData[$form] === ''
-            || $this->submittedData[$form] === $this->transform($form, $this->resolveEmptyData($form));
+        if ($form->getConfig()->getType()->getInnerType() instanceof CheckboxType) {
+            return $this->submittedData[$form] === null;
+        }
+
+        return (string) $this->submittedData[$form] === ''
+            || (string) $this->submittedData[$form] === $this->transform($form, $this->resolveEmptyData($form));
     }
 
     /**

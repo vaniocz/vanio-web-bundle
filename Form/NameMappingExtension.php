@@ -10,19 +10,29 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorBagInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Objects;
 
 class NameMappingExtension extends AbstractTypeExtension
 {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @param FormBuilderInterface $builder
      * @param mixed[] $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if ($options['name_mapping']) {
-            // Cannot set requestHandler directly, it would be overridden
+        if ($options['name_mapping'] || is_string($options['name_translation_domain'])) {
+            // Cannot s1et requestHandler directly, it would be overridden
             $builder->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData']);
         }
     }
@@ -40,13 +50,28 @@ class NameMappingExtension extends AbstractTypeExtension
 
         $path = explode('[', $view->vars['full_name']);
         $nameMapping = [];
+        $translationDomain = null;
         $replacedPath = [];
         $index = 0;
 
         foreach ($this->resolveFormHierarchy($form) as $child) {
             $nameMapping = $nameMapping[rtrim($path[$index], ']')] ?? [];
             $nameMapping = array_replace_recursive(self::resolveNameMapping($child), $nameMapping);
-            $transformedName = $nameMapping[''] ?? $child->getName();
+            $transformedName = $nameMapping[''] ?? null;
+            $translationDomain = $child->getConfig()->getOption('name_translation_domain') ?? $translationDomain;
+
+            if (is_string($translationDomain) && $transformedName !== '') {
+                $translationId = $transformedName ?? self::resolveTranslationId($child);
+                $translatedName = $this->translate($translationId, $translationDomain);
+
+                if ($translatedName !== null) {
+                    $transformedName = $translatedName;
+                }
+            }
+
+            if ($transformedName === null) {
+                $transformedName = $child->getName();
+            }
 
             if ($transformedName !== '') {
                 $replacedPath[] = $replacedPath ? "{$transformedName}]" : $transformedName;
@@ -66,7 +91,9 @@ class NameMappingExtension extends AbstractTypeExtension
     {
         $resolver
             ->setDefault('name_mapping', [])
-            ->setAllowedTypes('name_mapping', [\Closure::class, 'array', 'string']);
+            ->setDefault('name_translation_domain', null)
+            ->setAllowedTypes('name_mapping', [\Closure::class, 'array', 'string'])
+            ->setAllowedTypes('name_translation_domain', ['string', 'false', 'null']);
     }
 
     public function getExtendedType(): string
@@ -86,7 +113,7 @@ class NameMappingExtension extends AbstractTypeExtension
             && !$formConfig->getRequestHandler() instanceof NameMappingRequestHandler
         ) {
             $requestHandler = &Objects::getPropertyValue($formConfig, 'requestHandler', FormConfigBuilder::class);
-            $requestHandler = new NameMappingRequestHandler;
+            $requestHandler = new NameMappingRequestHandler($this->translator);
         }
     }
 
@@ -118,6 +145,19 @@ class NameMappingExtension extends AbstractTypeExtension
         return $normalizedNameMapping;
     }
 
+    public static function resolveTranslationId(FormInterface $form): string
+    {
+        $translationId = $form->getName();
+
+        while ($form = $form->getParent()) {
+            if ($form->getName() !== '') {
+                $translationId = "{$form->getName()}.{$translationId}";
+            }
+        }
+
+        return $translationId;
+    }
+
     /**
      * @return FormInterface[]
      */
@@ -130,5 +170,21 @@ class NameMappingExtension extends AbstractTypeExtension
         } while ($form = $form->getParent());
 
         return $formHierarchy;
+    }
+
+    private function translate(string $id, string $domain): ?string
+    {
+        $isTranslated = $this->translator instanceof TranslatorBagInterface
+            && $this->translator->getCatalogue(null)->has($id, $domain)
+            && $this->translator->getCatalogue(null)->get($id, $domain) !== false;
+
+        if (!$isTranslated) {
+            return null;
+        }
+
+        $path = explode('.', $this->translator->trans($id, [], $domain));
+
+        return end($path);
+
     }
 }
