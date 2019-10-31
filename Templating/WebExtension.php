@@ -14,7 +14,9 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Strings;
+use Vanio\Stdlib\Uri;
 use Vanio\WebBundle\Request\RouteHierarchyResolver;
 use Vanio\WebBundle\Request\TargetPathResolver;
 use Vanio\WebBundle\Serializer\Serializer;
@@ -146,6 +148,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
             new \Twig_SimpleFunction('entity', [$this, 'entity']),
             new \Twig_SimpleFunction('entities', [$this, 'entities']),
+            new \Twig_SimpleFunction('form_path', [$this, 'formPath']),
         ];
     }
 
@@ -629,5 +632,59 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         return $value !== '' && $value !== false && $value !== null && $value !== [];
+    }
+
+    public function formPath(FormView $view): string
+    {
+        $root = $view;
+
+        while ($root->parent) {
+            $root = $root->parent;
+        }
+
+        return Uri::encodeQuery($this->resolveFormData($root, $view), true);
+    }
+
+    private function resolveFormData(FormView $view, FormView $currentView, array $data = []): array
+    {
+        if (!empty($view->vars['compound'])) {
+            foreach ($view->children as $child) {
+                $data = $this->resolveFormData($child, $currentView, $data);
+            }
+
+            return $data;
+        }
+
+        $isCurrent = $view === $currentView;
+
+        if (
+            $isCurrent
+            || (!empty($view->vars['submitted']) && ($view->vars['isSubmittedWithEmptyData'] ?? true) === false)
+        ) {
+            if (
+                in_array('checkbox', $view->vars['block_prefixes'])
+                && ((empty($view->vars['checked']) && !$isCurrent) || (!empty($view->vars['checked']) && $isCurrent))
+            ) {
+                return $data;
+            }
+
+            $viewData = &Arrays::getReference($data, $this->resolveFormPath($view->vars['full_name']));
+
+            if (Strings::endsWith($view->vars['full_name'], '[]')) {
+                $viewData[] = $view->vars['value'];
+            } else {
+                $viewData = $view->vars['value'];
+            }
+        }
+
+        return $data;
+    }
+
+    private function resolveFormPath(string $fullName): array
+    {
+        $path = str_replace('[]', '', $fullName);
+        $path = str_replace(']', '', $path);
+
+        return explode('[', $path);
     }
 }
