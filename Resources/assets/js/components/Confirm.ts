@@ -101,6 +101,13 @@ export default class Confirm
 
     private actionConfirmed(confirmed: boolean): void
     {
+        const event = $.Event('confirm');
+        this.$element.trigger(event);
+
+        if (event.isDefaultPrevented()) {
+            return;
+        }
+
         if (this.$element.is(':submit')) {
             this.$element.closest('form').submit();
         }
