@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThan;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Url;
 
 class ValidationConstraintsGuesser
@@ -36,6 +37,7 @@ class ValidationConstraintsGuesser
         'email' => [Email::class],
         'url' => [Url::class],
         'supportedImageFile' => [Image::class, ['message' => 'mimeTypesMessage']],
+        'regex' => [Regex::class, ['pattern' => 'pattern']],
     ];
 
     public function __construct(
