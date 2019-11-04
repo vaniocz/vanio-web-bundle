@@ -9,7 +9,8 @@ export default class Collection
     public constructor(element: JQuery|HTMLElement|string, options: JQueryCollectionOptions = {})
     {
         this.$element = $(element);
-        this.$body = this.$element.find('> .collection__body');
+        const prefix = options.prefix || 'collection';
+        this.$body = this.$element.find(`> .${prefix}__body`);
         options = $.extend({
             fade_in: false,
             fade_out: false,
@@ -19,7 +20,7 @@ export default class Collection
             before_remove: this.onBeforeRemove.bind(this),
             after_remove: this.onAfterRemove.bind(this),
             drag_drop_options: {
-                handle: '.collection-move',
+                handle: `.${prefix}-move`,
                 cursor: 's-resize',
                 containment: 'parent',
                 tolerance: 'pointer',

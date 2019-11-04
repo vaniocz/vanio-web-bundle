@@ -1,6 +1,19 @@
 {% block collection_widget %}
     {% from _self import collection_entry %}
-    {% set attr = {class: "#{class_name(attr.class ?? '')} collection"} + attr + {'data-component-collection': []} %}
+
+    {% set parent = form.parent %}
+    {% set collectionLevel = 0 %}
+
+    {% for i in range(1, 50) if parent is not same as(null) %}
+        {% if 'collection' in parent.vars.block_prefixes %}
+            {% set collectionLevel = collectionLevel + 1 %}
+        {% endif %}
+
+        {% set parent = parent.parent %}
+    {% endfor %}
+
+    {% set prefix =  collectionLevel ? "collection-level-#{collectionLevel}" : 'collection' %}
+    {% set attr = {class: "#{class_name(attr.class ?? '')} #{prefix}"} + attr + {'data-component-collection': {prefix: prefix}} %}
 
     {% if restore_order|default(false) %}
         {% set attr = {'data-component-collection': attr['data-component-collection'] + {preserve_names: true}} + attr %}
@@ -11,7 +24,7 @@
 
         {% if entry %}
             {% if entry.vars.compound and not (entry.vars.nonCompoundWrapper ?? false) %}
-                <div class="collection__header">
+                <div class="{{ prefix }}__header">
                     {% for child in entry %}
                         {% set type = child.vars.block_prefixes[child.vars.block_prefixes|length - 2] %}
 
@@ -26,21 +39,21 @@
                         {% endif %}
                     {% endfor %}
 
-                    <span class="collection-actions"></span>
+                    <span class="{{ prefix }}-actions"></span>
                 </div>
             {% endif %}
         {% endif %}
 
         <div
-            class="collection__body"
-            {% if prototype is defined %}data-prototype="{{ collection_entry(prototype)|e('html_attr') }}"{% endif %}
+            class="{{ prefix }}__body"
+            {% if prototype is defined %}data-prototype="{{ collection_entry(prototype, prefix)|e('html_attr') }}"{% endif %}
             {% if prototype is defined %}data-prototype-name="{{ prototype.vars.name }}"{% endif %}
             data-allow-add="{{ allow_add }}"
             data-allow-remove="{{ allow_delete }}"
             data-name-prefix="{{ full_name }}"
         >
             {% for child in form %}
-                {{ collection_entry(child) }}
+                {{ collection_entry(child, prefix) }}
             {% endfor %}
         </div>
 
@@ -48,10 +61,10 @@
     </div>
 {% endblock %}
 
-{% macro collection_entry(form) %}
+{% macro collection_entry(form, prefix = 'collection') %}
     {% set isCompound = form.vars.compound and not (form.vars.nonCompoundWrapper ?? false) %}
 
-    <div {{ isCompound ? form_widget_attributes(form, {attr: {class: "collection__entry #{form.vars.attr.class ?? ''}"}}) : 'class="collection__entry"' }}>
+    <div {{ isCompound ? form_widget_attributes(form, {attr: {class: "#{prefix}__entry #{form.vars.attr.class ?? ''}"}}) : 'class="#{prefix}__entry"' }}>
         {% if isCompound %}
             {% for child in form %}
                 {{ form_row(child) }}
@@ -60,14 +73,14 @@
             {{ form_row(form) }}
         {% endif %}
 
-        <div class="collection-actions">
-            {{ form_block('actions', form) }}
+        <div class="{{ prefix }}-actions">
+            {{ form_block('actions', form, {prefix: prefix}) }}
         </div>
     </div>
 {% endmacro %}
 
 {% block form_actions %}
-    <a href="#" class="collection-remove"></a>
-    <a href="#" class="collection-move"></a>
-    <a href="#" class="collection-add"></a>
+    <a href="#" class="{{ prefix }}-remove"></a>
+    <a href="#" class="{{ prefix }}-move"></a>
+    <a href="#" class="{{ prefix }}-add"></a>
 {% endblock %}
