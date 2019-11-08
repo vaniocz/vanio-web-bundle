@@ -150,7 +150,10 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
                 : $options[$option];
         }
 
-        $formOptions['form_options'] += ['label' => false];
+        $formOptions['form_options'] += [
+            'label' => false,
+            'js_validation' => false,
+        ];
 
         return $formOptions;
     }
