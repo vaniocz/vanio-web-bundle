@@ -93,7 +93,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         } catch (\InvalidArgumentException $e) {}
 
         if (!$form->getConfig()->getCompound()) {
-            if ($this->isEmptyData($form)) {
+            if (!$form->isSubmitted() || $this->isEmptyData($form)) {
                 return $canonicalData;
             }
 
