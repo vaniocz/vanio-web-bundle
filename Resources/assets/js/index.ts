@@ -21,6 +21,7 @@ import '@vanio_web/js/components/Gallery';
 import '@vanio_web/js/components/Location';
 import '@vanio_web/js/components/NativeValidation';
 import '@vanio_web/js/components/PaginatedList';
+import '@vanio_web/js/components/Popover';
 import '@vanio_web/js/components/RangeSlider';
 import '@vanio_web/js/components/Toggle';
 import '@vanio_web/js/components/Tooltip';
