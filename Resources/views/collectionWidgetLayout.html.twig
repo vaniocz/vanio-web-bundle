@@ -64,7 +64,7 @@
 {% macro collection_entry(form, prefix = 'collection') %}
     {% set isCompound = form.vars.compound and not (form.vars.nonCompoundWrapper ?? false) %}
 
-    <div {{ isCompound ? form_widget_attributes(form, {attr: {class: "#{prefix}__entry #{form.vars.attr.class ?? ''}"}}) : 'class="#{prefix}__entry"' }}>
+    <div {{ isCompound ? form_widget_attributes(form, {attr: {class: "#{prefix}__entry #{form.vars.attr.class ?? ''}"}}) : ('class="' ~ prefix ~ '__entry"')|raw }}>
         {% if isCompound %}
             {% for child in form %}
                 {{ form_row(child) }}
