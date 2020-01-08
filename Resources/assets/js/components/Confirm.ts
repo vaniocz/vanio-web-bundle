@@ -76,6 +76,13 @@ export default class Confirm
 
     private onClick(event: JQueryEventObject): void
     {
+        const showEvent = $.Event('show');
+        this.$element.trigger(showEvent);
+
+        if (showEvent.isDefaultPrevented()) {
+            return;
+        }
+
         event.preventDefault();
 
         if (!this.$modal) {
