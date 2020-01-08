@@ -76,7 +76,7 @@ export default class Confirm
 
     private onClick(event: JQueryEventObject): void
     {
-        const showEvent = $.Event('show');
+        const showEvent = $.Event('confirm.show');
         this.$element.trigger(showEvent);
 
         if (showEvent.isDefaultPrevented()) {
@@ -108,7 +108,7 @@ export default class Confirm
 
     private actionConfirmed(confirmed: boolean): void
     {
-        const event = $.Event('confirm');
+        const event = $.Event('confirm.confirm');
         this.$element.trigger(event);
 
         if (event.isDefaultPrevented()) {
