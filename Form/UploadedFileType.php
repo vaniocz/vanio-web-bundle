@@ -128,7 +128,7 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $class = $config->getOption('class');
 
         if (!$multiple = $config->getOption('multiple')) {
-            $data = [$data];
+            $data = $data ? [$data] : null;
         }
 
         foreach ($formData as $fileData) {
