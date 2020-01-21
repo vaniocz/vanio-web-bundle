@@ -126,14 +126,16 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
         $formData = $formData === null ? [] : json_decode($form->getData(), true);
         $files = [];
         $class = $config->getOption('class');
+        $originalData = $data;
 
         if (!$multiple = $config->getOption('multiple')) {
-            $data = $data ? [$data] : null;
+            $data = $data ?: null;
+            $originalData = [$originalData];
         }
 
         foreach ($formData as $fileData) {
             if (isset($fileData['key'])) {
-                $files[$fileData['key']] = $data[$fileData['key']];
+                $files[$fileData['key']] = $originalData[$fileData['key']];
             } elseif (isset($fileData['id'])) {
                 $file = $this->getUploadedFile($fileData['id'])->file();
                 $files[] = new $class($file);
