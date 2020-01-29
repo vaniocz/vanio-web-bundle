@@ -49,6 +49,7 @@ function findPanesByLinks($links: JQuery, parent?: JQuery|HTMLElement): JQuery
 
 function selectSpecificOrFirstInvalidTab($specificTabs: JQuery, $invalidTabs: JQuery): void
 {
+    $invalidTabs = $invalidTabs.add($specificTabs);
     $invalidTabs.each((index: number, invalidTab: HTMLElement) => {
         const $invalidTab = $(invalidTab);
         const $link = $(invalidTab).find('a');
@@ -59,6 +60,7 @@ function selectSpecificOrFirstInvalidTab($specificTabs: JQuery, $invalidTabs: JQ
                 && !$invalidTab.siblings().filter($specificTabs).length
             )
         ) {
+            $invalidTab.addClass(FpJsFormValidator.hasErrorClass);
             $link.click();
         }
     });
@@ -81,6 +83,7 @@ $(() => {
             .${FpJsFormValidator.hasErrorClass}:input,
             .${FpJsFormValidator.hasErrorClass} :input
         `).first();
+
         const $tabsToFocus = findTabsByPanes($invalidFieldToFocus.parents('.tab-pane'));
         const $invalidTabs = findTabsByPanes(findPanesByLinks($(`.nav-tabs li.${FpJsFormValidator.hasErrorClass} a`)));
         selectSpecificOrFirstInvalidTab($tabsToFocus, $invalidTabs);
@@ -97,7 +100,7 @@ $(document.body).on('fp_js_form_validator_validate', (event: JQuery.Event) => {
 
     for (const id of Object.keys(errors)) {
         const $element = $(document.getElementById(id)!);
-        const $field = $element.is(':input') ? $element : $element.find(':input')
+        const $field = $element.is(':input') ? $element : $element.find(':input');
         invalidFields.push($field[0]);
 
         if (!$invalidFieldToFocus.length && $field.is(':focus')) {
