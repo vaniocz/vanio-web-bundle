@@ -6,6 +6,7 @@ import 'photoswipe';
 import 'photoswipe/dist/photoswipe-ui-default';
 import 'jquery-photoswipe/jquery.photoswipe';
 import 'symfony-collection/jquery.collection';
+import '@vanio_web/js/components/AttributeFieldValue';
 import '@vanio_web/js/components/AutoComplete';
 import '@vanio_web/js/components/AutoSize';
 import '@vanio_web/js/components/Collapse';
