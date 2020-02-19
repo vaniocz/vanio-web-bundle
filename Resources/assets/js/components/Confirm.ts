@@ -80,6 +80,7 @@ export default class Confirm
         this.$element.trigger(showEvent);
 
         if (showEvent.isDefaultPrevented()) {
+            this.actionConfirmed();
             return;
         }
 
@@ -106,7 +107,7 @@ export default class Confirm
         return $modal;
     }
 
-    private actionConfirmed(confirmed: boolean): void
+    private actionConfirmed(): void
     {
         const event = $.Event('confirm.confirm');
         this.$element.trigger(event);
