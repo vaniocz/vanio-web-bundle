@@ -117,7 +117,7 @@ export default class Confirm
         }
 
         if (this.$element.is(':submit')) {
-            this.$element.closest('form').submit();
+            this.$element.click();
         }
 
         const link = this.$element.attr('href');
