@@ -80,6 +80,7 @@ export default class Confirm
         this.$element.trigger(showEvent);
 
         if (showEvent.isDefaultPrevented()) {
+            this.actionConfirmed();
             return;
         }
 
@@ -106,7 +107,7 @@ export default class Confirm
         return $modal;
     }
 
-    private actionConfirmed(confirmed: boolean): void
+    private actionConfirmed(): void
     {
         const event = $.Event('confirm.confirm');
         this.$element.trigger(event);
@@ -116,7 +117,7 @@ export default class Confirm
         }
 
         if (this.$element.is(':submit')) {
-            this.$element.closest('form').submit();
+            this.$element.click();
         }
 
         const link = this.$element.attr('href');
