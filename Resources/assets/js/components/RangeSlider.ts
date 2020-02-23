@@ -1,5 +1,6 @@
 import {component} from 'jquery-ts-components';
 import noUiSlider from 'nouislider';
+import 'nouislider/distribute/nouislider.css';
 
 function isInteger(value: any): boolean
 {
