@@ -32,7 +32,7 @@ class NameMappingExtension extends AbstractTypeExtension
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['name_mapping'] || is_string($options['name_translation_domain'])) {
-            // Cannot s1et requestHandler directly, it would be overridden
+            // Cannot set request handler directly, it would be overridden
             $builder->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData']);
         }
     }
