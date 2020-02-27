@@ -41,9 +41,8 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         }
 
         $nameMapping = NameMappingExtension::resolveNameMapping($form);
-        $translationDomain = $form->getConfig()->getOption('name_translation_domain');
-        $transformedData = $this->transformData($form, $data, $nameMapping, $translationDomain);
         $transformedName = $nameMapping[''] ?? null;
+        $translationDomain = $form->getConfig()->getOption('name_translation_domain');
 
         if (is_string($translationDomain) && $transformedName !== '') {
             $translationId = $transformedName ?? NameMappingExtension::resolveTranslationId($form);
@@ -51,13 +50,18 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         }
 
         if ($transformedName === null) {
-            $transformedName = $child->getName();
+            $transformedName = $form->getName();
         }
 
-        if ($transformedName === '') {
+        $transformedData = $this->transformData(
+            $form,
+            $transformedName === '' ? $data : $data[$transformedName],
+            $nameMapping,
+            $translationDomain
+        );
+
+        if ($transformedData) {
             $form->submit($transformedData);
-        } elseif (isset($transformedData[$transformedName])) {
-            $form->submit($transformedData[$transformedName]);
         }
     }
 
@@ -83,6 +87,8 @@ class NameMappingRequestHandler implements RequestHandlerInterface
             return $data;
         }
 
+        $formConfig = $form->getConfig();
+        $type = $formConfig->getType();
         $transformedData = [];
 
         foreach ($form as $name => $child) {
@@ -111,6 +117,8 @@ class NameMappingRequestHandler implements RequestHandlerInterface
                     $childNameMapping,
                     $childTranslationDomain
                 );
+            } elseif (!is_array($data)) {
+                return $data;
             } elseif (array_key_exists($transformedName, $data)) {
                 $transformedData[$name] = $this->transformData(
                     $child,
