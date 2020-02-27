@@ -3,6 +3,7 @@ namespace Vanio\WebBundle\Form;
 
 use Assert\Assert;
 use Assert\Assertion;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\RequestHandlerInterface;
 use Symfony\Component\HttpFoundation\File;
@@ -41,9 +42,8 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         }
 
         $nameMapping = NameMappingExtension::resolveNameMapping($form);
-        $translationDomain = $form->getConfig()->getOption('name_translation_domain');
-        $transformedData = $this->transformData($form, $data, $nameMapping, $translationDomain);
         $transformedName = $nameMapping[''] ?? null;
+        $translationDomain = $form->getConfig()->getOption('name_translation_domain');
 
         if (is_string($translationDomain) && $transformedName !== '') {
             $translationId = $transformedName ?? NameMappingExtension::resolveTranslationId($form);
@@ -51,14 +51,26 @@ class NameMappingRequestHandler implements RequestHandlerInterface
         }
 
         if ($transformedName === null) {
-            $transformedName = $child->getName();
+            $transformedName = $form->getName();
         }
 
-        if ($transformedName === '') {
-            $form->submit($transformedData);
-        } elseif (isset($transformedData[$transformedName])) {
-            $form->submit($transformedData[$transformedName]);
-        }
+        $transformedData = $this->transformData($form, $transformedName === '' ? $data : $data[$transformedName], $nameMapping, $translationDomain);
+
+        if ($form->getRoot()->getName() === 'product_detail')
+//            die(var_dump($transformedData));
+//            die('konec');
+        $form->submit($transformedData);
+
+//        if ($form->getRoot()->getName() === 'product_detail')
+//            die(var_dump($transformedData[$transformedName]));
+//            die('konec');
+
+
+//        if ($transformedName === '') {
+//            $form->submit($transformedData);
+//        } elseif (isset($transformedData[$transformedName])) {
+//            $form->submit($transformedData[$transformedName]);
+//        }
     }
 
     /**
@@ -83,6 +95,17 @@ class NameMappingRequestHandler implements RequestHandlerInterface
             return $data;
         }
 
+        $formConfig = $form->getConfig();
+        $type = $formConfig->getType();
+
+        do {
+            if ($type->getInnerType() instanceof ChoiceType) {
+                if ($formConfig->getOption('expanded') && !$formConfig->getOption('multiple')) {
+                    return $data;
+                }
+            }
+        } while ($type = $type->getParent());
+
         $transformedData = [];
 
         foreach ($form as $name => $child) {
@@ -104,6 +127,12 @@ class NameMappingRequestHandler implements RequestHandlerInterface
                 $transformedName = $child->getName();
             }
 
+            if (is_string($data) && $transformedName !== '') {
+//                die(var_dump($data, $form->getName(), $form->getParent()->getName(), $transformedName));
+            }
+
+//            if ($form->getRoot()->getName() === 'product_detail') {}
+//                var_dump($name, '|', $transformedName);
             if ($transformedName === '') {
                 $transformedData[$name] = $this->transformData(
                     $child,
@@ -112,12 +141,24 @@ class NameMappingRequestHandler implements RequestHandlerInterface
                     $childTranslationDomain
                 );
             } elseif (array_key_exists($transformedName, $data)) {
+//                var_dump($name, 'added');
+
+//                if ($child->)
                 $transformedData[$name] = $this->transformData(
                     $child,
                     $data[$transformedName],
                     $childNameMapping,
                     $childTranslationDomain
                 );
+            } else/*if ($form->getRoot()->getName() === 'product_detail' && !in_array($transformedName, ['description', 'main_image', 'other_images', 'author', 'publisher', 'release_year', 'isbn', 'external_id', 'level']))*/ {
+//    if ($form->getRoot()->getName() === 'product_detail' && !in_array($name, ['description', 'main_image', 'other_images', 'author', 'publisher', 'release_year', 'isbn', 'external_id', 'level'])) {
+//    if ($form->getRoot()->getName() === 'product_detail' /*&& $transformedName === 'description'*/) {
+//        die(var_dump($data, 'p[yco', $transformedName, $form->count()));
+//    }
+//                }
+//                var_dump($data);
+//                $transformedData[$name] = $data;
+//                die(var_dump('CHYBA', $data, $transformedName, $form->getConfig()->getType()->getInnerType()->getBlockPrefix(), $transformedData));
             }
         }
 
