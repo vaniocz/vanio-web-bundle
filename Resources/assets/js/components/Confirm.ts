@@ -45,6 +45,7 @@ export default class Confirm
     private $element: JQuery;
     private options: ConfirmOptions;
     private $modal?: JQuery;
+    private isConfirmed: boolean;
 
     public constructor(element: JQuery|HTMLElement|string, options: ConfirmOptions|string)
     {
@@ -72,10 +73,15 @@ export default class Confirm
         );
         this.options.show = false;
         this.$element.on('click', this.onClick.bind(this));
+        this.isConfirmed = false;
     }
 
     private onClick(event: JQueryEventObject): void
     {
+        if (this.isConfirmed) {
+            return;
+        }
+
         const showEvent = $.Event('confirm.show');
         this.$element.trigger(showEvent);
 
@@ -115,6 +121,8 @@ export default class Confirm
         if (event.isDefaultPrevented()) {
             return;
         }
+
+        this.isConfirmed = true;
 
         if (this.$element.is(':submit')) {
             this.$element.click();
