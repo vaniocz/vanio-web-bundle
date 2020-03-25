@@ -79,6 +79,7 @@ export default class Confirm
     private onClick(event: JQueryEventObject): void
     {
         if (this.isConfirmed) {
+            this.isConfirmed = false;
             return;
         }
 
