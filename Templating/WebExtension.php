@@ -386,7 +386,10 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         if (!isset($imageDimensions[$path])) {
-            @$imageDimensions[$path] = getimagesize($path) ?: [0, 0];
+            $normalizedPath = Strings::startsWith($path, '//')
+                ? sprintf('%s:%s', $this->requestStack->getMasterRequest()->getScheme(), $path)
+                : $path;
+            @$imageDimensions[$path] = getimagesize($normalizedPath) ?: [0, 0];
             list($imageDimensions[$path]['width'], $imageDimensions[$path]['height']) = $imageDimensions[$path];
         }
 
