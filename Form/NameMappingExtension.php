@@ -2,6 +2,7 @@
 namespace Vanio\WebBundle\Form;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormConfigBuilder;
@@ -96,9 +97,12 @@ class NameMappingExtension extends AbstractTypeExtension
             ->setAllowedTypes('name_translation_domain', ['string', 'false', 'null']);
     }
 
-    public function getExtendedType(): string
+    /**
+     * @return string[]
+     */
+    public static function getExtendedTypes(): array
     {
-        return FormType::class;
+        return [FormType::class, ButtonType::class];
     }
 
     /**
