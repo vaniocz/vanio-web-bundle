@@ -29,7 +29,7 @@
     "dropzone": "^5.5.1",
     "jquery": "^3.3.1",
     "jquery-photoswipe": "^1.0.3",
-    "jquery-ts-components": "^0.1.8",
+    "jquery-ts-components": "^0.1.13",
     "nouislider": "^14.1.1",
     "photoswipe": "^4.1.2",
     "symfony-collection": "github:maryo/symfony-collection"
