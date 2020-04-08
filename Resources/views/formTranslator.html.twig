@@ -14,7 +14,7 @@
     {% endif -%}
 {% endmacro %}
 
-{% macro translate_recursive(id, translationDomain = null, path = null, preferFallback = false) -%}
+{% macro translate_recursive(id, translationDomain = null, path = null, preferFallback = false, rawOutput = false) -%}
     {% import _self as self -%}
 
     {% set path = path ?? id|split('.') -%}
@@ -23,16 +23,21 @@
     {% for pathLength in 0..(path|length) if not shouldStop -%}
         {% set currentPath = path|slice(pathLength) -%}
         {% set currentId = currentPath|join('.') -%}
+        {% set output = null %}
 
         {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
-            {{ currentId|trans({}, translationDomain) -}}
+            {% set output = currentId|trans({}, translationDomain) %}
             {% set shouldStop = true -%}
         {% elseif pathLength + 1 == path|length %}
             {% if preferFallback %}
-                {{ currentId -}}
+                {% set output = currentId %}
             {% else %}
-                {{ self.translate_recursive(id, translationDomain, null, true) -}}
+                {% set output = self.translate_recursive(id, translationDomain, null, true, rawOutput) %}
             {% endif %}
+        {% endif -%}
+
+        {% if output %}
+            {% if rawOutput %}{{- output|raw -}}{% else %}{{- output -}}{% endif %}
         {% endif -%}
     {% endfor %}
 {% endmacro %}
