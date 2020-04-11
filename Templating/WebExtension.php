@@ -410,6 +410,8 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             throw new \LogicException('LiipImagineBundle is not installed.');
         }
 
+        $path = parse_url($path, PHP_URL_PATH);
+
         return $this->imageDimensions(
             $this->cacheManager->getBrowserPath($path, $filter, $runtimeConfig, $resolver),
             $this->cacheManager->generateUrl($path, $filter, $runtimeConfig, $resolver)
