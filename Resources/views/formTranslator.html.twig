@@ -23,23 +23,21 @@
     {% for pathLength in 0..(path|length) if not shouldStop -%}
         {% set currentPath = path|slice(pathLength) -%}
         {% set currentId = currentPath|join('.') -%}
-        {% set output = null %}
+        {% set output = null -%}
 
         {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
-            {% set output = currentId|trans({}, translationDomain) %}
+            {% set output = currentId|trans({}, translationDomain) -%}
             {% set shouldStop = true -%}
-        {% elseif pathLength + 1 == path|length %}
-            {% if preferFallback %}
-                {% set output = currentId %}
-            {% else %}
-                {% set output = self.translate_recursive(id, translationDomain, null, true, rawOutput) %}
-            {% endif %}
+        {% elseif pathLength + 1 == path|length -%}
+            {% if preferFallback -%}
+                {% set output = currentId -%}
+            {% else -%}
+                {% set output = self.translate_recursive(id, translationDomain, null, true, rawOutput) -%}
+            {% endif -%}
         {% endif -%}
 
-        {% if output %}
-            {% if rawOutput %}{{- output|raw -}}{% else %}{{- output -}}{% endif %}
-        {% endif -%}
-    {% endfor %}
+        {{ rawOutput ? output|raw : output -}}
+    {% endfor -%}
 {% endmacro %}
 
 {% macro form_path(form, currentPath = null, maxPathLength = 50) -%}
