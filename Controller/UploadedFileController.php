@@ -51,7 +51,7 @@ class UploadedFileController extends Controller
 
         return $uploadedFile->file()->metaData()['mimeType'] === 'image/svg+xml'
             ? $path
-            : $this->cacheManager()->getBrowserPath($path, $thumbnailFilter);
+            : $this->cacheManager()->getBrowserPath(parse_url($path, PHP_URL_PATH), $thumbnailFilter);
     }
 
     private function uploadedFileRepository(): EntityRepository
