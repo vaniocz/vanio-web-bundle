@@ -130,6 +130,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
             new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
+            new \Twig_SimpleFunction('file_exists', [$this, 'fileExists']),
             new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
             new \Twig_SimpleFunction('form_block', null, [
                 'node_class' => SearchAndRenderBlockNode::class,
@@ -295,6 +296,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         } catch (ExceptionInterface $e) {}
 
         return true;
+    }
+
+    public function fileExists(string $filename): bool
+    {
+        return is_file($filename);
     }
 
     public function formDefaultTheme(string $theme)
