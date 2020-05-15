@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Twig\Environment;
 use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
@@ -150,6 +151,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             new \Twig_SimpleFunction('entity', [$this, 'entity']),
             new \Twig_SimpleFunction('entities', [$this, 'entities']),
             new \Twig_SimpleFunction('form_path', [$this, 'formPath']),
+            new \Twig_SimpleFunction('source_path', [$this, 'sourcePath'], ['needs_environment' => true]),
         ];
     }
 
@@ -654,6 +656,11 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         }
 
         return Uri::encodeQuery($this->resolveFormData($root, $view), true);
+    }
+
+    public function sourcePath(\Twig_Environment $environment, string $name): string
+    {
+        return $environment->getLoader()->getSourceContext($name)->getPath();
     }
 
     private function resolveFormData(FormView $view, FormView $currentView, array $data = []): array
