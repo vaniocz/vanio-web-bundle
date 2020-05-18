@@ -10,6 +10,12 @@ interface FpJsFormValidator
     getValueLength(value: any): number;
 }
 
+interface FpJsValidateEventDetail
+{
+    element: FpJsFormElement;
+    errors: {[id: string]: FpJsFormError|{[id: string]: FpJsFormError}};
+}
+
 declare class FpJsFormElement
 {
     domNode: HTMLInputElement;
@@ -18,6 +24,7 @@ declare class FpJsFormElement
     get(path: string): FpJsFormElement;
     getData(): any;
     getValue(): any;
+    isValid(): boolean;
     onValidate(this: HTMLElement, errors: Object, event: Event): void
 }
 
