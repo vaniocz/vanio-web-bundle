@@ -130,7 +130,10 @@ class FormChoiceType extends AbstractType implements DataMapperInterface
         $formOptions = $this->resolveFormOptions($options, $event->getForm()->getData());
         $form->add($formOptions['form_name'], $formOptions['form_type'], $formOptions['form_options']);
 
-        if ($form->get($options['choice_name'])->getData() === call_user_func($options['choice_data'], $form->getData())) {
+        if (
+            $form->getData() !== null
+            && $form->get($options['choice_name'])->getData() === call_user_func($options['choice_data'], $form->getData())
+        ) {
             $form->get($formOptions['form_name'])->setData($form->getData());
         }
     }
