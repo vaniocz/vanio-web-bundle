@@ -279,12 +279,14 @@ export class AutoComplete
 
     private formatResult(suggestion: AutoCompleteSuggestion, search: string): string
     {
+        search = search.trim();
+
         if (suggestion.html != null) {
             const $html = $(`<span>${suggestion.html}</span>`);
             const htmlSuggestionSelector = this.options.htmlSuggestionSelector || '.suggestion-value';
             $html.find(htmlSuggestionSelector).each((index: number, valueElement: HTMLElement) => {
                 const valueSuggestion = {
-                    value: valueElement.innerHTML,
+                    value: valueElement.innerText,
                     viewValue: suggestion.viewValue,
                     data: suggestion.data,
                 };
@@ -309,11 +311,13 @@ export class AutoComplete
             html += (i++ % 2) ? `<strong>${value}</strong>` : value;
         }
 
+        // htmlspecialchars except added strong tags
         return html
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
             .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     }
 
