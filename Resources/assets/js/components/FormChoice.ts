@@ -12,8 +12,10 @@ export default class FormChoice
     public constructor(element: JQuery|HTMLElement|string)
     {
         this.$element = $(element);
-        this.$choice = this.$element.find('.form-choice__choice');
-        this.$form = this.$element.find('.form-choice__form');
+        this.$choice = this.$element.find('.form-choice__choice')
+            .not(this.$element.find('[data-component-form-choice] .form-choice__choice'));
+        this.$form = this.$element.find('.form-choice__form')
+            .not(this.$element.find('[data-component-form-choice] .form-choice__form'));
         this.$choice.change(this.switchForm.bind(this));
         this.choiceValue = this.$choice.val() as string;
         this.switchForm();
