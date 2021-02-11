@@ -10,10 +10,10 @@
     ],
     "require": {
         "php": "^7.1",
-        "symfony/security-bundle": "^3.0 || ^4.0",
-        "symfony/translation": "^3.0 || ^4.0",
-        "symfony/form": "^3.0 || ^4.0",
-        "symfony/twig-bridge": "^3.0 || ^4.0",
+        "symfony/security-bundle": "^3.0 || ^4.0 || ^5.0",
+        "symfony/translation": "^3.0 || ^4.0 || ^5.0",
+        "symfony/form": "^3.0 || ^4.0 || ^5.0",
+        "symfony/twig-bridge": "^3.0 || ^4.0 || ^5.0",
         "sensio/framework-extra-bundle": "^3.0 || ^4.0 || ^5.0",
         "twig/twig": "^1.24.1 || ^2.0",
         "vanio/stdlib": "~0.1",
@@ -24,7 +24,7 @@
         "phpunit/phpunit": "^5.5",
         "matthiasnoback/symfony-dependency-injection-test": "^1.0",
         "vanio/coding-standards": "^0.1",
-        "vanio/vanio-domain-bundle": "^0.5"
+        "vanio/vanio-domain-bundle": "dev-sf5"
     },
     "autoload": {
         "psr-4": {"Vanio\\WebBundle\\": ""},
