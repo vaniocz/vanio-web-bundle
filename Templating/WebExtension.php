@@ -1,8 +1,8 @@
 <?php
 namespace Vanio\WebBundle\Templating;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Cache\FilesystemCache;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Form\FormError;
@@ -13,8 +13,14 @@ use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\EscaperExtension;
+use Twig\Extension\GlobalsInterface;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
+use Twig\TwigTest;
 use Vanio\Stdlib\Arrays;
 use Vanio\Stdlib\Strings;
 use Vanio\Stdlib\Uri;
@@ -22,7 +28,7 @@ use Vanio\WebBundle\Request\RouteHierarchyResolver;
 use Vanio\WebBundle\Request\TargetPathResolver;
 use Vanio\WebBundle\Serializer\Serializer;
 
-class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class WebExtension extends AbstractExtension implements GlobalsInterface
 {
     /** @var TranslatorInterface */
     private $translator;
@@ -48,7 +54,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     /** @var Serializer */
     private $serializer;
 
-    /** @var ManagerRegistry */
+    /** @var Registry */
     private $doctrine;
 
     /** @var CacheManager|null */
@@ -90,7 +96,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         RouteHierarchyResolver $routeHierarchyResolver,
         ResponseContext $responseContext,
         Serializer $serializer,
-        ManagerRegistry $doctrine,
+        Registry $doctrine,
         CacheManager $cacheManager = null,
         string $webRoot,
         string $imageDimensionsCacheDirectory,
@@ -114,81 +120,81 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     }
 
     /**
-     * @return \Twig_SimpleFunction[]
+     * @return TwigFunction[]
      */
     public function getFunctions(): array
     {
         return [
-            new \Twig_SimpleFunction('sum', [$this, 'sum']),
-            new \Twig_SimpleFunction('class_name', [$this, 'className']),
-            new \Twig_SimpleFunction('attributes', [$this, 'attributes'], [
+            new TwigFunction('sum', [$this, 'sum']),
+            new TwigFunction('class_name', [$this, 'className']),
+            new TwigFunction('attributes', [$this, 'attributes'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
-            new \Twig_SimpleFunction('web_path', [$this, 'webPath']),
-            new \Twig_SimpleFunction('require_js', [$this, 'requireJs']),
-            new \Twig_SimpleFunction('require_js_once', [$this, 'requireJsOnce']),
-            new \Twig_SimpleFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('is_translated', [$this, 'isTranslated']),
-            new \Twig_SimpleFunction('route_exists', [$this, 'routeExists']),
-            new \Twig_SimpleFunction('file_exists', [$this, 'fileExists']),
-            new \Twig_SimpleFunction('form_default_theme', [$this, 'formDefaultTheme']),
-            new \Twig_SimpleFunction('form_block', null, [
+            new TwigFunction('web_path', [$this, 'webPath']),
+            new TwigFunction('require_js', [$this, 'requireJs']),
+            new TwigFunction('require_js_once', [$this, 'requireJsOnce']),
+            new TwigFunction('render_js', [$this, 'renderJs'], ['is_safe' => ['html']]),
+            new TwigFunction('is_translated', [$this, 'isTranslated']),
+            new TwigFunction('route_exists', [$this, 'routeExists']),
+            new TwigFunction('file_exists', [$this, 'fileExists']),
+            new TwigFunction('form_default_theme', [$this, 'formDefaultTheme']),
+            new TwigFunction('form_block', null, [
                 'node_class' => SearchAndRenderBlockNode::class,
                 'is_safe' => ['html'],
             ]),
-            new \Twig_SimpleFunction('form_widget_attributes', [$this, 'formWidgetAttributes'], [
+            new TwigFunction('form_widget_attributes', [$this, 'formWidgetAttributes'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
-            new \Twig_SimpleFunction('form_error_messages', [$this, 'formErrorMessages']),
-            new \Twig_SimpleFunction('referer', [$this, 'referer']),
-            new \Twig_SimpleFunction('is_current', [$this, 'isCurrent']),
-            new \Twig_SimpleFunction('breadcrumbs', [$this, 'breadcrumbs']),
-            new \Twig_SimpleFunction('image_dimensions', [$this, 'imageDimensions']),
-            new \Twig_SimpleFunction('imagine_dimensions', [$this, 'imagineDimensions']),
-            new \Twig_SimpleFunction('response_status', [$this, 'responseStatus']),
-            new \Twig_SimpleFunction('entity', [$this, 'entity']),
-            new \Twig_SimpleFunction('entities', [$this, 'entities']),
-            new \Twig_SimpleFunction('form_path', [$this, 'formPath']),
-            new \Twig_SimpleFunction('source_path', [$this, 'sourcePath'], ['needs_environment' => true]),
+            new TwigFunction('form_error_messages', [$this, 'formErrorMessages']),
+            new TwigFunction('referer', [$this, 'referer']),
+            new TwigFunction('is_current', [$this, 'isCurrent']),
+            new TwigFunction('breadcrumbs', [$this, 'breadcrumbs']),
+            new TwigFunction('image_dimensions', [$this, 'imageDimensions']),
+            new TwigFunction('imagine_dimensions', [$this, 'imagineDimensions']),
+            new TwigFunction('response_status', [$this, 'responseStatus']),
+            new TwigFunction('entity', [$this, 'entity']),
+            new TwigFunction('entities', [$this, 'entities']),
+            new TwigFunction('form_path', [$this, 'formPath']),
+            new TwigFunction('source_path', [$this, 'sourcePath'], ['needs_environment' => true]),
         ];
     }
 
     /**
-     * @return \Twig_SimpleFilter[]
+     * @return TwigFilter[]
      */
     public function getFilters(): array
     {
         return [
-            new \Twig_SimpleFilter('trans', [$this, 'trans']),
-            new \Twig_SimpleFilter('without', [$this, 'without']),
-            new \Twig_SimpleFilter('without_keys', [$this, 'withoutKeys']),
-            new \Twig_SimpleFilter('without_empty', [$this, 'withoutEmpty']),
-            new \Twig_SimpleFilter('intersect', 'array_intersect'),
-            new \Twig_SimpleFilter('group_by', [$this, 'groupBy']),
-            new \Twig_SimpleFilter('regexp_replace', [$this, 'regexpReplace']),
-            new \Twig_SimpleFilter('regexp_split', [$this, 'regexpSplit']),
-            new \Twig_SimpleFilter('html_to_text', [$this, 'htmlToText']),
-            new \Twig_SimpleFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
-            new \Twig_SimpleFilter('basename', [$this, 'basename']),
-            new \Twig_SimpleFilter('filename', [$this, 'filename']),
-            new \Twig_SimpleFilter('extension', [$this, 'extension']),
-            new \Twig_SimpleFilter('human_file_size', [$this, 'humanFileSize']),
-            new \Twig_SimpleFilter('serialize', [$this, 'serialize']),
-            new \Twig_SimpleFilter('with_appended_query', [$this, 'withAppendedQuery']),
+            new TwigFilter('trans', [$this, 'trans']),
+            new TwigFilter('without', [$this, 'without']),
+            new TwigFilter('without_keys', [$this, 'withoutKeys']),
+            new TwigFilter('without_empty', [$this, 'withoutEmpty']),
+            new TwigFilter('intersect', 'array_intersect'),
+            new TwigFilter('group_by', [$this, 'groupBy']),
+            new TwigFilter('regexp_replace', [$this, 'regexpReplace']),
+            new TwigFilter('regexp_split', [$this, 'regexpSplit']),
+            new TwigFilter('html_to_text', [$this, 'htmlToText']),
+            new TwigFilter('evaluate', [$this, 'evaluate'], ['needs_environment' => true]),
+            new TwigFilter('basename', [$this, 'basename']),
+            new TwigFilter('filename', [$this, 'filename']),
+            new TwigFilter('extension', [$this, 'extension']),
+            new TwigFilter('human_file_size', [$this, 'humanFileSize']),
+            new TwigFilter('serialize', [$this, 'serialize']),
+            new TwigFilter('with_appended_query', [$this, 'withAppendedQuery']),
         ];
     }
 
     /**
-     * @return \Twig_SimpleFunction[]
+     * @return TwigTest[]
      */
     public function getTests(): array
     {
         return [
-            new \Twig_SimpleTest('instance of', [$this, 'isInstanceOf']),
-            new \Twig_SimpleTest('integer', 'is_int'),
-            new \Twig_SimpleTest('float', 'is_float'),
+            new TwigTest('instance of', [$this, 'isInstanceOf']),
+            new TwigTest('integer', 'is_int'),
+            new TwigTest('float', 'is_float'),
         ];
     }
 
@@ -221,7 +227,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
             : $classes;
     }
 
-    public function attributes(\Twig_Environment $environment, array $attributes): string
+    public function attributes(Environment $environment, array $attributes): string
     {
         $html = '';
 
@@ -316,7 +322,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
     }
 
     public function formWidgetAttributes(
-        \Twig_Environment $environment,
+        Environment $environment,
         FormView $formView,
         array $variables = []
     ): string {
@@ -567,14 +573,14 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return (new Html2Text($html, $options))->getText();
     }
 
-    public function evaluate(\Twig_Environment $environment, string $template, array $context = []): string
+    public function evaluate(Environment $environment, string $template, array $context = []): string
     {
         if (!Strings::contains($template, ['{{', '{%', '{#'])) {
             return $template;
         }
 
-        /** @var \Twig_Extension_Escaper $escaper */
-        $escaper = $environment->getExtension(\Twig_Extension_Escaper::class);
+        /** @var EscaperExtension $escaper */
+        $escaper = $environment->getExtension(EscaperExtension::class);
         $defaultStrategy = $escaper->getDefaultStrategy($template);
         $escaper->setDefaultStrategy(false);
         $content = $environment->createTemplate($template)->render($context);
@@ -658,7 +664,7 @@ class WebExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         return Uri::encodeQuery($this->resolveFormData($root, $view), true);
     }
 
-    public function sourcePath(\Twig_Environment $environment, string $name): string
+    public function sourcePath(Environment $environment, string $name): string
     {
         return $environment->getLoader()->getSourceContext($name)->getPath();
     }

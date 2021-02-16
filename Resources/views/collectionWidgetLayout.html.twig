@@ -4,12 +4,14 @@
     {% set parent = form.parent %}
     {% set collectionLevel = 0 %}
 
-    {% for i in range(1, 50) if parent is not same as(null) %}
-        {% if 'collection' in parent.vars.block_prefixes %}
-            {% set collectionLevel = collectionLevel + 1 %}
-        {% endif %}
+    {% for i in range(1, 50) %}
+        {% if parent is not same as(null) %}
+            {% if 'collection' in parent.vars.block_prefixes %}
+                {% set collectionLevel = collectionLevel + 1 %}
+            {% endif %}
 
-        {% set parent = parent.parent %}
+            {% set parent = parent.parent %}
+        {% endif %}
     {% endfor %}
 
     {% set prefix =  collectionLevel ? "collection-level-#{collectionLevel}" : 'collection' %}

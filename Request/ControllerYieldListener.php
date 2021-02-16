@@ -4,11 +4,11 @@ namespace Vanio\WebBundle\Request;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Vanio\WebBundle\Translation\FlashMessage;
 
 class ControllerYieldListener implements EventSubscriberInterface
@@ -43,7 +43,7 @@ class ControllerYieldListener implements EventSubscriberInterface
     /**
      * @internal
      */
-    public function onKernelView(GetResponseForControllerResultEvent $event): void
+    public function onKernelView(ViewEvent $event): void
     {
         $controllerResult = $event->getControllerResult();
 
@@ -69,7 +69,7 @@ class ControllerYieldListener implements EventSubscriberInterface
     /**
      * @internal
      */
-    public function onKernelRequest(GetResponseEvent $event): void
+    public function onKernelRequest(RequestEvent $event): void
     {
         $this->headers = [];
     }
@@ -77,7 +77,7 @@ class ControllerYieldListener implements EventSubscriberInterface
     /**
      * @internal
      */
-    public function onKernelResponse(FilterResponseEvent $event): void
+    public function onKernelResponse(ResponseEvent $event): void
     {
         $event->getResponse()->headers->add($this->headers);
     }

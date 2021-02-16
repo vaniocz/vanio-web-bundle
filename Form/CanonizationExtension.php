@@ -12,8 +12,8 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vanio\DomainBundle\UnexpectedResponse\UnexpectedResponseException;
@@ -132,6 +132,11 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
         return FormType::class;
     }
 
+    public static function getExtendedTypes(): iterable
+    {
+        return [FormType::class];
+    }
+
     /**
      * @return mixed[]
      */
@@ -164,7 +169,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
     /**
      * @internal
      */
-    public function onKernelRequest(GetResponseEvent $event): void
+    public function onKernelRequest(RequestEvent $event): void
     {
         $this->currentRequest = $event->getRequest();
         $this->headers = [];
@@ -173,7 +178,7 @@ class CanonizationExtension extends AbstractTypeExtension implements EventSubscr
     /**
      * @internal
      */
-    public function onKernelResponse(FilterResponseEvent $event): void
+    public function onKernelResponse(ResponseEvent $event): void
     {
         $event->getResponse()->headers->add($this->headers);
     }

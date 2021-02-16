@@ -20,35 +20,39 @@
     {% set path = path ?? id|split('.') -%}
     {% set shouldStop = false -%}
 
-    {% for pathLength in 0..(path|length) if not shouldStop -%}
-        {% set currentPath = path|slice(pathLength) -%}
-        {% set currentId = currentPath|join('.') -%}
-        {% set output = null -%}
+    {% for pathLength in 0..(path|length) -%}
+        {% if not shouldStop -%}
+            {% set currentPath = path|slice(pathLength) -%}
+            {% set currentId = currentPath|join('.') -%}
+            {% set output = null -%}
 
-        {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
-            {% set output = currentId|trans({}, translationDomain) -%}
-            {% set shouldStop = true -%}
-        {% elseif pathLength + 1 == path|length -%}
-            {% if preferFallback -%}
-                {% set output = currentId -%}
-            {% else -%}
-                {% set output = self.translate_recursive(id, translationDomain, null, true, rawOutput) -%}
+            {% if is_translated(currentId, translationDomain, null, preferFallback) -%}
+                {% set output = currentId|trans({}, translationDomain) -%}
+                {% set shouldStop = true -%}
+            {% elseif pathLength + 1 == path|length -%}
+                {% if preferFallback -%}
+                    {% set output = currentId -%}
+                {% else -%}
+                    {% set output = self.translate_recursive(id, translationDomain, null, true, rawOutput) -%}
+                {% endif -%}
             {% endif -%}
-        {% endif -%}
 
-        {{ rawOutput ? output|raw : output -}}
+            {{ rawOutput ? output|raw : output -}}
+        {% endif -%}
     {% endfor -%}
 {% endmacro %}
 
 {% macro form_path(form, currentPath = null, maxPathLength = 50) -%}
     {% import _self as self -%}
 
-    {% for i in range(1, maxPathLength) if form is not same as(null) -%}
-        {% if 'collection' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translations' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translationsForms' not in form.parent.vars.block_prefixes ?? [] -%}
-            {% set currentPath = currentPath is same as(null) ? form.vars.name : "#{form.vars.name}.#{currentPath}" -%}
-        {% endif -%}
+    {% for i in range(1, maxPathLength) -%}
+        {% if form is not same as(null) -%}
+            {% if 'collection' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translations' not in form.parent.vars.block_prefixes ?? [] and 'a2lix_translationsForms' not in form.parent.vars.block_prefixes ?? [] -%}
+                {% set currentPath = currentPath is same as(null) ? form.vars.name : "#{form.vars.name}.#{currentPath}" -%}
+            {% endif -%}
 
-        {%- set form = form.parent ?? null -%}
+            {%- set form = form.parent ?? null -%}
+        {% endif -%}
     {% endfor -%}
 
     {{ currentPath -}}
