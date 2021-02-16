@@ -1,15 +1,17 @@
 <?php
 namespace Vanio\WebBundle\Routing;
 
+use Symfony\Bundle\FrameworkBundle\Routing\Router as SymfonyRouter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use Vanio\Stdlib\Strings;
 
-class Router implements RouterInterface, RequestMatcherInterface
+class Router implements RouterInterface, RequestMatcherInterface, WarmableInterface
 {
     /** @var RouterInterface */
     private $router;
@@ -81,6 +83,11 @@ class Router implements RouterInterface, RequestMatcherInterface
     public function getContext(): RequestContext
     {
         return $this->router->getContext();
+    }
+
+    public function warmUp(string $cacheDir)
+    {
+        return $this->router instanceof SymfonyRouter ? $this->router->warmUp($cacheDir) : [];
     }
 
     private function isRouteInList(string $name, array $routesList): bool
