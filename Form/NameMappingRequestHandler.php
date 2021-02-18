@@ -8,7 +8,7 @@ use Symfony\Component\Form\RequestHandlerInterface;
 use Symfony\Component\HttpFoundation\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorBagInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NameMappingRequestHandler implements RequestHandlerInterface
 {

@@ -5,9 +5,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Vanio\Stdlib\Strings;
@@ -55,7 +55,7 @@ class MultilingualListener implements EventSubscriberInterface
         $this->localePrefixes = $localePrefixes;
     }
 
-    public function onRequest(GetResponseEvent $event)
+    public function onRequest(RequestEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
@@ -82,7 +82,7 @@ class MultilingualListener implements EventSubscriberInterface
         }
     }
 
-    public function onResponse(FilterResponseEvent $event)
+    public function onResponse(ResponseEvent $event)
     {
         if (
             $event->getRequestType() !== KernelInterface::MASTER_REQUEST
@@ -98,7 +98,7 @@ class MultilingualListener implements EventSubscriberInterface
         }
     }
 
-    public function onException(GetResponseForExceptionEvent $event)
+    public function onException(ExceptionEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;

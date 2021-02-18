@@ -174,7 +174,7 @@ class JsFormValidatorFactory extends BaseJsFormValidatorFactory
     private function resolveValidationGroups(FormInterface $form): array
     {
         $resolveValidationGroups = function () use ($form) {
-            return FormValidator::{'getValidationGroups'}($form);
+            return (new FormValidator)->getValidationGroups($form);
         };
         $resolveValidationGroups = $resolveValidationGroups->bindTo(null, FormValidator::class);
 
