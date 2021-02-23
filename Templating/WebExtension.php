@@ -1,8 +1,8 @@
 <?php
 namespace Vanio\WebBundle\Templating;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\Persistence\ManagerRegistry;
 use Html2Text\Html2Text;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Form\FormError;
@@ -54,7 +54,7 @@ class WebExtension extends AbstractExtension implements GlobalsInterface
     /** @var Serializer */
     private $serializer;
 
-    /** @var Registry */
+    /** @var ManagerRegistry */
     private $doctrine;
 
     /** @var CacheManager|null */
@@ -96,7 +96,7 @@ class WebExtension extends AbstractExtension implements GlobalsInterface
         RouteHierarchyResolver $routeHierarchyResolver,
         ResponseContext $responseContext,
         Serializer $serializer,
-        Registry $doctrine,
+        ManagerRegistry $doctrine,
         CacheManager $cacheManager = null,
         string $webRoot,
         string $imageDimensionsCacheDirectory,

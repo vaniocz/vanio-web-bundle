@@ -19,7 +19,7 @@ trait DefaultRouteNameTrait
         }
 
         $defaultRouteName = sprintf(
-            '%s_%s_%',
+            '%s_%s_%s',
             preg_replace('~(bundle|controller)(\\\|$)~i', '', $reflectionClass->name),
             preg_replace('~^index(Action)?$|action$~i', '', $reflectionMethod->name),
             $this->defaultRouteIndex++ ? $this->defaultRouteIndex : ''
