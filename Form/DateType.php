@@ -13,6 +13,7 @@ class DateType extends AbstractType
             ->setDefaults([
                 'widget' => 'single_text',
                 'format' => \IntlDateFormatter::MEDIUM,
+                'html5' => false,
             ])
             ->setAllowedValues('widget', 'single_text');
     }
