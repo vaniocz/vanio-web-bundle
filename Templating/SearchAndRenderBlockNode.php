@@ -20,12 +20,12 @@ class SearchAndRenderBlockNode extends FunctionExpression
         }
 
         if (count($argumentsNode) < 2) {
-            $compiler->raw("(function () { throw new Twig_Error_Runtime('Twig function \"form_block\" expects at least 2 arguments.', {$this->lineno}, \$this->source); })();");
+            $compiler->raw("(function () { throw new RuntimeError('Twig function \"form_block\" expects at least 2 arguments.', {$this->lineno}, \$this->source); })();");
         } elseif (
-            !$nameNode instanceof \Twig_Node_Expression_Constant
+            !$nameNode instanceof ConstantExpression
             || !is_string($nameNode->getAttribute('value'))
         ) {
-            $compiler->raw("(function () { throw new Twig_Error_Runtime('Twig function \"form_block\" expects the first argument to be a constant string.', {$this->lineno}, \$this->source); })();");
+            $compiler->raw("(function () { throw new RuntimeError('Twig function \"form_block\" expects the first argument to be a constant string.', {$this->lineno}, \$this->source); })();");
         } else {
             $this->setAttribute('name', sprintf('form_%s', str_replace('_', '', $nameNode->getAttribute('value'))));
         }
