@@ -4,6 +4,10 @@
     {% set page = filter.page %}
 {% endif %}
 
+{% if pageParameter is not defined %}
+    {% set pageParameter = 'page' %}
+{% endif %}
+
 {% if page is defined %}
     <div class="paginator">
         <p class="paginator-info">
@@ -17,24 +21,24 @@
 
             <div class="paginator-pages">
                 <ul class="pagination">
-                    {{ menu.item(null, {page: page.pageNumber - 1} + parameters, {class: {'pagination-previous': true, active: false, disabled: page.pageNumber == 1}}, {href: page.pageNumber == 1 ? false : null, label: '«'}) }}
-                    {{ menu.item(null, {page: 1} + parameters, {class: {active: page.pageNumber == 1}}, {label: 1}) }}
+                    {{ menu.item(null, {(pageParameter): page.pageNumber - 1} + parameters, {class: {'pagination-previous': true, active: false, disabled: page.pageNumber == 1}}, {href: page.pageNumber == 1 ? false : null, label: '«'}) }}
+                    {{ menu.item(null, {(pageParameter): 1} + parameters, {class: {active: page.pageNumber == 1}}, {label: 1}) }}
 
                     {% if page.pageNumber - neighboursCount > 2 %}<li class="disabled"><a>…</a></li>{% endif %}
 
                     {% if maximalPage > 2 %}
                         {% for pageNumber in max(page.pageNumber - neighboursCount, 2)..min(maximalPage - 1, page.pageNumber + neighboursCount) %}
-                            {{ menu.item(null, {page: pageNumber} + parameters, {class: {active: page.pageNumber == pageNumber}}, {label: pageNumber}) }}
+                            {{ menu.item(null, {(pageParameter): pageNumber} + parameters, {class: {active: page.pageNumber == pageNumber}}, {label: pageNumber}) }}
                         {% endfor %}
                     {% endif %}
 
                     {% if page.pageNumber + neighboursCount < maximalPage - 1 %}<li class="disabled"><a>…</a>{% endif %}
 
                     {% if maximalPage > 1 %}
-                        {{ menu.item(null, {page: maximalPage} + parameters, {class: {active: page.pageNumber == maximalPage}}, {label: maximalPage}) }}
+                        {{ menu.item(null, {(pageParameter): maximalPage} + parameters, {class: {active: page.pageNumber == maximalPage}}, {label: maximalPage}) }}
                     {% endif %}
 
-                    {{ menu.item(null, {page: page.pageNumber + 1} + parameters, {class: {'pagination-next': true, active: false, disabled: page.pageNumber >= maximalPage}}, {href: page.pageNumber >= maximalPage ? false : null, label: '»'}) }}
+                    {{ menu.item(null, {(pageParameter): page.pageNumber + 1} + parameters, {class: {'pagination-next': true, active: false, disabled: page.pageNumber >= maximalPage}}, {href: page.pageNumber >= maximalPage ? false : null, label: '»'}) }}
                 </ul>
             </div>
         {% endif %}
