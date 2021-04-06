@@ -52,6 +52,7 @@
         <service id="vanio_web.form.uploaded_file_type" class="%vanio_web.form.uploaded_file_type.class%" abstract="true">
             <argument type="service" id="vanio_web.model.uploaded_file_repository"/>
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="translator"/>
             <argument>%web_root%</argument>
             <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
         </service>
