@@ -6,10 +6,12 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Vanio\DomainBundle\Assert\Assertion;
 use Vanio\DomainBundle\Doctrine\EntityRepository;
 use Vanio\DomainBundle\Model\File;
@@ -23,6 +25,9 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
     /** @var RequestStack */
     private $requestStack;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
     /** @var CacheManager|null */
     private $cacheManager;
 
@@ -32,11 +37,13 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
     public function __construct(
         EntityRepository $uploadedFileRepository,
         RequestStack $requestStack,
+        TranslatorInterface $translator,
         string $webRoot,
         CacheManager $cacheManager = null
     ) {
         $this->uploadedFileRepository = $uploadedFileRepository;
         $this->requestStack = $requestStack;
+        $this->translator = $translator;
         $this->cacheManager = $cacheManager;
         $this->webRoot = str_replace('\\', '/', realpath($webRoot));
     }
@@ -137,8 +144,16 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
             if (isset($fileData['key'])) {
                 $files[$fileData['key']] = $originalData[$fileData['key']];
             } elseif (isset($fileData['id'])) {
-                $file = $this->getUploadedFile($fileData['id'])->file();
-                $files[] = new $class($file);
+                if ($uploadedFile = $this->findUploadedFile($fileData['id'])) {
+                    $files[] = new $class($uploadedFile->file());
+                } else {
+                    $errorMessage = $this->translator->trans(
+                        'Uploaded file not found. Please try to upload it again.',
+                        [],
+                        'validators'
+                    );
+                    $form->addError(new FormError($errorMessage));
+                }
             }
         }
 
@@ -179,9 +194,9 @@ class UploadedFileType extends AbstractType implements DataMapperInterface
             : $this->cacheManager->getBrowserPath($path, $thumbnailFilter);
     }
 
-    private function getUploadedFile(string $id): UploadedFile
+    private function findUploadedFile(string $id): ?UploadedFile
     {
-        return $this->uploadedFileRepository->getOneBy([
+        return $this->uploadedFileRepository->findOneBy([
             'id' => $id,
             'sessionId' => $this->requestStack->getCurrentRequest()->getSession()->getId(),
         ]);

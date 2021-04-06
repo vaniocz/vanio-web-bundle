@@ -15,6 +15,11 @@
                 <source>Choose an image.</source>
                 <target>Vyberte obrázek.</target>
             </trans-unit>
+
+            <trans-unit id="fe108a914814fb41d8f82557465be78c" resname="Uploaded file not found. Please try to upload it again.">
+                <source>Uploaded file not found. Please try to upload it again.</source>
+                <target>Nahraný soubor nebyl nalezen. Zkuste jej, prosím, nahrát znovu.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
