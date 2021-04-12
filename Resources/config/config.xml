@@ -44,6 +44,12 @@
             <argument>%kernel.cache_dir%/vanio_web</argument>
         </service>
 
+        <service id="vanio_web.controller.uploaded_file_controller" class="Vanio\WebBundle\Controller\UploadedFileController" public="true">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="Vich\UploaderBundle\Templating\Helper\UploaderHelper"/>
+            <argument type="service" id="liip_imagine.cache.manager" on-invalid="null"/>
+        </service>
+
         <service id="vanio_web.model.uploaded_file_repository" class="%vanio_web.model.uploaded_file_repository.class%" public="false" abstract="true">
             <argument type="service" id="doctrine"/>
             <argument>Vanio\WebBundle\Model\UploadedFile</argument>

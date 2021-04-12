@@ -3,6 +3,7 @@ namespace Vanio\WebBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Vanio\DomainBundle\Doctrine\EntityRepository;
 use Vanio\DomainBundle\Model\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -14,7 +15,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class UploadedFile
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      * @ORM\Column
      * @ORM\Id
      */
@@ -40,7 +41,7 @@ class UploadedFile
         $this->sessionId = $sessionId;
     }
 
-    public function id(): Uuid
+    public function id(): UuidInterface
     {
         return $this->id;
     }

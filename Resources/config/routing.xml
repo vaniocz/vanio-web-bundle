@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <routes xmlns="http://symfony.com/schema/routing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
     <route id="vanio_web_uploaded_file_upload" path="/uploaded-file/upload" methods="POST">
-        <default key="_controller">VanioWebBundle:UploadedFile:upload</default>
+        <default key="_controller">vanio_web.controller.uploaded_file_controller::uploadAction</default>
     </route>
 </routes>
