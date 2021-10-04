@@ -75,7 +75,7 @@
             {{ form_row(form) }}
         {% endif %}
 
-        <div class="{{ prefix }}-actions">
+        <div class="{{ prefix }}-actions" {% if form.parent.vars.disabled %}style="display: none;"{% endif %}>
             {{ form_block('actions', form, {prefix: prefix}) }}
         </div>
     </div>
