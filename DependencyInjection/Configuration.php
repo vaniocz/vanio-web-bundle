@@ -8,8 +8,8 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder;
-        $treeBuilder->root('vanio_web')
+        $treeBuilder = new TreeBuilder('vanio_web');
+        $treeBuilder->getRootNode()
             ->children()
                 ->booleanNode('override_default_route_names')->defaultFalse()->end()
                 ->booleanNode('detect_request_type')->defaultFalse()->end()
